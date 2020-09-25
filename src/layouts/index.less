@@ -1,0 +1,19 @@
+@import '~antd/lib/style/themes/default.less';
+
+.fixedHeader {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9;
+  transition: width 0.2s;
+}
+
+.content {
+  margin: 12px 12px;
+  margin-top: @layout-header-height + 12px;
+  background: white;
+  &.isMobile {
+    margin: 12px 6px;
+  }
+}
