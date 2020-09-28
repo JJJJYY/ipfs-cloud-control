@@ -20,8 +20,10 @@ class Page extends Component {
     visibleDrawer: false,
     visibleInviteDrawer: false,
     page: 1,
+    count: 10,
     search: null,
     invitePage: 1,
+    inviteCount: 10,
     rank: 0,
     userID: null,
   };
@@ -235,11 +237,12 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'authUser/queryList',
       payload: {
         page: page,
+        count: count,
         search: search,
       }
     })
@@ -257,12 +260,13 @@ class Page extends Component {
   }
 
   loadUserInvite = () => {
-    const { invitePage, userID, rank } = this.state;
+    const { invitePage, inviteCount, userID, rank } = this.state;
     this.props.dispatch({
       type: 'authUser/queryInviteDetailList',
       payload: {
         id: userID,
         page: invitePage,
+        count: inviteCount,
         rank: rank,
         maxrank: 2,
       },
@@ -342,7 +346,7 @@ class Page extends Component {
   }
 
   render() {
-    const { visibleDrawer, visibleInviteDrawer, page, search, userID, invitePage, rank } = this.state;
+    const { visibleDrawer, visibleInviteDrawer, page, count, search, userID, invitePage, inviteCount, rank } = this.state;
     const { data, listLoading, userDetail, updateLoading, inviteList } = this.props;
 
     return (
@@ -357,6 +361,7 @@ class Page extends Component {
             type: 'authUser/userExport',
             payload: {
               page: page,
+              count: count,
               search: search ? JSON.stringify(search) : null,
               all: all,
             },
@@ -370,6 +375,7 @@ class Page extends Component {
           loading={listLoading || updateLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           onSave={this.handleSave}
@@ -463,6 +469,7 @@ class Page extends Component {
                     payload: {
                       id: userID,
                       page: invitePage,
+                      count: inviteCount,
                       rank: rank ? rank : 0,
                       maxrank: 2,
                       all: all,
@@ -475,6 +482,7 @@ class Page extends Component {
                   dataSource={inviteList ? inviteList.list : []}
                   onChange={(pagination) => {
                     this.state.invitePage = pagination.current;
+                    this.state.inviteCount = pagination.pageSize;
                     this.loadUserInvite()
                   }}
                   pagination={{

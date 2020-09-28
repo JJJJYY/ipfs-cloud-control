@@ -10,6 +10,7 @@ const Option = Select.Option;
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     search: null,
   };
 
@@ -57,18 +58,19 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'deposit/queryList',
       payload: {
         page: page,
+        count: count,
         search: search,
       }
     });
   };
 
   render() {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     const { data, listLoading } = this.props;
 
     return (
@@ -107,6 +109,7 @@ class Page extends Component {
             type: 'deposit/export',
             payload: {
               page: page,
+              count: count,
               search: search ? JSON.stringify(search) : null,
               all: all,
             },
@@ -120,6 +123,7 @@ class Page extends Component {
           loading={listLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           rowKey="id"

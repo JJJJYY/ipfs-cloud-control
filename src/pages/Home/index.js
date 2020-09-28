@@ -7,7 +7,7 @@ import styles from './index.less';
 class Page extends Component {
 
   state = {
-    imgUrl: null
+
   }
 
   componentDidMount() {

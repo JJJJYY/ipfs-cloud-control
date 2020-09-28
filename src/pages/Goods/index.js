@@ -13,6 +13,7 @@ const Option = Select.Option;
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     visible: false,
     editdata: null,
   };
@@ -97,6 +98,7 @@ class Page extends Component {
       type: 'goods/queryList',
       payload: {
         page: this.state.page,
+        count: this.state.count,
       }
     });
   };
@@ -189,6 +191,7 @@ class Page extends Component {
           loading={listLoading || updateLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           onDelete={this.handleDel}

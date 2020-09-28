@@ -11,6 +11,7 @@ const Option = Select.Option;
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     search: null,
   };
   formRef = React.createRef();
@@ -70,11 +71,12 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'withdrawal/queryList',
       payload: {
         page: page,
+        count: count,
         search: search,
       }
     });
@@ -133,7 +135,7 @@ class Page extends Component {
   }
 
   render() {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     const { data, listLoading, updateLoading } = this.props;
 
     return (
@@ -175,6 +177,7 @@ class Page extends Component {
             type: 'withdrawal/export',
             payload: {
               page: page,
+              count: count,
               search: search ? JSON.stringify(search) : null,
               all: all,
             },
@@ -188,6 +191,7 @@ class Page extends Component {
           loading={listLoading || updateLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           rowKey="id"

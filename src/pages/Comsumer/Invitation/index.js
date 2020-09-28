@@ -8,10 +8,12 @@ import SearchGroup from '@/components/SearchGroup';
 const Option = Select.Option;
 
 class Page extends Component {
-  state = { 
+  state = {
     page: 1,
+    count: 10,
     search: null,
     invitePage: 1,
+    inviteCount: 10,
     rank: 0,
     userID: null,
   };
@@ -20,29 +22,29 @@ class Page extends Component {
     {
       title: 'UID',
       dataIndex: 'id',
-    },{
+    }, {
       title: '账号',
       dataIndex: 'account',
-    },{
+    }, {
       title: '等级',
       dataIndex: 'level',
       editable: true,
       required: true,
       render(text) {
         return (
-          <div>{['普通合伙人', '铜牌合伙人', '银牌合伙人', '金牌合伙人', '铂金合伙人', '钻石合伙人', '超级合伙人'][text+1]}</div>
+          <div>{['普通合伙人', '铜牌合伙人', '银牌合伙人', '金牌合伙人', '铂金合伙人', '钻石合伙人', '超级合伙人'][text + 1]}</div>
         );
       }
-    },{
+    }, {
       title: '邀请人',
       dataIndex: 'up_user',
-    },{
+    }, {
       title: '累计人数',
       dataIndex: 'reward',
       render(text) {
         return text.invitation_count;
       },
-    },{
+    }, {
       title: '分销奖励USDT',
       dataIndex: 'reward',
       render(text) {
@@ -50,7 +52,7 @@ class Page extends Component {
           Math.max(text.brokerage, 0)
         )
       },
-    },{
+    }, {
       title: '累计分销算力（TB）',
       dataIndex: 'reward',
       render(text) {
@@ -58,7 +60,7 @@ class Page extends Component {
           parseFloat(text.children_purchase) + parseFloat(text.grandchildren_purchase)
         )
       },
-    },{
+    }, {
       title: '一级分销（TB)',
       dataIndex: 'reward',
       render(text) {
@@ -66,7 +68,7 @@ class Page extends Component {
           parseFloat(text.children_purchase)
         )
       },
-    },{
+    }, {
       title: '二级分销（TB）',
       dataIndex: 'reward',
       render(text) {
@@ -74,10 +76,10 @@ class Page extends Component {
           parseFloat(text.grandchildren_purchase)
         )
       },
-    },{
+    }, {
       title: '注册时间',
       dataIndex: 'create_time',
-    },{
+    }, {
       title: '操作',
       operation: true,
       width: 60,
@@ -92,25 +94,25 @@ class Page extends Component {
     {
       title: '邀请用户',
       dataIndex: 'account',
-    },{
+    }, {
       title: '用户等级',
       dataIndex: 'level',
       render: (text) => (
-        <div>{['普通合伙人', '铜牌合伙人', '银牌合伙人', '金牌合伙人', '铂金合伙人', '钻石合伙人', '超级合伙人'][text+1]}</div>
+        <div>{['普通合伙人', '铜牌合伙人', '银牌合伙人', '金牌合伙人', '铂金合伙人', '钻石合伙人', '超级合伙人'][text + 1]}</div>
       ),
-    },{
+    }, {
       title: '层级关系',
       dataIndex: 'rank',
       render(text) {
         return text + '级';
       }
-    },{
+    }, {
       title: '购买算力',
       dataIndex: 'quantity',
       render: (text) => (
         <div>{parseFloat(text)} TB</div>
       ),
-    },{
+    }, {
       title: '团队业绩',
       dataIndex: 'reward',
       render: (text) => (
@@ -124,30 +126,32 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'authUser/queryInvitationList',
       payload: {
         page: page,
+        count: count,
         search: search,
       }
     });
   };
 
   loadUserInvite = () => {
-    const { invitePage, userID, rank } = this.state;
+    const { invitePage, inviteCount, userID, rank } = this.state;
     this.props.dispatch({
       type: 'authUser/queryInviteDetailList',
-      payload: { 
+      payload: {
         id: userID,
         page: invitePage,
+        count: inviteCount,
         rank: rank,
         maxrank: 2,
       },
     }).then((data) => {
       if (data != 'error') {
         this.setState({ visibleInviteDrawer: true });
-      } 
+      }
     })
   }
 
@@ -163,7 +167,7 @@ class Page extends Component {
   }
 
   render() {
-    const { visibleInviteDrawer, page, search, userID, invitePage, rank } = this.state;
+    const { visibleInviteDrawer, page, count, search, userID, invitePage, inviteCount, rank } = this.state;
     const { data, inviteList, listLoading } = this.props;
 
     return (
@@ -173,44 +177,47 @@ class Page extends Component {
           this.state.search = e;
           this.loadData();
         }} items={
-          [{ label: '账号', name: 'account' }, 
-          { label: '邀请人', name: 'up_user' }, 
-          { label: '用户等级', name: 'level', 
-              custom: (
-                <Select>
-                  <Option value={-1}>普通合伙人</Option>
-                  <Option value={0}>铜牌合伙人</Option>
-                  <Option value={1}>银牌合伙人</Option>
-                  <Option value={2}>金牌合伙人</Option>
-                  <Option value={3}>铂金合伙人</Option>
-                  <Option value={4}>钻石合伙人</Option>
-                  <Option value={5}>超级合伙人</Option>
-                </Select>
-              )
+          [{ label: '账号', name: 'account' },
+          { label: '邀请人', name: 'up_user' },
+          {
+            label: '用户等级', name: 'level',
+            custom: (
+              <Select>
+                <Option value={-1}>普通合伙人</Option>
+                <Option value={0}>铜牌合伙人</Option>
+                <Option value={1}>银牌合伙人</Option>
+                <Option value={2}>金牌合伙人</Option>
+                <Option value={3}>铂金合伙人</Option>
+                <Option value={4}>钻石合伙人</Option>
+                <Option value={5}>超级合伙人</Option>
+              </Select>
+            )
           }]
         } />
         <OperationGroup onExport={(all) => {
           this.props.dispatch({
             type: 'authUser/invitationExport',
-            payload: { 
+            payload: {
               page: page,
+              count: count,
               search: search ? JSON.stringify(search) : null,
               all: all,
             },
           });
         }} />
         <EditableTable
-          columns={this.columns} 
+          columns={this.columns}
           dataSource={data ? data.list : []}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           onActions={this.handleActions}
-          rowKey="id" 
+          rowKey="id"
         />
         <Drawer
           width={720}
@@ -226,7 +233,8 @@ class Page extends Component {
                   this.state.invitePage = 1;
                   this.state.rank = e ? e.rank : 0;
                   this.loadUserInvite();
-                }} items={[{ label: '层级关系', name: 'rank',
+                }} items={[{
+                  label: '层级关系', name: 'rank',
                   custom: (
                     <Select>
                       <Option value={1}>1级</Option>
@@ -237,9 +245,10 @@ class Page extends Component {
                 <OperationGroup onExport={(all) => {
                   this.props.dispatch({
                     type: 'authUser/inviteDetailExport',
-                    payload: { 
+                    payload: {
                       id: userID,
                       page: invitePage,
+                      count: inviteCount,
                       rank: rank ? rank : 0,
                       maxrank: 2,
                       all: all,
@@ -252,6 +261,7 @@ class Page extends Component {
                   dataSource={inviteList ? inviteList.list : []}
                   onChange={(pagination) => {
                     this.state.invitePage = pagination.current;
+                    this.state.inviteCount = pagination.pageSize;
                     this.loadUserInvite()
                   }}
                   pagination={{
@@ -265,7 +275,7 @@ class Page extends Component {
               </div>
             </Row>
           </div>
-        </Drawer>      
+        </Drawer>
       </div>
     )
   }

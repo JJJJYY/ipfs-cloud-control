@@ -9,6 +9,7 @@ import SearchGroup from '@/components/SearchGroup';
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     search: null,
     visible: false,
   };
@@ -17,6 +18,11 @@ class Page extends Component {
     {
       title: '用户',
       dataIndex: 'account',
+    }, {
+      title: '姓名',
+      dataIndex: 'name',
+      editable: true,
+      required: true,
     }, {
       title: '最高可查询层级',
       dataIndex: 'max_rank',
@@ -59,6 +65,10 @@ class Page extends Component {
       key: 'account',
       required: true,
     }, {
+      title: '姓名',
+      dataIndex: 'name',
+      required: true,
+    }, {
       title: '最高可查询层级',
       key: 'max_rank',
       required: true,
@@ -89,6 +99,7 @@ class Page extends Component {
       type: 'authAgent/queryList',
       payload: {
         page: this.state.page,
+        count: this.state.count,
         search: this.state.search,
       }
     });
@@ -154,6 +165,7 @@ class Page extends Component {
           loading={listLoading || updateLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           onSave={this.handleSave}

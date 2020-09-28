@@ -15,12 +15,15 @@ export default {
   },
 
   reducers: {
-    home(state, { payload: {data} }) {
+    home(state, { payload: { data } }) {
+      data.weight.orderSomeDay.map((item) => {
+        item.quantity = parseFloat(item.quantity)
+      })
       return {
         ...state,
         home: data,
       }
     },
-    
+
   },
 }

@@ -18,6 +18,7 @@ class Page extends Component {
     visible: false,
     visibleDrawer: false,
     page: 1,
+    count: 10,
     search: null,
   };
   formRef = React.createRef();
@@ -284,11 +285,12 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'replenishmentRecord/queryList',
       payload: {
         page: page,
+        count: count,
         search: search,
       }
     });
@@ -374,7 +376,7 @@ class Page extends Component {
   }
 
   render() {
-    const { visible, page, search } = this.state;
+    const { visible, page, count, search } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
 
     return (
@@ -416,6 +418,7 @@ class Page extends Component {
                 type: 'replenishmentRecord/export',
                 payload: {
                   page: page,
+                  count: count,
                   search: search ? JSON.stringify(search) : null,
                   all: all,
                 },
@@ -494,6 +497,7 @@ class Page extends Component {
           loading={listLoading || updateLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
           onSave={this.handleSave}

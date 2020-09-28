@@ -11,6 +11,7 @@ const Option = Select.Option;
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     search: null,
   };
   formRef = React.createRef();
@@ -19,13 +20,13 @@ class Page extends Component {
     {
       title: '账号',
       dataIndex: 'account',
-    },{
+    }, {
       title: '姓名',
       dataIndex: 'real_name',
-    },{
+    }, {
       title: '证件号',
       dataIndex: 'id_card_no',
-    },{
+    }, {
       title: '正面',
       dataIndex: 'id_front',
       render(text) {
@@ -33,7 +34,7 @@ class Page extends Component {
           <a href={text} target='view_window'><img src={text} width={60} alt='' /></a>
         );
       },
-    },{
+    }, {
       title: '背面',
       dataIndex: 'id_verso',
       render(text) {
@@ -41,7 +42,7 @@ class Page extends Component {
           <a href={text} target='view_window'><img src={text} width={60} alt='' /></a>
         );
       },
-    },{
+    }, {
       title: '状态',
       dataIndex: 'status',
       render(text) {
@@ -49,19 +50,19 @@ class Page extends Component {
           <div>{[<Tag color="blue">待审核</Tag>, <Tag color="green">通过</Tag>, <Tag color="black">拒绝</Tag>][text]}</div>
         );
       },
-    },{
+    }, {
       title: '国家',
       dataIndex: 'country',
-    },{
+    }, {
       title: '提交时间',
       dataIndex: 'create_time',
-    },{
+    }, {
       title: '审核时间',
       dataIndex: 'audit_time',
-    },{
+    }, {
       title: '备注',
       dataIndex: 'audit_remark',
-    },{
+    }, {
       title: '操作',
       dataIndex: 'operation',
       width: 60,
@@ -77,11 +78,12 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, search } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'userIdInfo/queryList',
       payload: {
         page: page,
+        count: count,
         search: search,
       }
     });
@@ -94,7 +96,7 @@ class Page extends Component {
         <div>
           账号：{record.account}<br /><br />
           <Form ref={this.formRef}>
-            <FormItem 
+            <FormItem
               label='审核'
               name='status'
               rules={[{ required: true, message: `请选择` }]}
@@ -104,7 +106,7 @@ class Page extends Component {
                 <Option value={2}>拒绝</Option>
               </Select>
             </FormItem>
-            <FormItem 
+            <FormItem
               label='备注'
               name='audit_remark'
               rules={[{ message: `请输入` }]}
@@ -150,31 +152,33 @@ class Page extends Component {
           this.loadData();
         }} items={
           [{ label: '账号', name: 'account' },
-            { label: '证件号', name: 'id_card_no' },
-            { label: '姓名', name: 'real_name' },
-            { label: '状态', name: 'status',
-              custom: (
-                <Select>
-                  <Option value={0}>待审核</Option>
-                  <Option value={1}>通过</Option>
-                  <Option value={2}>拒绝</Option>
-                </Select>
-              )
-            }
+          { label: '证件号', name: 'id_card_no' },
+          { label: '姓名', name: 'real_name' },
+          {
+            label: '状态', name: 'status',
+            custom: (
+              <Select>
+                <Option value={0}>待审核</Option>
+                <Option value={1}>通过</Option>
+                <Option value={2}>拒绝</Option>
+              </Select>
+            )
+          }
           ]
-          } />
+        } />
         {/* <OperationGroup onAdd={() => this.setState({ visible: true })} /> */}
         <EditableTable
-          columns={this.columns} 
+          columns={this.columns}
           dataSource={data ? data.list : []}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
           onChange={(pagination) => {
             this.state.page = pagination.current;
+            this.state.count = pagination.pageSize;
             this.loadData()
           }}
-          rowKey="id" 
+          rowKey="id"
         />
       </div>
     )
