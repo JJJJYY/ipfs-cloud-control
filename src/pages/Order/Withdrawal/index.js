@@ -4,6 +4,7 @@ import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
 import SearchGroup from '@/components/SearchGroup';
+import styles from './index.less';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -68,6 +69,7 @@ class Page extends Component {
 
   componentDidMount() {
     this.loadData();
+    this.loadBalance();
   }
 
   loadData = () => {
@@ -79,6 +81,12 @@ class Page extends Component {
         count: count,
         search: search,
       }
+    });
+  };
+
+  loadBalance = () => {
+    this.props.dispatch({
+      type: 'withdrawal/usdtBalance',
     });
   };
 
@@ -136,8 +144,7 @@ class Page extends Component {
 
   render() {
     const { page, count, search } = this.state;
-    const { data, listLoading, updateLoading } = this.props;
-
+    const { data, listLoading, updateLoading, usdt } = this.props;
     return (
       <div>
         <SearchGroup onSearch={(e) => {
@@ -183,6 +190,7 @@ class Page extends Component {
             },
           });
         }} />
+        {usdt && <div className={styles.balance}>提币地址： {usdt} USDT</div>}
         <EditableTable
           columns={this.columns}
           dataSource={data ? data.list : []}
@@ -204,6 +212,7 @@ class Page extends Component {
 function mapStateToProps(state) {
   return {
     data: state.withdrawal.list,
+    usdt: state.withdrawal.usdt,
     listLoading: state.loading.effects['withdrawal/queryList'],
     updateLoading: state.loading.effects['withdrawal/audit'],
   };

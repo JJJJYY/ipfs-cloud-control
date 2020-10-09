@@ -49,9 +49,16 @@ class Page extends Component {
     }, {
       title: '订单金额',
       dataIndex: 'payment_quantity',
+      editable: true,
+      required: true,
       render: (text) => (
         <div>{parseFloat(text)}</div>
       ),
+      custom() {
+        return (
+          <InputNumber min={0} />
+        )
+      },
     }, {
       title: '支付方式',
       dataIndex: 'asset',
@@ -166,6 +173,14 @@ class Page extends Component {
           { label: '用户账号', name: 'account' },
           { label: '邀请人账号', name: 'up_user' },
           {
+            label: '服务费', name: 'service_charge_rate',
+            custom: (
+              <Select>
+                <Option value='0.2000'>不保底</Option>
+                <Option value='0.1490'>保底</Option>
+              </Select>
+            )
+          }, {
             label: '支付状态', name: 'status',
             custom: (
               <Select>

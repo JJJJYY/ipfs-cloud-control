@@ -5,6 +5,7 @@ export default {
 
   state: {
     list: {},
+    usdt: null,
   },
 
   effects: {
@@ -20,16 +21,28 @@ export default {
     *export({ payload }, { call }) {
       return yield call(api.withdrawalExport, payload);
     },
-    
+
+    *usdtBalance({ payload }, { call, put }) {
+      const data = yield call(api.withdrawalUSDTBalance, payload);
+      yield put({ type: 'usdt', payload: { data: data } });
+    },
+
   },
 
   reducers: {
-    list(state, { payload: {data} }) {
+    list(state, { payload: { data } }) {
       return {
         ...state,
         list: data,
       }
     },
-    
+
+    usdt(state, { payload: { data } }) {
+      return {
+        ...state,
+        usdt: data,
+      }
+    },
+
   },
 }

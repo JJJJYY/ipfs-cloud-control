@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, Drawer, Divider, Row, Table } from 'antd';
+import { Select, Drawer, Divider, Row, Table, Modal, Progress } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -15,6 +15,8 @@ class Page extends Component {
     invitePage: 1,
     rank: 0,
     userID: null,
+    visible: false,
+    checkRes: null,
   };
 
   columns = [
@@ -113,9 +115,27 @@ class Page extends Component {
       ),
     }, {
       title: '团队业绩',
-      dataIndex: 'reward',
+      dataIndex: 'share',
       render: (text) => (
-        <div>{(parseFloat(text.children_purchase) + parseFloat(text.grandchildren_purchase))} TB</div>
+        <div>{parseFloat(text.team_purchase)} TB</div>
+      ),
+    }, {
+      title: '支付金额(USDT)',
+      dataIndex: 'share',
+      render: (text) => (
+        <div>{parseFloat(text.payment)}</div>
+      ),
+    }, {
+      title: '上级佣金(USDT)',
+      dataIndex: 'share',
+      render: (text) => (
+        <div>{parseFloat(text.father_reward)}</div>
+      ),
+    }, {
+      title: '上上级佣金(USDT)',
+      dataIndex: 'share',
+      render: (text) => (
+        <div>{parseFloat(text.grandfather_reward)}</div>
       ),
     },
   ];
@@ -138,7 +158,7 @@ class Page extends Component {
         },
       }
     });
-  };
+  }
 
   loadUserInvite = () => {
     const { invitePage, inviteCount, userID, rank } = this.state;
@@ -149,12 +169,49 @@ class Page extends Component {
         page: invitePage,
         count: inviteCount,
         rank: rank,
+        agent: true,
       },
     }).then((data) => {
       if (data != 'error') {
         this.setState({ visibleInviteDrawer: true });
       }
     })
+  }
+
+  checkExport = (name) => {
+    this.setState({
+      visible: true,
+    });
+    this.timer && clearInterval(this.timer);
+    this.checkExportTimer(name);
+  }
+
+  checkExportTimer = (name) => {
+    this.timer = setInterval(() => {
+      this.props.dispatch({
+        type: 'authUser/checkInviteDetailExport',
+        payload: {
+          name: name,
+        }
+      }).then((res) => {
+        if (res && res != 'error') {
+          this.setState({
+            checkRes: res,
+          })
+          if (res.path && res.present == res.count) {
+            this.timer && clearInterval(this.timer);
+          }
+        }
+      })
+    }, 1000);
+  }
+
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+      checkRes: null,
+    });
+    this.timer && clearInterval(this.timer);
   }
 
   handleCloseDrawer = () => {
@@ -169,7 +226,7 @@ class Page extends Component {
   }
 
   render() {
-    const { visibleInviteDrawer, page, count, search, userID, invitePage, inviteCount, rank } = this.state;
+    const { visibleInviteDrawer, visible, checkRes, page, count, search, userID, invitePage, inviteCount, rank } = this.state;
     const { data, inviteList, listLoading } = this.props;
 
     return (
@@ -207,8 +264,30 @@ class Page extends Component {
           onActions={this.handleActions}
           rowKey="id"
         />
+        <Modal
+          title="导出表格"
+          visible={visible}
+          maskClosable={false}
+          onCancel={this.handleCancel}
+          footer={null}
+        >
+          {checkRes ?
+            <div>
+              <Progress
+                style={{ width: '70%' }}
+                percent={checkRes.present / checkRes.count * 100}
+                status="active"
+                format={percent => `${parseFloat(percent).toFixed(2)}% （` + checkRes.present + ' / ' + checkRes.count + '）'}
+              />
+              {checkRes.present == checkRes.count && !checkRes.path && <div><br />正在生成表格...</div>}
+              {checkRes.path && <div><br /><a href={checkRes.path} >下载结果</a></div>}
+            </div>
+            :
+            <p>处理中...</p>
+          }
+        </Modal>
         <Drawer
-          width={720}
+          width={1000}
           placement="right"
           onClose={this.handleCloseDrawer}
           visible={visibleInviteDrawer}
@@ -247,8 +326,13 @@ class Page extends Component {
                       count: inviteCount,
                       rank: rank ? rank : 0,
                       all: all,
+                      agent: true,
                     },
-                  });
+                  }).then((res) => {
+                    if (res != 'error' && all) {
+                      this.checkExport(res);
+                    }
+                  })
                 }} />
                 <Table
                   columns={this.columnsInvite}

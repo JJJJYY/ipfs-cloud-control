@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, InputNumber, Tag, Modal, Select, Upload as AntUpload, message } from 'antd';
+import { Form, Button, InputNumber, Tag, Modal, Select, Upload as AntUpload, message, Table } from 'antd';
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
@@ -20,6 +20,7 @@ class Page extends Component {
     page: 1,
     count: 10,
     search: null,
+    selectedRowKeys: [],
   };
   formRef = React.createRef();
 
@@ -107,7 +108,7 @@ class Page extends Component {
         )
       },
     }, {
-      title: '金额单位',
+      title: '单位',
       dataIndex: 'asset',
       editable: true,
       required: true,
@@ -231,7 +232,7 @@ class Page extends Component {
         return (<InputNumber style={{ width: '100%' }} min={0} />)
       }
     }, {
-      title: '金额单位',
+      title: '单位',
       key: 'asset',
       required: true,
       custom() {
@@ -371,13 +372,27 @@ class Page extends Component {
     });
   };
 
-  handleUpload = (info) => {
+  onSelectChange = selectedRowKeys => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  };
 
+  batchAudit = () => {
+    console.log('selectedRowKeys changed: ', this.state.selectedRowKeys);
   }
 
   render() {
-    const { visible, page, count, search } = this.state;
+    const { visible, page, count, search, selectedRowKeys } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
+
+    const rowSelection = search && search.status == 0 ? {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+      selections: [
+        Table.SELECTION_ALL,
+        Table.SELECTION_INVERT,
+      ]
+    } : null;
 
     return (
       <div>
@@ -480,6 +495,9 @@ class Page extends Component {
           >
             批量导入
           </Button>
+          {search && search.status == 0 && <Button className={styles.btn} type="primary" onClick={this.batchAudit} disabled={selectedRowKeys.length == 0}>
+            批量审核
+          </Button>}
         </div>
         <EditModal
           visible={visible}
@@ -503,6 +521,7 @@ class Page extends Component {
           onSave={this.handleSave}
           onActions={this.handleActions}
           rowKey="id"
+          rowSelection={rowSelection}
         />
       </div>
     )

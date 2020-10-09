@@ -131,7 +131,11 @@ export async function authUserInvitationExport(params) {
 }
 
 export async function authUserInviteDetailExport(params) {
-  return request.download('Portal.AuthUser.ExportInviteDetail', params);
+  return params.all && params.agent ? request.post('Portal.AuthUser.ExportInviteDetail', params) : request.download('Portal.AuthUser.ExportInviteDetail', params);
+}
+
+export async function authUserCheckInvitationDetailExport(params) {
+  return request.post('Portal.AuthUser.CheckInvitationDetailExport', params);
 }
 
 // ----------------------- UserIdInfo -----------------------
@@ -155,6 +159,15 @@ export async function balanceModifyList(params) {
 
 export async function balanceModifyExport(params) {
   return request.download('Portal.BalanceModify.Export', params);
+}
+
+// ----------------------- Income -----------------------
+export async function incomeList(params) {
+  return request.post('Portal.Income.List', params);
+}
+
+export async function incomeExport(params) {
+  return request.download('Portal.Income.Export', params);
 }
 
 // ----------------------- Weight -----------------------
@@ -207,6 +220,10 @@ export async function withdrawalAudit(params) {
 
 export async function withdrawalExport(params) {
   return request.download('Portal.Withdrawal.Export', params);
+}
+
+export async function withdrawalUSDTBalance(params) {
+  return request.post('Portal.Withdrawal.WithdrawalUSDTBalance', params);
 }
 
 // ----------------------- Goods -----------------------

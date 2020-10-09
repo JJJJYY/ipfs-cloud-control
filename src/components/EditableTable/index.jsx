@@ -2,37 +2,37 @@ import React, { useState } from 'react';
 import { Table, Form, Divider, Input, Menu, Dropdown, Modal } from 'antd';
 
 const EditableCell = ({
-    editing,
-    required,
-    custom,
-    dataIndex,
-    title,
-    record,
-    valuePropName,
-    ...restProps
-  }) => {
-    return (
-      <td {...restProps}>
-        {editing ? (
-          <Form.Item 
-            style={{ margin: 0 }}
-            name={dataIndex}
-            valuePropName={valuePropName}
-            rules={[{
-              required: required,
-              message: `输入${title}`
-            }]}
-          >
-            {custom ? custom(record) : <Input style={{ minWidth: 120 }}  />}
-          </Form.Item>
-        ) : (
+  editing,
+  required,
+  custom,
+  dataIndex,
+  title,
+  record,
+  valuePropName,
+  ...restProps
+}) => {
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          style={{ margin: 0 }}
+          name={dataIndex}
+          valuePropName={valuePropName}
+          rules={[{
+            required: required,
+            message: `输入${title}`
+          }]}
+        >
+          {custom ? custom(record) : <Input style={{ minWidth: 120 }} />}
+        </Form.Item>
+      ) : (
           restProps.children
         )}
-      </td>
-    )
+    </td>
+  )
 }
 
-const EditableTable = ({onSave, onDelete, onActions, dataSource, columns, total, current, loading, onChange, pagination, rowKey}) => {
+const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total, current, loading, onChange, pagination, rowKey, rowSelection }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
 
@@ -79,7 +79,7 @@ const EditableTable = ({onSave, onDelete, onActions, dataSource, columns, total,
         ...col,
         render: (record) => {
           const editable = isEditing(record);
-          
+
           var actionCount = 0;
           if (col.showEdit) actionCount++;
           if (col.showDelete) actionCount++;
@@ -103,44 +103,44 @@ const EditableTable = ({onSave, onDelete, onActions, dataSource, columns, total,
                   </a>
                 </span>
               ) : (
-                <span>
-                  {actionCount > 1 ?
-                    (
-                      <Dropdown disabled={editingKey !== ''}  trigger={['click']} overlay={
-                        <Menu onClick={(e) => handleMenuClick(record, e.key)}>
+                  <span>
+                    {actionCount > 1 ?
+                      (
+                        <Dropdown disabled={editingKey !== ''} trigger={['click']} overlay={
+                          <Menu onClick={(e) => handleMenuClick(record, e.key)}>
+                            {col.showEdit &&
+                              <Menu.Item key={-1} >
+                                编辑
+                            </Menu.Item>
+                            }{col.showDelete &&
+                              <Menu.Item key={-2} >
+                                删除
+                            </Menu.Item>
+                            }
+                            {(col.showEdit || col.showDelete) && col.actions && <Menu.Divider />}
+                            {col.actions && col.actions(record).map((title, index) => (
+                              <Menu.Item key={index} >
+                                {title}
+                              </Menu.Item>
+                            ))}
+                          </Menu>
+                        }>
+                          <a>更多</a>
+                        </Dropdown>
+                      ) : (
+                        <span>
                           {col.showEdit &&
-                            <Menu.Item key={-1} >
-                              编辑
-                            </Menu.Item>
-                          }{col.showDelete && 
-                            <Menu.Item key={-2} >
-                              删除
-                            </Menu.Item>
+                            <a disabled={editingKey !== ''} onClick={() => edit(record)}>编辑</a>
+                          }{col.showDelete &&
+                            <a onClick={() => handleMenuClick(record, -2)}>删除</a>
+                          }{col.actions && col.actions(record).length != 0 &&
+                            <a onClick={() => handleMenuClick(record, 0)}>{col.actions(record)[0]}</a>
                           }
-                          {(col.showEdit || col.showDelete) && col.actions && <Menu.Divider />}
-                          {col.actions && col.actions(record).map((title, index) => (
-                            <Menu.Item key={index} >
-                              {title}
-                            </Menu.Item>
-                          ))}
-                        </Menu>
-                      }>
-                        <a>更多</a>
-                      </Dropdown>
-                    ) : (
-                      <span>
-                        {col.showEdit && 
-                          <a disabled={editingKey !== ''} onClick={() => edit(record)}>编辑</a>
-                        }{col.showDelete && 
-                          <a onClick={() => handleMenuClick(record, -2)}>删除</a>
-                        }{col.actions && col.actions(record).length != 0 && 
-                          <a onClick={() => handleMenuClick(record, 0)}>{col.actions(record)[0]}</a>
-                        }
-                      </span>
-                    )
-                  }
-                </span>
-              )}
+                        </span>
+                      )
+                    }
+                  </span>
+                )}
             </div>
           );
         }
@@ -180,7 +180,7 @@ const EditableTable = ({onSave, onDelete, onActions, dataSource, columns, total,
 
   return (
     <Form form={form} component={false}>
-      <Table 
+      <Table
         style={{ backgroundColor: 'white' }}
         scroll={{ x: 'max-content' }}
         tableLayout='auto'
@@ -189,12 +189,13 @@ const EditableTable = ({onSave, onDelete, onActions, dataSource, columns, total,
             cell: EditableCell,
           },
         }}
-        columns={ecolumns} 
-        dataSource={dataSource} 
+        columns={ecolumns}
+        dataSource={dataSource}
         loading={loading}
         pagination={page}
         onChange={onChange}
         rowKey={rowKey ? rowKey : 'id'}
+        rowSelection={rowSelection}
       />
     </Form>
   )

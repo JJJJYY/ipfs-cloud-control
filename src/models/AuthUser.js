@@ -47,37 +47,41 @@ export default {
     *inviteDetailExport({ payload }, { call }) {
       return yield call(api.authUserInviteDetailExport, payload);
     },
-    
+
+    *checkInviteDetailExport({ payload }, { call }) {
+      return yield call(api.authUserCheckInvitationDetailExport, payload);
+    },
+
   },
 
   reducers: {
-    list(state, { payload: {data} }) {
+    list(state, { payload: { data } }) {
       return {
         ...state,
         list: data,
       }
     },
 
-    invitationList(state, { payload: {data} }) {
+    invitationList(state, { payload: { data } }) {
       return {
         ...state,
         invitationList: data,
       }
     },
 
-    inviteDetailList(state, { payload: {data} }) {
+    inviteDetailList(state, { payload: { data } }) {
       return {
         ...state,
         inviteDetailList: data,
       }
     },
 
-    userDetail(state, { payload: {data} }) {
+    userDetail(state, { payload: { data } }) {
       return {
         ...state,
         userDetail: data,
       }
     },
-    
+
   },
 }
