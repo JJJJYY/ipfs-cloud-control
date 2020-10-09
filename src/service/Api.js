@@ -166,6 +166,10 @@ export async function incomeList(params) {
   return request.post('Portal.Income.List', params);
 }
 
+export async function incomeRewardBy24H(params) {
+  return request.post('Portal.Income.RewardBy24H', params);
+}
+
 export async function incomeExport(params) {
   return request.download('Portal.Income.Export', params);
 }

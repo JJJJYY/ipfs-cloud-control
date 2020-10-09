@@ -5,12 +5,18 @@ export default {
 
   state: {
     list: {},
+    rewards: [],
   },
 
   effects: {
     *queryList({ payload }, { call, put }) {
       const data = yield call(api.incomeList, payload);
       yield put({ type: 'list', payload: { data: data } });
+    },
+
+    *queryReward({ payload }, { call, put }) {
+      const data = yield call(api.incomeRewardBy24H, payload);
+      yield put({ type: 'rewards', payload: { data: data } });
     },
 
     *export({ payload }, { call }) {
@@ -24,6 +30,13 @@ export default {
       return {
         ...state,
         list: data,
+      }
+    },
+
+    rewards(state, { payload: { data } }) {
+      return {
+        ...state,
+        rewards: data,
       }
     },
 

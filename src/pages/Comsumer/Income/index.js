@@ -4,6 +4,7 @@ import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
 import SearchGroup from '@/components/SearchGroup';
+import styles from './index.less';
 
 const Option = Select.Option;
 
@@ -32,7 +33,7 @@ class Page extends Component {
       dataIndex: 'type',
       render(text) {
         return (
-          <div>{['奖励', '挖矿收益'][text - 1]}</div>
+          <div>{['SR1奖励', '挖矿收益'][text - 1]}</div>
         );
       }
     }, {
@@ -49,6 +50,7 @@ class Page extends Component {
 
   componentDidMount() {
     this.loadData();
+    this.loadReward();
   }
 
   loadData = () => {
@@ -63,9 +65,15 @@ class Page extends Component {
     });
   };
 
+  loadReward = () => {
+    this.props.dispatch({
+      type: 'income/queryReward',
+    });
+  };
+
   render() {
     const { page, count, search } = this.state;
-    const { data, listLoading } = this.props;
+    const { data, rewards, listLoading } = this.props;
 
     return (
       <div>
@@ -79,7 +87,7 @@ class Page extends Component {
             label: '类型', name: 'type',
             custom: (
               <Select>
-                <Option value={1}>奖励</Option>
+                <Option value={1}>SR1奖励</Option>
                 <Option value={2}>挖矿收益</Option>
               </Select>
             )
@@ -96,6 +104,9 @@ class Page extends Component {
             },
           });
         }} />
+        {rewards && <div className={styles.rewardDiv}>
+          出块奖励(24H)：{rewards.map((item, index) => <div className={styles.reward} key={index}><Tag color="blue">{item.miner}</Tag>{item.rewards} FIL</div>)}
+        </div>}
         <EditableTable
           columns={this.columns}
           dataSource={data ? data.list : []}
@@ -117,6 +128,7 @@ class Page extends Component {
 function mapStateToProps(state) {
   return {
     data: state.income.list,
+    rewards: state.income.rewards,
     listLoading: state.loading.effects['income/queryList'],
   };
 }
