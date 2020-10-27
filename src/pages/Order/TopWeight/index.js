@@ -65,18 +65,9 @@ class Page extends Component {
     }, {
       title: '类型',
       dataIndex: 'type',
-      render(text) {
-        var name = '其他';
-        switch (text) {
-          case 1:
-            name = '矿机租赁';
-            break;
-          case 7:
-            name = '矿机托管';
-            break;
-        }
-        return name;
-      }
+      render: (text) => (
+        <div>{['矿机租赁', '赠送', '兑换', '推广赠送', '注册送', '活动奖励', '矿机托管', '推广奖励', '其他', '未知'][text - 1]}</div>
+      ),
     }, {
       title: '服务费',
       dataIndex: 'service_charge_rate',
@@ -111,8 +102,23 @@ class Page extends Component {
         )
       },
     }, {
+      title: '有效算力',
+      dataIndex: 'adj_power',
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
+    }, {
+      title: '质押数量',
+      dataIndex: 'pledged',
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
+    }, {
       title: '创建时间',
       dataIndex: 'create_time',
+    }, {
+      title: '修改时间',
+      dataIndex: 'update_time',
     }, {
       title: '备注',
       dataIndex: 'remark',
@@ -132,7 +138,7 @@ class Page extends Component {
   loadData = () => {
     const { page, count, search } = this.state;
     this.props.dispatch({
-      type: 'weight/queryList',
+      type: 'weight/queryTopList',
       payload: {
         page: page,
         count: count,
@@ -177,6 +183,19 @@ class Page extends Component {
               <InputNumber style={{ width: '100%' }} min={0} max={1} step={0.1} />
             )
           }, {
+            label: '订单类型', name: 'type',
+            custom: (
+              <Select>
+                <Option value={1}>矿机租赁</Option>
+                <Option value={2}>赠送</Option>
+                <Option value={4}>推广赠送</Option>
+                <Option value={5}>注册送</Option>
+                <Option value={6}>活动奖励</Option>
+                <Option value={7}>矿机托管</Option>
+                <Option value={8}>推广奖励</Option>
+              </Select>
+            )
+          }, {
             label: '支付状态', name: 'status',
             custom: (
               <Select>
@@ -195,7 +214,7 @@ class Page extends Component {
         } />
         <OperationGroup onExport={(all) => {
           this.props.dispatch({
-            type: 'weight/export',
+            type: 'weight/topExport',
             payload: {
               page: page,
               count: count,
@@ -225,8 +244,8 @@ class Page extends Component {
 
 function mapStateToProps(state) {
   return {
-    data: state.weight.list,
-    listLoading: state.loading.effects['weight/queryList'],
+    data: state.weight.topList,
+    listLoading: state.loading.effects['weight/queryTopList'],
     updateLoading: state.loading.effects['weight/update'],
   };
 }

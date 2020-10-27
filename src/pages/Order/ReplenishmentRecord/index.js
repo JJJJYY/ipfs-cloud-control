@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, InputNumber, Tag, Modal, Select, Upload as AntUpload, message, Table } from 'antd';
+import { Form, Button, InputNumber, Tag, Modal, Select, Upload as AntUpload, message, DatePicker } from 'antd';
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
@@ -64,22 +64,17 @@ class Page extends Component {
         )
       },
     }, {
-      title: '是否保底',
+      title: '服务费',
       dataIndex: 'service_charge_rate',
       editable: true,
       required: true,
-      render(text) {
-        return (
-          <div>{text == 0.2 ? <Tag color="green">不保底</Tag> : <Tag color="red">保底</Tag>}</div>
-        );
-      },
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
       custom() {
         return (
-          <Select>
-            <Option value='0.2000'>不保底</Option>
-            <Option value='0.1490'>保底</Option>
-          </Select>
-        )
+          <InputNumber min={0} max={1} step={0.1} />
+        );
       },
     }, {
       title: '算力(TB)',
@@ -163,6 +158,9 @@ class Page extends Component {
       dataIndex: 'agent',
       editable: true,
     }, {
+      title: '商品',
+      dataIndex: 'goods_name',
+    }, {
       title: '备注',
       dataIndex: 'remark',
       editable: true,
@@ -206,15 +204,12 @@ class Page extends Component {
         )
       }
     }, {
-      title: '是否保底',
+      title: '服务费',
       key: 'service_charge_rate',
       required: true,
       custom() {
         return (
-          <Select>
-            <Option value={0.2}>不保底</Option>
-            <Option value={0.149}>保底</Option>
-          </Select>
+          <InputNumber style={{ width: '100%' }} min={0} max={1} step={0.1} />
         )
       },
     }, {
@@ -372,13 +367,59 @@ class Page extends Component {
     });
   };
 
-  onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  };
+  onSelectChange = value => {
+    var set = new Set(this.state.selectedRowKeys)
+    if (set.has(value.id)) {
+      set.delete(value.id);
+    } else {
+      set.add(value.id);
+    }
+    this.setState({ selectedRowKeys: Array.from(set) });
+  }
 
   batchAudit = () => {
-    console.log('selectedRowKeys changed: ', this.state.selectedRowKeys);
+    Modal.confirm({
+      title: '批量审核',
+      content: (
+        <div>
+          <Form ref={this.formRef}>
+            <FormItem
+              label='审核'
+              name='status'
+              rules={[{ required: true, message: `请选择` }]}
+            >
+              <Select placeholder="请选择">
+                <Option value={1}>通过</Option>
+                <Option value={2}>拒绝</Option>
+              </Select>
+            </FormItem>
+          </Form>
+        </div>
+      ),
+      onOk: (() => {
+        return new Promise((resolve, reject) => {
+          this.formRef.current.validateFields().then(values => {
+            this.props.dispatch({
+              type: 'replenishmentRecord/batchAudit',
+              payload: {
+                ids: this.state.selectedRowKeys,
+                ...
+                values
+              },
+            }).then((data) => {
+              if (data != 'error') {
+                resolve()
+                this.setState({ selectedRowKeys: [] })
+                this.loadData();
+
+              } else {
+                reject()
+              }
+            })
+          }).catch(() => reject());
+        })
+      }),
+    });
   }
 
   render() {
@@ -387,23 +428,27 @@ class Page extends Component {
 
     const rowSelection = search && search.status == 0 ? {
       selectedRowKeys,
-      onChange: this.onSelectChange,
-      selections: [
-        Table.SELECTION_ALL,
-        Table.SELECTION_INVERT,
-      ]
+      onSelect: this.onSelectChange,
     } : null;
 
     return (
       <div>
         <SearchGroup onSearch={(e) => {
           this.state.page = 1;
+          if (e && e.time) {
+            e.time = [e.time[0].format('YYYY-MM-DD'), e.time[1].format('YYYY-MM-DD')]
+          }
           this.state.search = e;
           this.loadData();
         }} items={
           [{ label: '补单号', name: 'pid' },
           { label: '账号', name: 'account' },
           {
+            label: '服务费', name: 'service_charge_rate',
+            custom: (
+              <InputNumber style={{ width: '100%' }} min={0} max={1} step={0.1} />
+            )
+          }, {
             label: '补单类型', name: 'oper_type',
             custom: (
               <Select>
@@ -413,8 +458,7 @@ class Page extends Component {
                 <Option value={8}>推广奖励</Option>
               </Select>
             )
-          },
-          {
+          }, {
             label: '状态', name: 'status',
             custom: (
               <Select>
@@ -422,6 +466,11 @@ class Page extends Component {
                 <Option value={1}>通过</Option>
                 <Option value={2}>拒绝</Option>
               </Select>
+            )
+          }, {
+            label: '日期', name: 'time',
+            custom: (
+              <DatePicker.RangePicker />
             )
           }]
         } />

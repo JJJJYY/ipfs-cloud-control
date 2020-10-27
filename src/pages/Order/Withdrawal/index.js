@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tag, Form, Select, Modal, Input } from 'antd';
+import { Tag, Form, Select, Modal, Input, Button } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -142,6 +142,26 @@ class Page extends Component {
     });
   }
 
+  downloadFilWaitTrans = () => {
+    this.props.dispatch({
+      type: 'withdrawal/exportFILTxt',
+    }).then((res) => {
+      if (res && res != 'error') {
+        this.loadData();
+
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = res
+        link.setAttribute(
+          'download',
+          '',
+        )
+        document.body.appendChild(link)
+        link.click()
+      }
+    })
+  }
+
   render() {
     const { page, count, search } = this.state;
     const { data, listLoading, updateLoading, usdt } = this.props;
@@ -179,17 +199,22 @@ class Page extends Component {
             )
           }]}
         />
-        <OperationGroup onExport={(all) => {
-          this.props.dispatch({
-            type: 'withdrawal/export',
-            payload: {
-              page: page,
-              count: count,
-              search: search ? JSON.stringify(search) : null,
-              all: all,
-            },
-          });
-        }} />
+        <div className={styles.btnGroup}>
+          <OperationGroup onExport={(all) => {
+            this.props.dispatch({
+              type: 'withdrawal/export',
+              payload: {
+                page: page,
+                count: count,
+                search: search ? JSON.stringify(search) : null,
+                all: all,
+              },
+            });
+          }} />
+          {search && search.status == 4 && search.asset == 'FIL' && <Button className={styles.btn} type="primary" onClick={this.downloadFilWaitTrans}>
+            下载提币数据
+          </Button>}
+        </div>
         {usdt && <div className={styles.balance}>提币地址： {usdt} USDT</div>}
         <EditableTable
           columns={this.columns}

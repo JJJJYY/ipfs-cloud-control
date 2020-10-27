@@ -12,12 +12,14 @@ import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import UserLayout from './UserLayout.js';
 import crypto from 'crypto';
+import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 import logo from '../img/logo.png';
 
+moment.locale('zh-cn');
 const { Header, Footer, Content } = Layout
-const title =  'FILPool';
+const title = 'FILPool';
 const footer = 'Copyright © FILPool 2020.';
 
 const query = {
@@ -50,7 +52,7 @@ class BasicLayout extends Component {
     super(props);
     this.state = {
       collapsed: false,
-      visible: false, 
+      visible: false,
       modalData: [],
     };
   }
@@ -135,7 +137,7 @@ class BasicLayout extends Component {
 
     // 登录页面用其他的Layout
     if (location.pathname === '/login') {
-      return <UserLayout>{ children }</UserLayout>
+      return <UserLayout>{children}</UserLayout>
 
     } else if (menu.length && location.pathname != '/' && location.pathname != '/403' && location.pathname != '/404' && location.pathname != '/500') {
       var match = false;
@@ -169,7 +171,7 @@ class BasicLayout extends Component {
         {menu.length && <SiderMenu
           logo={logo}
           title={title}
-          collapsed={collapsed} 
+          collapsed={collapsed}
           menuData={menu}
           location={location}
           onCollapse={this.handleMenuCollapse}

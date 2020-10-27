@@ -27,6 +27,10 @@ export default {
       yield put({ type: 'usdt', payload: { data: data } });
     },
 
+    *exportFILTxt({ payload }, { call }) {
+      return yield call(api.withdrawalExportFILTxt, payload);
+    },
+
   },
 
   reducers: {

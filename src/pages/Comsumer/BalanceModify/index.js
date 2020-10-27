@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tag, Select } from 'antd';
+import { Tag, Select, DatePicker } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -32,7 +32,7 @@ class Page extends Component {
       dataIndex: 'type',
       render(text) {
         return (
-          <div>{['购买算力', '', '充值', '提现', '提现中', '', '', '内部转出', '内部转入', '邀请奖励（锁定）', '邀请奖励（解锁）', '返佣', '系统充币', '活动奖励', '系统提币', '兑换', '挖矿收益', '系统扣除', '补款', '未知'][text - 1]}</div>
+          <div>{['购买算力', '', '充值', '提现', '提现中', '', '', '内部转出', '内部转入', '邀请奖励（锁定）', '邀请奖励（解锁）', '返佣', '系统充币', '活动奖励', '系统提币', '兑换', '收益释放', '系统扣除', '补款', '冻结款扣除', '25%收益释放', '可用金额划转', '可用金额返还', '挖矿收益(冻结)', '未知'][text - 1]}</div>
         );
       }
     }, {
@@ -120,10 +120,20 @@ class Page extends Component {
                 <Option value={14}>活动奖励</Option>
                 <Option value={15}>系统提币</Option>
                 <Option value={16}>兑换</Option>
-                <Option value={17}>挖矿收益</Option>
+                <Option value={24}>挖矿收益(冻结)</Option>
+                <Option value={17}>收益释放</Option>
                 <Option value={18}>系统扣除</Option>
                 <Option value={19}>补款</Option>
+                <Option value={20}>冻结款扣除</Option>
+                <Option value={21}>25%收益释放</Option>
+                <Option value={22}>可用金额划转</Option>
+                <Option value={23}>可用金额返还</Option>
               </Select>
+            )
+          }, {
+            label: '日期', name: 'time',
+            custom: (
+              <DatePicker.RangePicker />
             )
           }]
         } />

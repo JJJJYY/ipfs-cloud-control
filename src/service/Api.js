@@ -179,12 +179,20 @@ export async function weightList(params) {
   return request.post('Portal.Weight.List', params);
 }
 
+export async function weightTopList(params) {
+  return request.post('Portal.Weight.TopList', params);
+}
+
 export async function weightUpdate(params) {
   return request.post('Portal.Weight.Update', params);
 }
 
 export async function weightExport(params) {
   return request.download('Portal.Weight.Export', params);
+}
+
+export async function weightTopExport(params) {
+  return request.download('Portal.Weight.TopExport', params);
 }
 
 // ----------------------- ReplenishmentRecord -----------------------
@@ -200,9 +208,15 @@ export async function replenishmentRecordUpdate(params) {
   return request.post('Portal.ReplenishmentRecord.Update', params);
 }
 
+export async function replenishmentRecordBatchAudit(params) {
+  return request.post('Portal.ReplenishmentRecord.BatchAudit', params);
+}
+
 export async function replenishmentRecordExport(params) {
   return request.download('Portal.ReplenishmentRecord.Export', params);
 }
+
+
 
 // ----------------------- Deposit -----------------------
 export async function depositList(params) {
@@ -228,6 +242,10 @@ export async function withdrawalExport(params) {
 
 export async function withdrawalUSDTBalance(params) {
   return request.post('Portal.Withdrawal.WithdrawalUSDTBalance', params);
+}
+
+export async function withdrawalExportFILTxt(params) {
+  return request.post('Portal.Withdrawal.ExportFILTxt', params);
 }
 
 // ----------------------- Goods -----------------------

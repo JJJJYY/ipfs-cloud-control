@@ -21,6 +21,10 @@ export default {
       return yield call(api.replenishmentRecordUpdate, payload);
     },
 
+    *batchAudit({ payload }, { call }) {
+      return yield call(api.replenishmentRecordBatchAudit, payload);
+    },
+
     *export({ payload }, { call }) {
       return yield call(api.replenishmentRecordExport, payload);
     },
@@ -28,12 +32,12 @@ export default {
   },
 
   reducers: {
-    list(state, { payload: {data} }) {
+    list(state, { payload: { data } }) {
       return {
         ...state,
         list: data,
       }
     },
-    
+
   },
 }

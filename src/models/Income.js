@@ -16,7 +16,9 @@ export default {
 
     *queryReward({ payload }, { call, put }) {
       const data = yield call(api.incomeRewardBy24H, payload);
-      yield put({ type: 'rewards', payload: { data: data } });
+      if (data != 'error') {
+        yield put({ type: 'rewards', payload: { data: data } });
+      }
     },
 
     *export({ payload }, { call }) {

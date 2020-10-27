@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tag, Select } from 'antd';
+import { Tag, Select, DatePicker } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -33,7 +33,7 @@ class Page extends Component {
       dataIndex: 'type',
       render(text) {
         return (
-          <div>{['SR1奖励', '挖矿收益'][text - 1]}</div>
+          <div>{['SR1奖励', '挖矿收益', '赠送/补收益'][text - 1]}</div>
         );
       }
     }, {
@@ -89,7 +89,13 @@ class Page extends Component {
               <Select>
                 <Option value={1}>SR1奖励</Option>
                 <Option value={2}>挖矿收益</Option>
+                <Option value={3}>赠送/补收益</Option>
               </Select>
+            )
+          }, {
+            label: '日期', name: 'time',
+            custom: (
+              <DatePicker.RangePicker />
             )
           }]
         } />

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, Drawer, Divider, Row, Table, Modal, Progress } from 'antd';
+import { Select, Drawer, Divider, Row, Table, Modal, Progress, DatePicker } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -14,6 +14,7 @@ class Page extends Component {
     search: null,
     invitePage: 1,
     rank: 0,
+    inviteDetailTime: null,
     userID: null,
     visible: false,
     checkRes: null,
@@ -161,7 +162,7 @@ class Page extends Component {
   }
 
   loadUserInvite = () => {
-    const { invitePage, inviteCount, userID, rank } = this.state;
+    const { invitePage, inviteCount, userID, rank, inviteDetailTime } = this.state;
     this.props.dispatch({
       type: 'authUser/queryInviteDetailList',
       payload: {
@@ -170,6 +171,8 @@ class Page extends Component {
         count: inviteCount,
         rank: rank,
         agent: true,
+        start_time: inviteDetailTime && inviteDetailTime[0],
+        end_time: inviteDetailTime && inviteDetailTime[1],
       },
     }).then((data) => {
       if (data != 'error') {
@@ -226,7 +229,7 @@ class Page extends Component {
   }
 
   render() {
-    const { visibleInviteDrawer, visible, checkRes, page, count, search, userID, invitePage, inviteCount, rank } = this.state;
+    const { visibleInviteDrawer, visible, checkRes, page, count, search, userID, invitePage, inviteCount, rank, inviteDetailTime } = this.state;
     const { data, inviteList, listLoading } = this.props;
 
     return (
@@ -298,6 +301,11 @@ class Page extends Component {
               <div style={{ width: '100%' }}>
                 <SearchGroup onSearch={(e) => {
                   this.state.invitePage = 1;
+                  if (e && e.time) {
+                    this.state.inviteDetailTime = [e.time[0].format('YYYY-MM-DD'), e.time[1].format('YYYY-MM-DD')]
+                  } else {
+                    this.state.inviteDetailTime = null;
+                  }
                   this.state.rank = e ? e.rank : 0;
                   this.loadUserInvite();
                 }} items={[{
@@ -316,6 +324,11 @@ class Page extends Component {
                       <Option value={10}>10级</Option>
                     </Select>
                   )
+                }, {
+                  label: '日期', name: 'time',
+                  custom: (
+                    <DatePicker.RangePicker />
+                  )
                 }]} />
                 <OperationGroup onExport={(all) => {
                   this.props.dispatch({
@@ -326,6 +339,8 @@ class Page extends Component {
                       count: inviteCount,
                       rank: rank ? rank : 0,
                       all: all,
+                      start_time: inviteDetailTime && inviteDetailTime[0],
+                      end_time: inviteDetailTime && inviteDetailTime[1],
                       agent: true,
                     },
                   }).then((res) => {
