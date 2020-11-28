@@ -68,7 +68,7 @@ class Page extends Component {
       width: 60,
       fixed: 'right',
       render: (_, record) => (
-        record.status == 0 ? <a onClick={() => this.handleReceipt(record)}>审核</a> : <div>-</div>
+        record.status != 2 ? <a onClick={() => this.handleReceipt(record)}>{record.status == 0 ? '审核' : '驳回'}</a> : <div>-</div>
       ),
     },
   ];
@@ -91,21 +91,23 @@ class Page extends Component {
 
   handleReceipt = (record) => {
     Modal.confirm({
-      title: '审核',
+      title: record.status == 0 ? '审核' : '驳回',
       content: (
         <div>
           账号：{record.account}<br /><br />
           <Form ref={this.formRef}>
-            <FormItem
-              label='审核'
-              name='status'
-              rules={[{ required: true, message: `请选择` }]}
-            >
-              <Select placeholder="请选择">
-                <Option value={1}>通过</Option>
-                <Option value={2}>拒绝</Option>
-              </Select>
-            </FormItem>
+            {record.status == 0 &&
+              <FormItem
+                label='审核'
+                name='status'
+                rules={[{ required: true, message: `请选择` }]}
+              >
+                <Select placeholder="请选择">
+                  <Option value={1}>通过</Option>
+                  <Option value={2}>拒绝</Option>
+                </Select>
+              </FormItem>
+            }
             <FormItem
               label='备注'
               name='audit_remark'
@@ -119,10 +121,13 @@ class Page extends Component {
       onOk: (() => {
         return new Promise((resolve, reject) => {
           this.formRef.current.validateFields().then(values => {
+            values.id = record.id;
+            if (record.status == 1) {
+              values.status = 2;
+            }
             this.props.dispatch({
               type: 'userIdInfo/update',
               payload: {
-                id: record.id,
                 ...
                 values
               },

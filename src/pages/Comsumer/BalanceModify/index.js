@@ -32,7 +32,11 @@ class Page extends Component {
       dataIndex: 'type',
       render(text) {
         return (
-          <div>{['购买算力', '', '充值', '提现', '提现中', '', '', '内部转出', '内部转入', '邀请奖励（锁定）', '邀请奖励（解锁）', '返佣', '系统充币', '活动奖励', '系统提币', '兑换', '收益释放', '系统扣除', '补款', '冻结款扣除', '25%收益释放', '可用金额划转', '可用金额返还', '挖矿收益(冻结)', '未知'][text - 1]}</div>
+          <div>{['购买算力', '申请加速包', '充值', '提现', '提现中', '收益->充值', '充值->收益',
+            '内部转出', '内部转入', '借币本息', '还贷', '返佣', '系统充币',
+            '活动奖励', '系统提币', '兑换', '收益释放', '系统扣除', '补款', '冻结款扣除', '25%收益释放',
+            '自动质押划转', '质押返还', '挖矿收益', 'SR质押币发放', '扣除质押币', '充值->质押', '释放至质押',
+            '加速收益', '25%加速收益释放', '加速收益释放', '借贷质押', '未知'][text - 1]}</div>
         );
       }
     }, {
@@ -108,26 +112,31 @@ class Page extends Component {
             label: '类型', name: 'type',
             custom: (
               <Select>
-                <Option value={1}>购买算力</Option>
+                {/* <Option value={1}>购买算力</Option> */}
+                <Option value={2}>申请加速包</Option>
                 <Option value={3}>充值</Option>
                 <Option value={4}>提现</Option>
                 <Option value={5}>提现中</Option>
+                <Option value={6}>收益-&gt;充值</Option>
+                <Option value={7}>充值-&gt;收益</Option>
                 <Option value={8}>内部转出</Option>
                 <Option value={9}>内部转入</Option>
-                <Option value={11}>邀请奖励（解锁）</Option>
-                <Option value={12}>返佣</Option>
+                <Option value={10}>借贷</Option>
+                <Option value={11}>还贷</Option>
+                {/* <Option value={12}>返佣</Option> */}
                 <Option value={13}>系统充币</Option>
                 <Option value={14}>活动奖励</Option>
                 <Option value={15}>系统提币</Option>
-                <Option value={16}>兑换</Option>
-                <Option value={24}>挖矿收益(冻结)</Option>
+                {/* <Option value={16}>兑换</Option> */}
+                <Option value={24}>挖矿收益</Option>
                 <Option value={17}>收益释放</Option>
                 <Option value={18}>系统扣除</Option>
-                <Option value={19}>补款</Option>
+                {/* <Option value={19}>补款</Option> */}
                 <Option value={20}>冻结款扣除</Option>
                 <Option value={21}>25%收益释放</Option>
-                <Option value={22}>可用金额划转</Option>
-                <Option value={23}>可用金额返还</Option>
+                <Option value={22}>自动质押划转</Option>
+                <Option value={23}>质押返还</Option>
+                <Option value={25}>SR质押币发放</Option>
               </Select>
             )
           }, {

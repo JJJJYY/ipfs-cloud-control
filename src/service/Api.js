@@ -440,3 +440,33 @@ export async function authAgentUpdate(params) {
 export async function authAgentAdd(params) {
   return request.post('Portal.AuthAgent.Add', params);
 }
+
+// ----------------------- FlashSaleOrders -----------------------
+export async function flashSaleOrdersList(params) {
+  return request.post('Portal.FlashSaleOrders.List', params);
+}
+
+export async function flashSaleOrdersUpdate(params) {
+  return request.post('Portal.FlashSaleOrders.Update', params);
+}
+
+// ----------------------- Pledged -----------------------
+export async function pledgedList(params) {
+  return request.post('Portal.Pledged.List', params);
+}
+
+// ----------------------- Loan -----------------------
+export async function loanList(params) {
+  return request.post('Portal.Loan.List', params);
+}
+
+// ----------------------- UserAdjPower -----------------------
+export async function userAdjPowerList(params) {
+  return request.post('Portal.UserAdjPower.List', params);
+}
+
+// ----------------------- IncomeRecord -----------------------
+export async function incomeRecordList(params) {
+  return request.post('Portal.IncomeRecord.List', params);
+}
+

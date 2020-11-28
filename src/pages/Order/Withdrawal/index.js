@@ -145,6 +145,9 @@ class Page extends Component {
   downloadFilWaitTrans = () => {
     this.props.dispatch({
       type: 'withdrawal/exportFILTxt',
+      payload: {
+        sendTrans: this.state.search && this.state.search.status == 4,
+      }
     }).then((res) => {
       if (res && res != 'error') {
         this.loadData();
@@ -211,7 +214,7 @@ class Page extends Component {
               },
             });
           }} />
-          {search && search.status == 4 && search.asset == 'FIL' && <Button className={styles.btn} type="primary" onClick={this.downloadFilWaitTrans}>
+          {search && (search.status == 4 || search.status == 5) && search.asset == 'FIL' && <Button className={styles.btn} type="primary" onClick={this.downloadFilWaitTrans}>
             下载提币数据
           </Button>}
         </div>

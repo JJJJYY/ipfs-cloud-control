@@ -147,17 +147,29 @@ class Page extends Component {
       title: '总数量',
       dataIndex: 'sum',
       render: (_, record) => (
-        <div>{(parseFloat(record.available) + parseFloat(record.frozen))}</div>
+        <div>{(parseFloat(Number(record.available) + Number(record.recharge) + Number(record.frozen) + Number(record.pledged)))}</div>
       ),
     }, {
-      title: '可用数量',
+      title: '释放',
       dataIndex: 'available',
       render: (text) => (
         <div>{parseFloat(text)}</div>
       ),
     }, {
-      title: '冻结数量',
+      title: '充值',
+      dataIndex: 'recharge',
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
+    }, {
+      title: '冻结',
       dataIndex: 'frozen',
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
+    }, {
+      title: '质押',
+      dataIndex: 'pledged',
       render: (text) => (
         <div>{parseFloat(text)}</div>
       ),
@@ -384,7 +396,7 @@ class Page extends Component {
         />
 
         <Drawer
-          width={640}
+          width={840}
           placement="right"
           onClose={this.handleCloseDrawer}
           visible={visibleDrawer}

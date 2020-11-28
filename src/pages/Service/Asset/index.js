@@ -7,7 +7,7 @@ import OperationGroup from '@/components/OperationGroup';
 import Upload from '@/components/Upload';
 
 class Page extends Component {
-  state = { 
+  state = {
     page: 1,
     visible: false,
   };
@@ -18,17 +18,17 @@ class Page extends Component {
       dataIndex: 'asset',
       editable: true,
       required: true,
-    },{
+    }, {
       title: '名称',
       dataIndex: 'name',
       editable: true,
       required: true,
-    },{
+    }, {
       title: '所属公链',
       dataIndex: 'block_chain',
       editable: true,
       required: true,
-    },{
+    }, {
       title: '图标',
       dataIndex: 'icon',
       editable: true,
@@ -43,7 +43,22 @@ class Page extends Component {
           <Upload />
         )
       },
-    },{
+    }, {
+      title: '手机图标',
+      dataIndex: 'app_icon',
+      editable: true,
+      required: true,
+      render(text) {
+        return (
+          <a href={text} target='view_window'><img src={text} width={30} alt='' /></a>
+        );
+      },
+      custom() {
+        return (
+          <Upload />
+        )
+      },
+    }, {
       title: '最低手续费',
       dataIndex: 'min_fee',
       editable: true,
@@ -56,7 +71,7 @@ class Page extends Component {
           <InputNumber min={0} />
         )
       },
-    },{
+    }, {
       title: '最小提现数',
       dataIndex: 'min_withdraw',
       editable: true,
@@ -69,7 +84,7 @@ class Page extends Component {
           <InputNumber min={0} />
         )
       },
-    },{
+    }, {
       title: '最小充值数',
       dataIndex: 'min_deposit',
       editable: true,
@@ -82,7 +97,7 @@ class Page extends Component {
           <InputNumber min={0} />
         )
       },
-    },{
+    }, {
       title: '是否锁定',
       dataIndex: 'lock',
       editable: true,
@@ -98,7 +113,7 @@ class Page extends Component {
           <Switch checkedChildren="是" unCheckedChildren="否" />
         )
       },
-    },{
+    }, {
       title: '是否可充值',
       dataIndex: 'deposit',
       editable: true,
@@ -114,7 +129,7 @@ class Page extends Component {
           <Switch checkedChildren="是" unCheckedChildren="否" />
         )
       },
-    },{
+    }, {
       title: '是否可提现',
       dataIndex: 'withdraw',
       editable: true,
@@ -130,7 +145,7 @@ class Page extends Component {
           <Switch checkedChildren="是" unCheckedChildren="否" />
         )
       },
-    },{
+    }, {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -145,15 +160,15 @@ class Page extends Component {
       title: '币种',
       key: 'asset',
       required: true,
-    },{
+    }, {
       title: '名称',
       key: 'name',
       required: true,
-    },{
+    }, {
       title: '所属公链',
       key: 'block_chain',
       required: true,
-    },{
+    }, {
       title: '图标',
       key: 'icon',
       required: true,
@@ -162,7 +177,7 @@ class Page extends Component {
           <Upload />
         )
       }
-    },{
+    }, {
       title: '最低手续费',
       key: 'min_fee',
       required: true,
@@ -171,7 +186,7 @@ class Page extends Component {
           <InputNumber style={{ width: '100%' }} min={0} />
         )
       }
-    },{
+    }, {
       title: '最小提现数',
       key: 'min_withdraw',
       required: true,
@@ -180,7 +195,7 @@ class Page extends Component {
           <InputNumber style={{ width: '100%' }} min={0} />
         )
       }
-    },{
+    }, {
       title: '最小充值数',
       key: 'min_deposit',
       required: true,
@@ -189,7 +204,7 @@ class Page extends Component {
           <InputNumber style={{ width: '100%' }} min={0} />
         )
       }
-    },{
+    }, {
       title: '是否锁定',
       key: 'lock',
       valuePropName: 'checked',
@@ -199,7 +214,7 @@ class Page extends Component {
           <Switch checkedChildren="是" unCheckedChildren="否" />
         )
       },
-    },{
+    }, {
       title: '是否可充值',
       key: 'deposit',
       valuePropName: 'checked',
@@ -209,7 +224,7 @@ class Page extends Component {
           <Switch checkedChildren="是" unCheckedChildren="否" />
         )
       },
-    },{
+    }, {
       title: '是否可提现',
       key: 'withdraw',
       valuePropName: 'checked',
@@ -284,7 +299,7 @@ class Page extends Component {
       <div>
         <OperationGroup onAdd={() => this.setState({ visible: true })} />
         <EditableTable
-          columns={this.columns} 
+          columns={this.columns}
           dataSource={data ? data.list : []}
           total={data ? data.total : 0}
           loading={listLoading || updateLoading}
@@ -294,7 +309,7 @@ class Page extends Component {
           }}
           onSave={this.handleSave}
           onDelete={this.handleDel}
-          rowKey="id" 
+          rowKey="id"
         />
         <EditModal
           visible={visible}

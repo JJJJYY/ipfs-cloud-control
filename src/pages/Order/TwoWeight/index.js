@@ -108,13 +108,13 @@ class Page extends Component {
         <div>{parseFloat(text)}</div>
       ),
     },
-    // {
+    //  {
     //   title: '质押数量',
     //   dataIndex: 'pledged',
     //   render: (text) => (
     //     <div>{parseFloat(text)}</div>
     //   ),
-    // },
+    // }, 
     {
       title: '创建时间',
       dataIndex: 'create_time',
@@ -145,10 +145,10 @@ class Page extends Component {
         page: page,
         count: count,
         search: search,
-        number: 1,
+        number: 2,
       }
-    });
-  };
+    })
+  }
 
   handleSave = (row, id) => {
     const { dispatch } = this.props;
@@ -159,7 +159,7 @@ class Page extends Component {
       if (data != 'error') {
         this.loadData();
       }
-    });
+    })
   }
 
   render() {

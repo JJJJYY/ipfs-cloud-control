@@ -15,11 +15,13 @@ export default defineConfig({
   },
   proxy: {
     '/public': {
-      target: 'http://localhost:8080/filpool',
+      // target: 'http://localhost:8080/filpool',
+      target: 'http://testapi.filpool.c28e9d7b637474c3a98b2ed559c29434c.cn-hongkong.alicontainer.com',
       changeOrigin: true,
     },
     '/tmp': {
-      target: 'http://localhost:8080/filpool',
+      // target: 'http://localhost:8080/filpool',
+      target: 'http://testapi.filpool.c28e9d7b637474c3a98b2ed559c29434c.cn-hongkong.alicontainer.com',
       changeOrigin: true,
     },
   }
