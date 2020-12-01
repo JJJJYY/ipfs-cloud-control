@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Select, DatePicker } from 'antd';
+import { Tag, Select, DatePicker } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
 import SearchGroup from '@/components/SearchGroup';
+import styles from './index.less';
 
 const Option = Select.Option;
 
@@ -44,6 +45,7 @@ class Page extends Component {
 
   componentDidMount() {
     this.loadData();
+    this.loadReward();
   }
 
   loadData = () => {
@@ -58,19 +60,24 @@ class Page extends Component {
     });
   };
 
+  loadReward = () => {
+    this.props.dispatch({
+      type: 'income/queryReward',
+    });
+  };
+
   render() {
     const { page, count, search } = this.state;
-    const { data, listLoading } = this.props;
+    const { data, rewards, listLoading } = this.props;
 
     return (
       <div>
-        {/* <SearchGroup onSearch={(e) => {
+        <SearchGroup onSearch={(e) => {
           this.state.page = 1;
           this.state.search = e;
           this.loadData();
         }} items={
-          [{ label: '用户账号', name: 'account' },
-          {
+          [{
             label: '期数', name: 'number',
             custom: (
               <Select>
@@ -79,7 +86,10 @@ class Page extends Component {
               </Select>
             )
           }]
-        } /> */}
+        } />
+        {rewards && <div className={styles.rewardDiv}>
+          出块奖励(24H)：{rewards.map((item, index) => <div className={styles.reward} key={index}><Tag color="blue">{item.miner}</Tag>{item.rewards} FIL</div>)}
+        </div>}
         <EditableTable
           columns={this.columns}
           dataSource={data ? data.list : []}
@@ -101,6 +111,7 @@ class Page extends Component {
 function mapStateToProps(state) {
   return {
     data: state.incomeRecord.list,
+    rewards: state.income.rewards,
     listLoading: state.loading.effects['incomeRecord/queryList'],
   };
 }

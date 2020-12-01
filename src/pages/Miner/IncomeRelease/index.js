@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, DatePicker } from 'antd';
+import { Tag, Select, DatePicker } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -20,19 +20,13 @@ class Page extends Component {
       dataIndex: 'account',
     }, {
       title: '期数',
-      dataIndex: 'number',
+      dataIndex: 'remark',
       render: (text) => (
         <div>{text}期</div>
       ),
     }, {
-      title: '总数',
+      title: '数量',
       dataIndex: 'quantity',
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
-      ),
-    }, {
-      title: '释放初始值',
-      dataIndex: 'release_quantity',
       render: (text) => (
         <div>{parseFloat(text)}</div>
       ),
@@ -44,21 +38,24 @@ class Page extends Component {
       dataIndex: 'type',
       render(text) {
         return (
-          <div>{['SR1奖励', '挖矿收益', '赠送/补收益', '加速收益'][text - 1]}</div>
+          <div>{['购买算力', '申请加速包', '充值', '提现', '提现中', '收益->充值', '充值->收益',
+            '内部转出', '内部转入', '借币本息', '还贷', '返佣', '系统充币',
+            '活动奖励', '系统提币', '兑换', '收益释放', '系统扣除', '补款', '冻结款扣除', '25%收益释放',
+            '自动质押划转', '质押返还', '挖矿收益', 'SR质押币发放', '扣除质押币', '充值->质押', '释放至质押',
+            '加速收益', '25%加速收益释放', '加速收益释放', '借贷质押', '未知'][text - 1]}</div>
         );
       }
     }, {
-      title: '手续费',
-      dataIndex: 'service_charge',
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
-      ),
+      title: '状态',
+      dataIndex: 'status',
+      render(text) {
+        return (
+          <div>{[<Tag color="blue">提现中</Tag>, <Tag color="green">成功</Tag>, <Tag color="black">拒绝</Tag>][text]}</div>
+        );
+      },
     }, {
-      title: '创建时间',
+      title: '时间',
       dataIndex: 'create_time',
-    }, {
-      title: '开始时间',
-      dataIndex: 'start_time',
     },
   ];
 
@@ -68,12 +65,15 @@ class Page extends Component {
 
   loadData = () => {
     const { page, count, search } = this.state;
+    var s = search ? search : {};
+    s.asset = 'FIL';
+    s.type = s.type ? s.type : [17, 21, 31, 30];
     this.props.dispatch({
-      type: 'income/queryList',
+      type: 'balanceModify/queryList',
       payload: {
         page: page,
         count: count,
-        search: search,
+        search: s,
       }
     });
   };
@@ -91,21 +91,21 @@ class Page extends Component {
         }} items={
           [{ label: '用户账号', name: 'account' },
           {
-            label: '期数', name: 'number',
+            label: '期数', name: 'remark',
             custom: (
               <Select>
-                <Option value={1}>1期</Option>
-                <Option value={2}>2期</Option>
+                <Option value={'1'}>1期</Option>
+                <Option value={'2'}>2期</Option>
               </Select>
             )
           }, {
             label: '类型', name: 'type',
             custom: (
               <Select>
-                <Option value={1}>SR1奖励</Option>
-                <Option value={2}>挖矿收益</Option>
-                <Option value={3}>赠送/补收益</Option>
-                <Option value={4}>加速收益</Option>
+                <Option value={17}>收益释放</Option>
+                <Option value={21}>25%收益释放</Option>
+                <Option value={31}>加速收益释放</Option>
+                <Option value={30}>25%加速收益释放</Option>
               </Select>
             )
           }, {
@@ -117,7 +117,7 @@ class Page extends Component {
         } />
         <OperationGroup onExport={(all) => {
           this.props.dispatch({
-            type: 'income/export',
+            type: 'balanceModify/export',
             payload: {
               page: page,
               count: count,
@@ -146,8 +146,8 @@ class Page extends Component {
 
 function mapStateToProps(state) {
   return {
-    data: state.income.list,
-    listLoading: state.loading.effects['income/queryList'],
+    data: state.balanceModify.list,
+    listLoading: state.loading.effects['balanceModify/queryList'],
   };
 }
 
