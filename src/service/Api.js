@@ -191,10 +191,6 @@ export async function weightExport(params) {
   return request.download('Portal.Weight.Export', params);
 }
 
-export async function weightTopExport(params) {
-  return request.download('Portal.Weight.TopExport', params);
-}
-
 // ----------------------- ReplenishmentRecord -----------------------
 export async function replenishmentRecordList(params) {
   return request.post('Portal.ReplenishmentRecord.List', params);

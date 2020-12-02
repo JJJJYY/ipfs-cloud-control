@@ -104,8 +104,8 @@ class Page extends Component {
     }, {
       title: '有效算力',
       dataIndex: 'adj_power',
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
+      render: (text, record) => (
+        <div>{parseFloat(text)}{parseFloat(record.speed_adj) != 0 ? '（+' + parseFloat(record.speed_adj) + '）' : ''}</div>
       ),
     },
     // {
@@ -217,10 +217,11 @@ class Page extends Component {
         } />
         <OperationGroup onExport={(all) => {
           this.props.dispatch({
-            type: 'weight/topExport',
+            type: 'weight/export',
             payload: {
               page: page,
               count: count,
+              number: 1,
               search: search ? JSON.stringify(search) : null,
               all: all,
             },

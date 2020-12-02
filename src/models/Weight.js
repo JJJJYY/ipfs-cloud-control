@@ -27,10 +27,6 @@ export default {
       return yield call(api.weightExport, payload);
     },
 
-    *topExport({ payload }, { call }) {
-      return yield call(api.weightTopExport, payload);
-    },
-
   },
 
   reducers: {
