@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Drawer, Form, Input, Switch, Tag, Modal, Select, Table, Divider, Col, Row } from 'antd';
+import { Drawer, Form, Input, Switch, Tag, Modal, Select, Table, Divider, Col, Row, InputNumber } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -156,7 +156,7 @@ class Page extends Component {
         <div>{parseFloat(text)}</div>
       ),
     }, {
-      title: '充值',
+      title: '充提',
       dataIndex: 'recharge',
       render: (text) => (
         <div>{parseFloat(text)}</div>
@@ -323,11 +323,21 @@ class Page extends Component {
           <br />
           <Form ref={this.formRef}>
             <FormItem
+              label='类型'
+              name='type'
+              rules={[{ required: true, message: `请选择类型` }]}
+            >
+              <Select>
+                <Option value={2}>质押账户</Option>
+                <Option value={3}>充提账户</Option>
+              </Select>
+            </FormItem>
+            <FormItem
               label='数量'
-              name='available'
+              name='value'
               rules={[{ required: true, message: `请输入数量` }]}
             >
-              <Input placeholder="请输入数量" />
+              <InputNumber style={{ width: '100%' }} placeholder="请输入数量" min={0} />
             </FormItem>
           </Form>
         </div>
@@ -340,7 +350,8 @@ class Page extends Component {
               payload: {
                 auth_user_id: record.auth_user_id,
                 asset: record.asset,
-                available: isAdd ? values.available : -values.available,
+                value: isAdd ? values.value : -values.value,
+                type: values.type,
               },
             }).then((data) => {
               if (data != 'error') {
