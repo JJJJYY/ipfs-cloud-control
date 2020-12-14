@@ -26,7 +26,7 @@ class Page extends Component {
       title: '有效单T',
       dataIndex: 'efficiency',
       render: (text, record) => (
-        <div>{parseFloat(text) - parseFloat(gas_efficiency)}</div>
+        <div>{parseFloat(text) - parseFloat(record.gas_efficiency)}</div>
       ),
     }, {
       title: 'GAS(24H)',
