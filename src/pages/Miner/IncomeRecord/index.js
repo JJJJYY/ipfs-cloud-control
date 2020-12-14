@@ -23,14 +23,26 @@ class Page extends Component {
         <div>{text}期</div>
       ),
     }, {
-      title: '销毁',
-      dataIndex: 'burn',
+      title: '有效单T',
+      dataIndex: 'efficiency',
+      render: (text, record) => (
+        <div>{parseFloat(text) - parseFloat(gas_efficiency)}</div>
+      ),
+    }, {
+      title: 'GAS(24H)',
+      dataIndex: 'gas',
       render: (text) => (
         <div>{parseFloat(text)}</div>
       ),
     }, {
-      title: '有效单T',
-      dataIndex: 'efficiency',
+      title: 'GAS(总)',
+      dataIndex: 'gas_total',
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
+    }, {
+      title: 'GAS(已扣)',
+      dataIndex: 'gas_deduct',
       render: (text) => (
         <div>{parseFloat(text)}</div>
       ),
