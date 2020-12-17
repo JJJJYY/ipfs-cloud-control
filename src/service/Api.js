@@ -466,3 +466,7 @@ export async function incomeRecordList(params) {
   return request.post('Portal.IncomeRecord.List', params);
 }
 
+// ----------------------- DailyFilpoolMinerStatistics -----------------------
+export async function dailyFilpoolMinerStatisticsList(params) {
+  return request.post('Portal.DailyFilpoolMinerStatistics.List', params);
+}

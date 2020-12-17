@@ -29,6 +29,12 @@ class Page extends Component {
         <div>{parseFloat(text) - parseFloat(record.gas_efficiency)}</div>
       ),
     }, {
+      title: '加速有效单T',
+      dataIndex: 'gas_efficiency_speed',
+      render: (text, record) => (
+        <div>{parseFloat(text) != 0 ? parseFloat(record.efficiency) - parseFloat(text) : 0}</div>
+      ),
+    }, {
       title: 'GAS(24H)',
       dataIndex: 'gas',
       render: (text) => (
@@ -37,14 +43,14 @@ class Page extends Component {
     }, {
       title: 'GAS(总)',
       dataIndex: 'gas_total',
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
+      render: (text, record) => (
+        <div>{parseFloat(text) + parseFloat(record.gas_total_speed)}</div>
       ),
     }, {
       title: 'GAS(已扣)',
       dataIndex: 'gas_deduct',
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
+      render: (text, record) => (
+        <div>{parseFloat(text) + parseFloat(record.gas_deduct_speed)}</div>
       ),
     }, {
       title: '创建时间',
