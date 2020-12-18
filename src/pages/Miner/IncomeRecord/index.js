@@ -25,14 +25,20 @@ class Page extends Component {
     }, {
       title: '有效单T',
       dataIndex: 'efficiency',
-      render: (text, record) => (
-        <div>{parseFloat(text) - parseFloat(record.gas_efficiency)}</div>
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
       ),
     }, {
-      title: '加速有效单T',
+      title: '单T扣GAS（普通）',
+      dataIndex: 'gas_efficiency',
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
+      ),
+    }, {
+      title: '单T扣GAS（加速）',
       dataIndex: 'gas_efficiency_speed',
-      render: (text, record) => (
-        <div>{parseFloat(text) != 0 ? parseFloat(record.efficiency) - parseFloat(text) : 0}</div>
+      render: (text) => (
+        <div>{parseFloat(text)}</div>
       ),
     }, {
       title: 'GAS(24H)',
