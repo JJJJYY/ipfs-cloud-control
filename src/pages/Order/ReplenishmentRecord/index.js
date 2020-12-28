@@ -1,14 +1,25 @@
 import React, { Component } from 'react';
-import { Form, Button, InputNumber, Tag, Modal, Select, Upload as AntUpload, message, DatePicker } from 'antd';
+import {
+  Form,
+  Button,
+  InputNumber,
+  Input,
+  Radio,
+  Tag,
+  Modal,
+  Select,
+  Upload as AntUpload,
+  message,
+  DatePicker,
+} from 'antd';
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
 import EditModal from '@/components/EditModal';
-import Upload from '@/components/Upload';
 import SearchGroup from '@/components/SearchGroup';
 import styles from './index.less';
-
+import './index.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { Dragger } = AntUpload;
@@ -26,153 +37,114 @@ class Page extends Component {
 
   columns = [
     {
-      title: '补单号',
+      title: '订单号',
       dataIndex: 'pid',
-    }, {
+    },
+    {
+      title: 'UID',
+      dataIndex: 'id',
+    },
+    {
       title: '账号',
       dataIndex: 'account',
-    }, {
-      title: '补单类型',
-      dataIndex: 'oper_type',
-      editable: true,
-      required: true,
-      render(text) {
-        switch (text) {
-          case 1:
-            name = '矿机租赁';
-            break;
-          case 6:
-            name = '活动奖励';
-            break;
-          case 7:
-            name = '矿机托管';
-            break;
-          case 8:
-            name = '推广奖励';
-            break;
-        }
-        return name;
-      },
-      custom() {
-        return (
-          <Select placeholder="请选择">
-            <Option value={1}>矿机租赁</Option>
-            <Option value={7}>矿机托管</Option>
-            <Option value={6}>活动奖励</Option>
-            <Option value={8}>推广奖励</Option>
-          </Select>
-        )
-      },
-    }, {
-      title: '服务费',
-      dataIndex: 'service_charge_rate',
-      editable: true,
-      required: true,
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
-      ),
-      custom() {
-        return (
-          <InputNumber min={0} max={1} step={0.1} />
-        );
-      },
-    }, {
-      title: '算力(TB)',
+    },
+    {
+      title: '商品名称',
+      dataIndex: 'goods_name',
+    },
+    {
+      title: '数量(TB)',
       dataIndex: 'hashrate',
       editable: true,
       required: true,
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
-      ),
+      render: text => <div>{parseFloat(text)}</div>,
       custom() {
-        return (
-          <InputNumber min={0} />
-        )
+        return <InputNumber min={0} />;
       },
-    }, {
-      title: '金额',
+    },
+    {
+      title: '技术服务费',
+      dataIndex: 'service_charge_rate',
+      editable: true,
+      required: true,
+      render: text => <div>{parseFloat(text)}</div>,
+      custom() {
+        return <InputNumber min={0} max={1} step={0.1} />;
+      },
+    },
+    {
+      title: '折扣',
+      dataIndex: 'service_charge_rate',
+      editable: true,
+      required: true,
+      render: text => <div>{parseFloat(text)}</div>,
+      custom() {
+        return <InputNumber min={0} max={1} step={0.1} />;
+      },
+    },
+    {
+      title: '订单金额',
       dataIndex: 'amount',
       editable: true,
       required: true,
-      render: (text) => (
-        <div>{parseFloat(text)}</div>
-      ),
+      render: text => <div>{parseFloat(text)}</div>,
       custom() {
-        return (
-          <InputNumber min={0} />
-        )
+        return <InputNumber min={0} />;
       },
-    }, {
-      title: '单位',
-      dataIndex: 'asset',
-      editable: true,
-      required: true,
-      custom() {
-        return (
-          <Select placeholder="请选择">
-            <Option value='USDT'>USDT</Option>
-            <Option value='BTC'>BTC</Option>
-            <Option value='ETH'>ETH</Option>
-            <Option value='FIL'>FIL</Option>
-            <Option value='RMB'>RMB</Option>
-          </Select>
-        )
-      },
-    }, {
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       editable: true,
       required: true,
       render(text) {
         return (
-          <div>{[<Tag color="blue">待审核</Tag>, <Tag color="green">通过</Tag>, <Tag color="black">拒绝</Tag>][text]}</div>
+          <div>
+            {
+              [
+                <Tag color="blue">待审核</Tag>,
+                <Tag color="green">已通过</Tag>,
+                <Tag color="black">已拒绝</Tag>,
+              ][text]
+            }
+          </div>
         );
       },
       custom() {
         return (
           <Select placeholder="请选择">
-            <Option value={0} disabled>待审核</Option>
-            <Option value={1} disabled>通过</Option>
-            <Option value={2}>拒绝</Option>
+            <Option value={0} disabled>
+              待审核
+            </Option>
+            <Option value={1} disabled>
+              已通过
+            </Option>
+            <Option value={2}>已拒绝</Option>
           </Select>
-        )
-      },
-    }, {
-      title: '创建人',
-      dataIndex: 'add_sys_user_name',
-    }, {
-      title: '创建时间',
-      dataIndex: 'create_time',
-    }, {
-      title: '审核人',
-      dataIndex: 'sys_user_name',
-    }, {
-      title: '审核时间',
-      dataIndex: 'oper_time',
-    }, {
-      title: '客户姓名',
-      dataIndex: 'customer_name',
-      editable: true,
-    }, {
-      title: '代理商',
-      dataIndex: 'agent',
-      editable: true,
-    }, {
-      title: '商品',
-      dataIndex: 'goods_name',
-    }, {
-      title: '备注',
-      dataIndex: 'remark',
-      editable: true,
-    }, {
-      title: '图片',
-      dataIndex: 'images',
-      render(text) {
-        return (
-          <a href={text} target='view_window'><img src={text} width={60} alt='' /></a>
         );
       },
-    }, {
+    },
+    {
+      title: '创建人',
+      dataIndex: 'add_sys_user_name',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'create_time',
+    },
+    {
+      title: '审核人',
+      dataIndex: 'sys_user_name',
+    },
+    {
+      title: '审核时间',
+      dataIndex: 'oper_time',
+    },
+    {
+      title: '备注',
+      key: 'remark',
+    },
+    {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -184,94 +156,101 @@ class Page extends Component {
     },
   ];
 
-  modelColumns = (active) => [
+  modelColumns = active => [
     {
       title: '用户账号',
       key: 'account',
       required: true,
-    }, {
-      title: '补单类型',
-      key: 'oper_type',
-      required: true,
       custom() {
         return (
-          <Select>
-            <Option value={1}>矿机租赁</Option>
-            <Option value={7}>矿机托管</Option>
-            <Option value={6}>活动奖励</Option>
-            <Option value={8}>推广奖励</Option>
-          </Select>
-        )
-      }
-    }, {
-      title: '服务费',
-      key: 'service_charge_rate',
-      required: true,
-      custom() {
-        return (
-          <InputNumber style={{ width: '100%' }} min={0} max={1} step={0.1} />
-        )
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入用户手机/邮箱账号"
+          />
+        );
       },
-    }, {
-      title: '算力(TB)',
-      key: 'hashrate',
-      required: true,
-      custom() {
-        return (<InputNumber style={{ width: '100%' }} min={0} />)
-      }
-    }, {
-      title: '金额',
-      key: 'amount',
-      required: true,
-      custom() {
-        return (<InputNumber style={{ width: '100%' }} min={0} />)
-      }
-    }, {
-      title: '单位',
-      key: 'asset',
-      required: true,
-      custom() {
-        return (
-          <Select>
-            <Option value='USDT'>USDT</Option>
-            <Option value='BTC'>BTC</Option>
-            <Option value='ETH'>ETH</Option>
-            <Option value='FIL'>FIL</Option>
-            <Option value='RMB'>RMB</Option>
-          </Select>
-        )
-      }
-    }, {
-      title: '产品',
+    },
+    {
+      title: '商品名称',
       key: 'goods_id',
       custom() {
         return (
           <Select>
-            {active && active.map((row) =>
-              <Option value={row.id} key={row.id}>{row.name}</Option>
-            )}
+            {active &&
+              active.map(row => (
+                <Option value={row.id} key={row.id}>
+                  {row.name}
+                </Option>
+              ))}
           </Select>
-        )
-      }
-    }, {
-      title: '客户姓名',
-      key: 'customer_name',
-    }, {
-      title: '代理商',
-      key: 'agent',
-    }, {
-      title: '备注',
-      key: 'remark',
-    }, {
-      title: '图片',
-      key: 'images',
+        );
+      },
+    },
+    {
+      title: '数量(TB)',
+      key: 'hashrate',
+      required: true,
       custom() {
         return (
-          <Upload />
-        )
-      }
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入正数"
+            min={0}
+          />
+        );
+      },
     },
-  ]
+    {
+      title: '折扣',
+      key: 'service_charge_rate',
+      required: true,
+      custom() {
+        return (
+          <InputNumber
+            style={{ width: '100%' }}
+            min={0}
+            max={1}
+            step={0.1}
+            placeholder="最多可输入小数位后两位,仅可输入正数"
+          />
+        );
+      },
+    },
+    {
+      title: '技术服务费',
+      key: 'service_charge_rate',
+      required: true,
+      custom() {
+        return (
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="最多可输入小数位后两位,仅可输入正数"
+            min={0}
+            max={1}
+            step={0.1}
+          />
+        );
+      },
+    },
+    {
+      title: '订单金额',
+      key: 'amount',
+      custom() {
+        return (
+          <Input
+            disabled
+            style={{ width: '100%' }}
+            placeholder="系统自动计算金额"
+            min={0}
+          />
+        );
+      },
+    },
+    {
+      title: '备注',
+      key: 'remark',
+    },
+  ];
 
   componentDidMount() {
     this.loadData();
@@ -288,94 +267,105 @@ class Page extends Component {
         page: page,
         count: count,
         search: search,
-      }
+      },
     });
   };
 
   handleClose = () => {
-    this.setState({ visible: false })
-  }
+    this.setState({ visible: false });
+  };
 
   handleSave = (row, id) => {
-    this.props.dispatch({
-      type: 'replenishmentRecord/update',
-      payload: { id: id, ...row },
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  }
+    this.props
+      .dispatch({
+        type: 'replenishmentRecord/update',
+        payload: { id: id, ...row },
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+        }
+      });
+  };
 
   handleActions = (row, index) => {
     if (index == 0) {
       Modal.confirm({
         title: '审核',
+
         content: (
           <div>
-            账号：{row.account}<br />
-            创建人：{row.add_sys_user_name}<br /><br />
+            <div className={styles.information}>
+              <div>账号：{row.account}</div>
+              <div>商品名称: {row.goods_name} </div>
+              <div>订单金额: {row.amount} </div>
+            </div>
             <Form ref={this.formRef}>
               <FormItem
-                label='审核'
-                name='status'
+                label="审核"
+                name="status"
                 rules={[{ required: true, message: `请选择` }]}
               >
-                <Select placeholder="请选择">
-                  <Option value={1}>通过</Option>
-                  <Option value={2}>拒绝</Option>
-                </Select>
+                <Radio.Group>
+                  <Radio value={1}>通过</Radio>
+                  <Radio value={2}>拒绝</Radio>
+                </Radio.Group>
               </FormItem>
             </Form>
           </div>
         ),
-        onOk: (() => {
+        onOk: () => {
           return new Promise((resolve, reject) => {
-            this.formRef.current.validateFields().then(values => {
-              this.props.dispatch({
-                type: 'replenishmentRecord/update',
-                payload: {
-                  id: row.id,
-                  ...
-                  values
-                },
-              }).then((data) => {
-                if (data != 'error') {
-                  resolve()
-                  this.loadData();
-
-                } else {
-                  reject()
-                }
+            this.formRef.current
+              .validateFields()
+              .then(values => {
+                this.props
+                  .dispatch({
+                    type: 'replenishmentRecord/update',
+                    payload: {
+                      id: row.id,
+                      ...values,
+                    },
+                  })
+                  .then(data => {
+                    if (data != 'error') {
+                      resolve();
+                      this.loadData();
+                    } else {
+                      reject();
+                    }
+                  });
               })
-            }).catch(() => reject());
-          })
-        }),
+              .catch(() => reject());
+          });
+        },
       });
     }
-  }
+  };
 
-  handleSubmit = (values) => {
-    this.props.dispatch({
-      type: 'replenishmentRecord/add',
-      payload: values,
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-        this.handleClose()
-      }
-    });
+  handleSubmit = values => {
+    this.props
+      .dispatch({
+        type: 'replenishmentRecord/add',
+        payload: values,
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+          this.handleClose();
+        }
+      });
   };
 
   onSelectChange = value => {
-    var set = new Set(this.state.selectedRowKeys)
+    var set = new Set(this.state.selectedRowKeys);
     if (set.has(value.id)) {
       set.delete(value.id);
     } else {
       set.add(value.id);
     }
     this.setState({ selectedRowKeys: Array.from(set) });
-  }
+  };
 
   batchAudit = () => {
     Modal.confirm({
@@ -384,8 +374,8 @@ class Page extends Component {
         <div>
           <Form ref={this.formRef}>
             <FormItem
-              label='审核'
-              name='status'
+              label="审核"
+              name="status"
               rules={[{ required: true, message: `请选择` }]}
             >
               <Select placeholder="请选择">
@@ -396,88 +386,90 @@ class Page extends Component {
           </Form>
         </div>
       ),
-      onOk: (() => {
+      onOk: () => {
         return new Promise((resolve, reject) => {
-          this.formRef.current.validateFields().then(values => {
-            this.props.dispatch({
-              type: 'replenishmentRecord/batchAudit',
-              payload: {
-                ids: this.state.selectedRowKeys,
-                ...
-                values
-              },
-            }).then((data) => {
-              if (data != 'error') {
-                resolve()
-                this.setState({ selectedRowKeys: [] })
-                this.loadData();
-
-              } else {
-                reject()
-              }
+          this.formRef.current
+            .validateFields()
+            .then(values => {
+              this.props
+                .dispatch({
+                  type: 'replenishmentRecord/batchAudit',
+                  payload: {
+                    ids: this.state.selectedRowKeys,
+                    ...values,
+                  },
+                })
+                .then(data => {
+                  if (data != 'error') {
+                    resolve();
+                    this.setState({ selectedRowKeys: [] });
+                    this.loadData();
+                  } else {
+                    reject();
+                  }
+                });
             })
-          }).catch(() => reject());
-        })
-      }),
+            .catch(() => reject());
+        });
+      },
     });
-  }
+  };
 
   render() {
     const { visible, page, count, search, selectedRowKeys } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
 
-    const rowSelection = search && search.status == 0 ? {
-      selectedRowKeys,
-      onSelect: this.onSelectChange,
-    } : null;
+    const rowSelection =
+      search && search.status == 0
+        ? {
+            selectedRowKeys,
+            onSelect: this.onSelectChange,
+          }
+        : null;
 
     return (
       <div>
-        <SearchGroup onSearch={(e) => {
-          this.state.page = 1;
-          if (e && e.time) {
-            e.time = [e.time[0].format('YYYY-MM-DD'), e.time[1].format('YYYY-MM-DD')]
-          }
-          this.state.search = e;
-          this.loadData();
-        }} items={
-          [{ label: '补单号', name: 'pid' },
-          { label: '账号', name: 'account' },
-          {
-            label: '服务费', name: 'service_charge_rate',
-            custom: (
-              <InputNumber style={{ width: '100%' }} min={0} max={1} step={0.1} />
-            )
-          }, {
-            label: '补单类型', name: 'oper_type',
-            custom: (
-              <Select>
-                <Option value={1}>矿机租赁</Option>
-                <Option value={7}>矿机托管</Option>
-                <Option value={6}>活动奖励</Option>
-                <Option value={8}>推广奖励</Option>
-              </Select>
-            )
-          }, {
-            label: '状态', name: 'status',
-            custom: (
-              <Select>
-                <Option value={0}>待审核</Option>
-                <Option value={1}>通过</Option>
-                <Option value={2}>拒绝</Option>
-              </Select>
-            )
-          }, {
-            label: '日期', name: 'time',
-            custom: (
-              <DatePicker.RangePicker />
-            )
-          }]
-        } />
+        <SearchGroup
+          onSearch={e => {
+            this.state.page = 1;
+            if (e && e.time) {
+              e.time = [
+                e.time[0].format('YYYY-MM-DD'),
+                e.time[1].format('YYYY-MM-DD'),
+              ];
+            }
+            this.state.search = e;
+            this.loadData();
+          }}
+          items={[
+            { label: '订单号', name: 'pid' },
+            { label: '账号', name: 'account' },
+            {
+              label: '商品名称',
+              name: 'goods_name',
+            },
+            {
+              label: '支付状态',
+              name: 'asset',
+              custom: (
+                <Select>
+                  <Option value={0}>已完成</Option>
+                  <Option value={1}>已取消</Option>
+                  <Option value={2}>已下单</Option>
+                </Select>
+              ),
+            },
+            {
+              label: '日期',
+              name: 'time',
+              custom: <DatePicker.RangePicker />,
+            },
+          ]}
+        />
         <div className={styles.btnGroup}>
           <OperationGroup
             onAdd={() => this.setState({ visible: true })}
-            onExport={(all) => {
+            onExport={all => {
               this.props.dispatch({
                 type: 'replenishmentRecord/export',
                 payload: {
@@ -499,15 +491,14 @@ class Page extends Component {
                   <div>
                     <br />
                     <Dragger
-                      name='file'
-                      action='/public/?s=Portal.ReplenishmentRecord.Import'
-                      onChange={(info) => {
+                      name="file"
+                      action="/public/?s=Portal.ReplenishmentRecord.Import"
+                      onChange={info => {
                         const { status } = info.file;
                         if (status === 'done') {
                           var res = info.file.response;
                           if (res.ret != 200) {
                             message.error(res.msg);
-
                           } else {
                             modal.destroy();
                             this.loadData();
@@ -518,13 +509,20 @@ class Page extends Component {
                                   <br />
                                   表格总数：{res.data.sum} 条<br />
                                   失败数量：{res.data.error} 条<br />
-                                  {res.data.error != 0 && <a href={res.data.path} download='失败补单.xlsx'>查看失败结果</a>}
+                                  {res.data.error != 0 && (
+                                    <a
+                                      href={res.data.path}
+                                      download="失败补单.xlsx"
+                                    >
+                                      查看失败结果
+                                    </a>
+                                  )}
                                 </div>
                               ),
                               okText: '确认',
                             });
                           }
-                          console.log(info.file.response)
+                          console.log(info.file.response);
                         } else if (status === 'error') {
                           message.error('上传失败');
                         }
@@ -533,7 +531,10 @@ class Page extends Component {
                       <InboxOutlined className={styles.icon} />
                       <p>选择或拖拽Excel文件到此区域上传</p>
                     </Dragger>
-                    <a href='/public/replenishment.xlsx' download='补单模板.xlsx'>
+                    <a
+                      href="/public/replenishment.xlsx"
+                      download="补单模板.xlsx"
+                    >
                       查看模板
                     </a>
                   </div>
@@ -544,9 +545,16 @@ class Page extends Component {
           >
             批量导入
           </Button>
-          {search && search.status == 0 && <Button className={styles.btn} type="primary" onClick={this.batchAudit} disabled={selectedRowKeys.length == 0}>
-            批量审核
-          </Button>}
+          {search && search.status == 0 && (
+            <Button
+              className={styles.btn}
+              type="primary"
+              onClick={this.batchAudit}
+              disabled={selectedRowKeys.length == 0}
+            >
+              批量审核
+            </Button>
+          )}
         </div>
         <EditModal
           visible={visible}
@@ -562,10 +570,10 @@ class Page extends Component {
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
-          onChange={(pagination) => {
+          onChange={pagination => {
             this.state.page = pagination.current;
             this.state.count = pagination.pageSize;
-            this.loadData()
+            this.loadData();
           }}
           onSave={this.handleSave}
           onActions={this.handleActions}
@@ -573,7 +581,7 @@ class Page extends Component {
           rowSelection={rowSelection}
         />
       </div>
-    )
+    );
   }
 }
 

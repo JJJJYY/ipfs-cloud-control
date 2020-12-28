@@ -1,0 +1,19 @@
+.avatar-uploader > .ant-upload {
+    width: 65px;
+    height:30px;
+  }
+
+  .ant-upload-picture-card-wrapper {
+      width: 0; 
+  }
+
+  .ant-upload-list-picture-card-container{
+      width: 95px;
+  }
+  .ant-upload.ant-upload-select-picture-card{
+      width: 95px;
+  }
+  .ant-upload{
+      width: 95px;
+     
+  }

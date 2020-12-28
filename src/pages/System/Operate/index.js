@@ -6,7 +6,6 @@ import OperationGroup from '@/components/OperationGroup';
 import EditModal from '@/components/EditModal';
 
 class Page extends Component {
-
   state = {
     visible: false,
   };
@@ -17,12 +16,14 @@ class Page extends Component {
       dataIndex: 'name',
       editable: true,
       required: true,
-    }, {
+    },
+    {
       title: '接口',
       dataIndex: 'api',
       editable: true,
       required: true,
-    }, {
+    },
+    {
       title: '是否启用',
       dataIndex: 'is_enable',
       editable: true,
@@ -30,25 +31,29 @@ class Page extends Component {
       valuePropName: 'checked',
       render(text) {
         return (
-          <div>{[<Tag color="black">关闭</Tag>, <Tag color="green">开启</Tag>][text]}</div>
+          <div>
+            {
+              [<Tag color="black">关闭</Tag>, <Tag color="green">开启</Tag>][
+                text
+              ]
+            }
+          </div>
         );
       },
       custom() {
-        return (
-          <Switch checkedChildren="开启" unCheckedChildren="关闭" />
-        )
+        return <Switch checkedChildren="开启" unCheckedChildren="关闭" />;
       },
-    }, {
+    },
+    {
       title: '排序',
       dataIndex: 'sort_no',
       editable: true,
       required: true,
       custom() {
-        return (
-          <InputNumber min={0} />
-        )
+        return <InputNumber min={0} />;
       },
-    }, {
+    },
+    {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -63,31 +68,30 @@ class Page extends Component {
       title: '名称',
       key: 'name',
       required: true,
-    }, {
+    },
+    {
       title: '接口',
       key: 'api',
       required: true,
-    }, {
+    },
+    {
       title: '排序',
       key: 'sort_no',
       required: true,
       custom() {
-        return (
-          <InputNumber style={{ width: '100%' }} min={0} />
-        )
+        return <InputNumber style={{ width: '100%' }} min={0} />;
       },
-    }, {
+    },
+    {
       title: '是否启用',
       key: 'is_enable',
       valuePropName: 'checked',
       value: true,
       custom() {
-        return (
-          <Switch checkedChildren="开启" unCheckedChildren="关闭" />
-        )
+        return <Switch checkedChildren="开启" unCheckedChildren="关闭" />;
       },
     },
-  ]
+  ];
 
   componentDidMount() {
     this.loadData();
@@ -104,39 +108,41 @@ class Page extends Component {
     dispatch({
       type: 'sysOperate/update',
       payload: { id: id, ...row },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
-  handleDel = (id) => {
+  handleDel = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'sysOperate/update',
       payload: { id: id, deleted: 1 },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
   handleClose = () => {
-    this.setState({ visible: false })
-  }
+    this.setState({ visible: false });
+  };
 
-  handleSubmit = (values) => {
-    this.props.dispatch({
-      type: 'sysOperate/add',
-      payload: values,
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-        this.handleClose()
-      }
-    });
+  handleSubmit = values => {
+    this.props
+      .dispatch({
+        type: 'sysOperate/add',
+        payload: values,
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+          this.handleClose();
+        }
+      });
   };
 
   render() {
@@ -162,7 +168,7 @@ class Page extends Component {
           columns={this.modelColumns}
         />
       </div>
-    )
+    );
   }
 }
 
