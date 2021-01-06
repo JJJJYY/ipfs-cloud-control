@@ -19,19 +19,25 @@ const IconFont = createFromIconfontCN({
 const getIcon = icon => {
   if (typeof icon === 'string' && icon != '') {
     if (icon.indexOf('http') === 0) {
-      return <img src={icon} alt="icon" className={`${styles.icon} sider-menu-item-img`} />;
+      return (
+        <img
+          src={icon}
+          alt="icon"
+          className={`${styles.icon} sider-menu-item-img`}
+        />
+      );
     }
     return <IconFont type={icon} />;
   }
   return icon;
 };
 
-export const urlToList = (url) => {
+export const urlToList = url => {
   const urllist = url.split('/').filter(i => i);
   return urllist.map((urlItem, index) => {
     return `/${urllist.slice(0, index + 1).join('/')}`;
   });
-}
+};
 
 export const getMeunMatcheys = (flatMenuKeys, path) => {
   return flatMenuKeys.filter(item => {
@@ -60,7 +66,9 @@ export default class SiderMenu extends PureComponent {
    * @param  props
    */
   getDefaultCollapsedSubMenus(props) {
-    const { location: { pathname } } = props || this.props;
+    const {
+      location: { pathname },
+    } = props || this.props;
     return urlToList(pathname)
       .map(item => {
         return getMeunMatcheys(this.flatMenuKeys, item)[0];
@@ -78,7 +86,7 @@ export default class SiderMenu extends PureComponent {
       if (item.children) {
         keys = keys.concat(this.getFlatMenuKeys(item.children));
       }
-      keys.push(item.path);
+      keys.push(item.path_name);
     });
     return keys;
   }
@@ -88,7 +96,7 @@ export default class SiderMenu extends PureComponent {
    * @memberof SiderMenu
    */
   getMenuItemPath = item => {
-    const itemPath = this.conversionPath(item.path);
+    const itemPath = this.conversionPath(item.path_name);
     const icon = getIcon(item.icon);
     const { target, name } = item;
     return (
@@ -129,7 +137,7 @@ export default class SiderMenu extends PureComponent {
                 item.name
               )
             }
-            key={item.path}
+            key={item.path_name}
           >
             {childrenItems}
           </SubMenu>
@@ -137,7 +145,9 @@ export default class SiderMenu extends PureComponent {
       }
       return null;
     } else {
-      return <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>;
+      return (
+        <Menu.Item key={item.path_name}>{this.getMenuItemPath(item)}</Menu.Item>
+      );
     }
   };
   /**
@@ -158,8 +168,12 @@ export default class SiderMenu extends PureComponent {
   };
   // Get the currently selected menu
   getSelectedMenuKeys = () => {
-    const { location: { pathname } } = this.props;
-    return urlToList(pathname).map(itemPath => getMeunMatcheys(this.flatMenuKeys, itemPath).pop());
+    const {
+      location: { pathname },
+    } = this.props;
+    return urlToList(pathname).map(itemPath =>
+      getMeunMatcheys(this.flatMenuKeys, itemPath).pop(),
+    );
   };
   // conversion Path
   // 转化路径
@@ -172,17 +186,21 @@ export default class SiderMenu extends PureComponent {
   };
 
   isMainMenu = key => {
-    return this.props.menuData.some(item => key && (item.key === key || item.path === key));
+    return this.props.menuData.some(
+      item => key && (item.key === key || item.path === key),
+    );
   };
   handleOpenChange = openKeys => {
     const lastOpenKey = openKeys[openKeys.length - 1];
-    const moreThanOne = openKeys.filter(openKey => this.isMainMenu(openKey)).length > 1;
+    const moreThanOne =
+      openKeys.filter(openKey => this.isMainMenu(openKey)).length > 1;
     this.setState({
       openKeys: moreThanOne ? [lastOpenKey] : [...openKeys],
     });
   };
   render() {
     const { logo, title, collapsed, onCollapse, menuData } = this.props;
+
     const { openKeys } = this.state;
     // Don't show popup menu when it is been collapsed
     const menuProps = collapsed

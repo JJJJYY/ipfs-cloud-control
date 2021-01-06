@@ -11,6 +11,7 @@ class Page extends Component {
     visibleDrawer: false,
     visibleDrawer2: false,
     page: 1,
+    count: 10,
     treeData: [],
     checkedKeys: [],
     sys_role_id: null,
@@ -24,7 +25,8 @@ class Page extends Component {
       dataIndex: 'name',
       editable: true,
       required: true,
-    }, {
+    },
+    {
       title: '是否启用',
       dataIndex: 'is_enable',
       editable: true,
@@ -32,18 +34,24 @@ class Page extends Component {
       valuePropName: 'checked',
       render(text) {
         return (
-          <div>{[<Tag color="black">关闭</Tag>, <Tag color="green">开启</Tag>][text]}</div>
+          <div>
+            {
+              [<Tag color="black">关闭</Tag>, <Tag color="green">开启</Tag>][
+                text
+              ]
+            }
+          </div>
         );
       },
       custom() {
-        return (
-          <Switch checkedChildren="开启" unCheckedChildren="关闭" />
-        )
+        return <Switch checkedChildren="开启" unCheckedChildren="关闭" />;
       },
-    }, {
+    },
+    {
       title: '创建时间',
       dataIndex: 'create_time',
-    }, {
+    },
+    {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -61,18 +69,17 @@ class Page extends Component {
       title: '角色名称',
       key: 'name',
       required: true,
-    }, {
+    },
+    {
       title: '是否启用',
       key: 'is_enable',
       valuePropName: 'checked',
       value: true,
       custom() {
-        return (
-          <Switch checkedChildren="开启" unCheckedChildren="关闭" />
-        )
+        return <Switch checkedChildren="开启" unCheckedChildren="关闭" />;
       },
     },
-  ]
+  ];
 
   componentDidMount() {
     this.loadData();
@@ -83,24 +90,27 @@ class Page extends Component {
       type: 'sysrole/queryList',
       payload: {
         page: this.state.page,
-      }
+        count: this.state.count,
+      },
     });
   };
 
   handleClose = () => {
-    this.setState({ visible: false })
-  }
+    this.setState({ visible: false });
+  };
 
-  handleSubmit = (values) => {
-    this.props.dispatch({
-      type: 'sysrole/add',
-      payload: values,
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-        this.handleClose()
-      }
-    });
+  handleSubmit = values => {
+    this.props
+      .dispatch({
+        type: 'sysrole/add',
+        payload: values,
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+          this.handleClose();
+        }
+      });
   };
 
   handleSave = (row, id) => {
@@ -108,137 +118,172 @@ class Page extends Component {
     dispatch({
       type: 'sysrole/update',
       payload: { id: id, ...row },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
-  handleDel = (id) => {
-    this.props.dispatch({
-      type: 'sysrole/update',
-      payload: { id: id, deleted: 1 },
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  }
+  handleDel = id => {
+    this.props
+      .dispatch({
+        type: 'sysrole/update',
+        payload: { id: id, deleted: 1 },
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+        }
+      });
+  };
 
   handleActions = (row, index) => {
     this.setState({ sys_role_id: row.id });
     if (index == 0) {
-      this.props.dispatch({
-        type: 'sysrole/queryRoleTree',
-        payload: { sys_role_id: row.id }
-      }).then((data) => {
-        if (data != 'error' && data) {
-          var modules = [];
-          if (data.modules) {
-            data.modules.map((row) => {
-              modules.push(row.sys_module_id);
-            })
+      this.props
+        .dispatch({
+          type: 'sysrole/queryRoleTree',
+          payload: { sys_role_id: row.id },
+        })
+        .then(data => {
+          if (data != 'error' && data) {
+            var modules = [];
+            if (data.modules) {
+              data.modules.map(row => {
+                modules.push(row.sys_module_id);
+              });
+            }
+            this.setState({
+              visibleDrawer: true,
+              treeData: this.createChildNode(data.tree),
+              checkedKeys: modules,
+            });
           }
-          this.setState({ visibleDrawer: true, treeData: this.createChildNode(data.tree), checkedKeys: modules });
-        }
-      })
-
+        });
     } else if (index == 1) {
-      this.props.dispatch({
-        type: 'sysrole/queryRoleOperate',
-        payload: { sys_role_id: row.id }
-      }).then((data) => {
-        if (data != 'error' && data) {
-          var operatesList = [];
-          if (data.operatesList) {
-            data.operatesList.map((row) => {
-              operatesList.push({
-                label: row.name,
-                value: row.id,
-                disabled: !row.is_enable,
-              })
-            })
+      this.props
+        .dispatch({
+          type: 'sysrole/queryRoleOperate',
+          payload: { sys_role_id: row.id },
+        })
+        .then(data => {
+          if (data != 'error' && data) {
+            var operatesList = [];
+            if (data.operatesList) {
+              data.operatesList.map(row => {
+                operatesList.push({
+                  label: row.name,
+                  value: row.id,
+                  disabled: !row.is_enable,
+                });
+              });
+            }
+            var operates = [];
+            if (data.userOperate) {
+              data.userOperate.map(row => {
+                operates.push(row.sys_operate_id);
+              });
+            }
+            this.setState({
+              visibleDrawer2: true,
+              operatesList: operatesList,
+              operatesCheck: operates,
+            });
           }
-          var operates = [];
-          if (data.userOperate) {
-            data.userOperate.map((row) => {
-              operates.push(row.sys_operate_id);
-            })
-          }
-          this.setState({ visibleDrawer2: true, operatesList: operatesList, operatesCheck: operates });
-        }
-      })
+        });
     }
-  }
+  };
 
   handleSubmitAuth = () => {
     const { sys_role_id, checkedKeys } = this.state;
-    this.props.dispatch({
-      type: 'sysRoleModule/edit',
-      payload: { sys_role_id: sys_role_id, modules: checkedKeys.checked }
-    }).then((data) => {
-      if (data != 'error') {
-        this.handleCloseDrawer();
-      }
-    })
-  }
+    this.props
+      .dispatch({
+        type: 'sysRoleModule/edit',
+        payload: { sys_role_id: sys_role_id, modules: checkedKeys.checked },
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.handleCloseDrawer();
+        }
+      });
+  };
 
   handleSubmitOperates = () => {
     const { sys_role_id, operatesCheck } = this.state;
-    this.props.dispatch({
-      type: 'sysRoleOperate/edit',
-      payload: { sys_role_id: sys_role_id, operates: operatesCheck }
-    }).then((data) => {
-      if (data != 'error') {
-        this.handleCloseDrawer();
-      }
-    })
-  }
+    this.props
+      .dispatch({
+        type: 'sysRoleOperate/edit',
+        payload: { sys_role_id: sys_role_id, operates: operatesCheck },
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.handleCloseDrawer();
+        }
+      });
+  };
 
   handleCloseDrawer = () => {
-    this.setState({ visibleDrawer: false, visibleDrawer2: false, treeData: null, checkedKeys: [], sys_role_id: null, operatesList: [], operatesCheck: [] });
-  }
+    this.setState({
+      visibleDrawer: false,
+      visibleDrawer2: false,
+      treeData: null,
+      checkedKeys: [],
+      sys_role_id: null,
+      operatesList: [],
+      operatesCheck: [],
+    });
+  };
 
-  onTreeCheck = (checkedKeys) => {
-    this.setState({ checkedKeys: checkedKeys })
-  }
+  onTreeCheck = checkedKeys => {
+    this.setState({ checkedKeys: checkedKeys });
+  };
 
-  createChildNode = (datas) => {
+  createChildNode = datas => {
     var treeData = [];
-    datas && datas.map((row) => {
-      var tree = {
-        title: row.name,
-        key: row.id,
-        disabled: !row.is_enable,
-      }
-      if (row.children) {
-        tree.children = this.createChildNode(row.children);
-      }
-      treeData.push(tree)
-    })
+    datas &&
+      datas.map(row => {
+        var tree = {
+          title: row.name,
+          key: row.id,
+          disabled: !row.is_enable,
+        };
+        if (row.children) {
+          tree.children = this.createChildNode(row.children);
+        }
+        treeData.push(tree);
+      });
     return treeData;
-  }
+  };
 
-  onOperatesCheck = (checks) => {
-    this.setState({ operatesCheck: checks })
+  onOperatesCheck = checks => {
+    this.setState({ operatesCheck: checks });
   };
 
   render() {
-    const { visible, visibleDrawer, visibleDrawer2, treeData, checkedKeys, operatesList, operatesCheck } = this.state;
+    const {
+      visible,
+      visibleDrawer,
+      visibleDrawer2,
+      treeData,
+      checkedKeys,
+      operatesList,
+      operatesCheck,
+    } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
+    console.log(data);
 
     return (
       <div>
         <OperationGroup onAdd={() => this.setState({ visible: true })} />
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
-          total={data ? data.total : 0}
+          dataSource={data.data}
+          total={data.total}
           loading={listLoading || updateLoading}
-          onChange={(pagination) => {
+          onChange={pagination => {
             this.state.page = pagination.current;
-            this.loadData()
+            this.loadData();
           }}
           onSave={this.handleSave}
           onDelete={this.handleDel}
@@ -261,7 +306,10 @@ class Page extends Component {
           visible={visibleDrawer}
           footer={
             <div style={{ textAlign: 'right' }}>
-              <Button onClick={this.handleCloseDrawer} style={{ marginRight: 8 }}>
+              <Button
+                onClick={this.handleCloseDrawer}
+                style={{ marginRight: 8 }}
+              >
                 取消
               </Button>
               <Button type="primary" onClick={() => this.handleSubmitAuth()}>
@@ -287,26 +335,40 @@ class Page extends Component {
           visible={visibleDrawer2}
           footer={
             <div style={{ textAlign: 'right' }}>
-              <Button onClick={this.handleCloseDrawer} style={{ marginRight: 8 }}>
+              <Button
+                onClick={this.handleCloseDrawer}
+                style={{ marginRight: 8 }}
+              >
                 取消
               </Button>
-              <Button type="primary" onClick={() => this.handleSubmitOperates()}>
+              <Button
+                type="primary"
+                onClick={() => this.handleSubmitOperates()}
+              >
                 提交
               </Button>
             </div>
           }
         >
-          <Checkbox.Group style={{ display: 'flex', flexDirection: 'column' }} options={operatesList} value={operatesCheck} onChange={this.onOperatesCheck} />
+          <Checkbox.Group
+            style={{ display: 'flex', flexDirection: 'column' }}
+            options={operatesList}
+            value={operatesCheck}
+            onChange={this.onOperatesCheck}
+          />
         </Drawer>
       </div>
-    )
+    );
   }
 }
 
 function mapStateToProps(state) {
   return {
     data: state.sysrole.list,
-    listLoading: state.loading.effects['sysrole/queryList'] || state.loading.effects['sysrole/queryRoleTree'] || state.loading.effects['sysrole/queryRoleOperate'],
+    listLoading:
+      state.loading.effects['sysrole/queryList'] ||
+      state.loading.effects['sysrole/queryRoleTree'] ||
+      state.loading.effects['sysrole/queryRoleOperate'],
     addLoading: state.loading.effects['sysrole/add'],
     updateLoading: state.loading.effects['sysrole/update'],
   };

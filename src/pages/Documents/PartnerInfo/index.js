@@ -7,7 +7,7 @@ import OperationGroup from '@/components/OperationGroup';
 import Upload from '@/components/Upload';
 
 class Page extends Component {
-  state = { 
+  state = {
     page: 1,
     visible: false,
   };
@@ -18,38 +18,42 @@ class Page extends Component {
       dataIndex: 'title',
       editable: true,
       required: true,
-    },{
+    },
+    {
       title: '链接',
       dataIndex: 'link',
       editable: true,
-      render: (text) => (
-        <a target="_blank" href={text}>{text}</a>
+      render: text => (
+        <a target="_blank" href={text}>
+          {text}
+        </a>
       ),
-    },{
+    },
+    {
       title: '图片',
       dataIndex: 'image',
       editable: true,
       required: true,
       render(text) {
         return (
-          <a href={text} target='view_window'><img src={text} width={100} alt='' /></a>
+          <a href={text} target="view_window">
+            <img src={text} width={100} alt="" />
+          </a>
         );
       },
       custom() {
-        return (
-          <Upload />
-        )
+        return <Upload />;
       },
-    },{
+    },
+    {
       title: '顺序',
       dataIndex: 'rank',
       editable: true,
       custom() {
-        return (
-          <InputNumber style={{ width: '100%' }} min={1} />
-        )
-      }
-    },{
+        return <InputNumber style={{ width: '100%' }} min={1} />;
+      },
+    },
+    {
       title: '是否显示',
       dataIndex: 'is_enable',
       editable: true,
@@ -57,18 +61,20 @@ class Page extends Component {
       valuePropName: 'checked',
       render(text) {
         return (
-          <div>{[<Tag color="black">否</Tag>, <Tag color="green">是</Tag>][text]}</div>
+          <div>
+            {[<Tag color="black">否</Tag>, <Tag color="green">是</Tag>][text]}
+          </div>
         );
       },
       custom() {
-        return (
-          <Switch checkedChildren="是" unCheckedChildren="否" />
-        )
+        return <Switch checkedChildren="是" unCheckedChildren="否" />;
       },
-    },{
+    },
+    {
       title: '更新时间',
       dataIndex: 'update_time',
-    },{
+    },
+    {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -83,39 +89,37 @@ class Page extends Component {
       title: '标题',
       key: 'title',
       required: true,
-    },{
+    },
+    {
       title: '链接',
       key: 'link',
       required: true,
-    },{
+    },
+    {
       title: '图片',
       key: 'image',
       required: true,
       custom() {
-        return (
-          <Upload />
-        )
-      }
-    },{
+        return <Upload />;
+      },
+    },
+    {
       title: '顺序',
       key: 'rank',
       custom() {
-        return (
-          <InputNumber style={{ width: '100%' }} min={1} />
-        )
-      }
-    },{
+        return <InputNumber style={{ width: '100%' }} min={1} />;
+      },
+    },
+    {
       title: '是否显示',
       key: 'is_enable',
       valuePropName: 'checked',
       value: true,
       custom() {
-        return (
-          <Switch checkedChildren="是" unCheckedChildren="否" />
-        )
+        return <Switch checkedChildren="是" unCheckedChildren="否" />;
       },
     },
-  ]
+  ];
 
   componentDidMount() {
     this.loadData();
@@ -126,25 +130,26 @@ class Page extends Component {
       type: 'partnerInfo/queryList',
       payload: {
         page: this.state.page,
-      }
+      },
     });
   };
 
-
   handleClose = () => {
-    this.setState({ visible: false })
-  }
+    this.setState({ visible: false });
+  };
 
-  handleSubmit = (values) => {
-    this.props.dispatch({
-      type: 'partnerInfo/add',
-      payload: values,
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-        this.handleClose()
-      }
-    });
+  handleSubmit = values => {
+    this.props
+      .dispatch({
+        type: 'partnerInfo/add',
+        payload: values,
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+          this.handleClose();
+        }
+      });
   };
 
   handleSave = (row, id) => {
@@ -152,24 +157,24 @@ class Page extends Component {
     dispatch({
       type: 'partnerInfo/update',
       payload: { id: id, ...row },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
-  handleDel = (id) => {
+  handleDel = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'partnerInfo/update',
       payload: { id: id, deleted: 1 },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
   render() {
     const { visible } = this.state;
@@ -179,17 +184,17 @@ class Page extends Component {
       <div>
         <OperationGroup onAdd={() => this.setState({ visible: true })} />
         <EditableTable
-          columns={this.columns} 
-          dataSource={data ? data.list : []}
+          columns={this.columns}
+          dataSource={data.data}
           total={data ? data.total : 0}
           loading={listLoading || updateLoading}
-          onChange={(pagination) => {
+          onChange={pagination => {
             this.state.page = pagination.current;
-            this.loadData()
+            this.loadData();
           }}
           onSave={this.handleSave}
           onDelete={this.handleDel}
-          rowKey="id" 
+          rowKey="id"
         />
         <EditModal
           visible={visible}
@@ -199,7 +204,7 @@ class Page extends Component {
           columns={this.modelColumns}
         />
       </div>
-    )
+    );
   }
 }
 

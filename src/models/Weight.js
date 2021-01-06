@@ -23,10 +23,9 @@ export default {
       return yield call(api.weightUpdate, payload);
     },
 
-    *export({ payload }, { call }) {
-      return yield call(api.weightExport, payload);
+    *Id({ payload }, { call }) {
+      return yield call(api.weightId, payload);
     },
-
   },
 
   reducers: {
@@ -34,14 +33,13 @@ export default {
       return {
         ...state,
         list: data,
-      }
+      };
     },
     topList(state, { payload: { data } }) {
       return {
         ...state,
         topList: data,
-      }
+      };
     },
-
   },
-}
+};

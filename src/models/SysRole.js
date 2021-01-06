@@ -19,6 +19,12 @@ export default {
     *queryList({ payload }, { call, put }) {
       const data = yield call(api.sysRoleList, payload);
       yield put({ type: 'list', payload: { data: data } });
+      let index = data.data.map(item => {
+        // console.log(item);
+        return item;
+      });
+      console.log(index);
+      return index;
     },
 
     *queryRoleTree({ payload }, { call }) {
@@ -28,7 +34,6 @@ export default {
     *queryRoleOperate({ payload }, { call }) {
       return yield call(api.sysRoleOperate, payload);
     },
-
   },
 
   reducers: {
@@ -36,8 +41,7 @@ export default {
       return {
         ...state,
         list: data,
-      }
+      };
     },
-
   },
-}
+};

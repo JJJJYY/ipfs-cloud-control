@@ -5,12 +5,14 @@ export default {
 
   state: {
     list: {},
+    active: [],
   },
 
   effects: {
     *queryList({ payload }, { call, put }) {
       const data = yield call(api.replenishmentRecordList, payload);
       yield put({ type: 'list', payload: { data: data } });
+      return data;
     },
 
     *add({ payload }, { call }) {
@@ -25,10 +27,16 @@ export default {
       return yield call(api.replenishmentRecordBatchAudit, payload);
     },
 
-    *export({ payload }, { call }) {
-      return yield call(api.replenishmentRecordExport, payload);
+    *Audit({ payload }, { call }) {
+      return yield call(api.replenishmentRecordAudit, payload);
     },
 
+    *queryActive({ payload }, { call, put }) {
+      const data = yield call(api.replenishmentRecordBatchAudit, payload);
+      yield put({ type: 'active', payload: { data: data } });
+      console.log(data.data);
+      return data;
+    },
   },
 
   reducers: {
@@ -36,8 +44,13 @@ export default {
       return {
         ...state,
         list: data,
-      }
+      };
     },
-
+    active(state, { payload: { data } }) {
+      return {
+        ...state,
+        active: data instanceof Array ? data : [],
+      };
+    },
   },
-}
+};

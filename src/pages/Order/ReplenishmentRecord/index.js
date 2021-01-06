@@ -19,7 +19,6 @@ import OperationGroup from '@/components/OperationGroup';
 import EditModal from '@/components/EditModal';
 import SearchGroup from '@/components/SearchGroup';
 import styles from './index.less';
-import './index.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { Dragger } = AntUpload;
@@ -30,7 +29,13 @@ class Page extends Component {
     visibleDrawer: false,
     page: 1,
     count: 10,
-    search: null,
+    user: '',
+    status: '',
+    product_name: '',
+    order_code: '',
+    price: '',
+    amount: '',
+    discount: '',
     selectedRowKeys: [],
   };
   formRef = React.createRef();
@@ -38,23 +43,21 @@ class Page extends Component {
   columns = [
     {
       title: '订单号',
-      dataIndex: 'pid',
-    },
-    {
-      title: 'UID',
-      dataIndex: 'id',
+      dataIndex: 'order_code',
     },
     {
       title: '账号',
-      dataIndex: 'account',
+      dataIndex: 'user',
+      render: text => <div>{text.user_name}</div>,
     },
     {
       title: '商品名称',
-      dataIndex: 'goods_name',
+      dataIndex: 'group',
+      render: text => <div>{text.product_group_name}</div>,
     },
     {
       title: '数量(TB)',
-      dataIndex: 'hashrate',
+      dataIndex: 'num',
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
@@ -64,37 +67,33 @@ class Page extends Component {
     },
     {
       title: '技术服务费',
-      dataIndex: 'service_charge_rate',
+      dataIndex: 'service_fee',
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
       custom() {
-        return <InputNumber min={0} max={1} step={0.1} />;
+        return <InputNumber min={0.0} step={0.1} />;
       },
     },
     {
       title: '折扣',
-      dataIndex: 'service_charge_rate',
+      dataIndex: 'discount',
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
       custom() {
-        return <InputNumber min={0} max={1} step={0.1} />;
+        return <InputNumber min={0.0} step={0.1} />;
       },
     },
     {
       title: '订单金额',
-      dataIndex: 'amount',
-      editable: true,
-      required: true,
-      render: text => <div>{parseFloat(text)}</div>,
-      custom() {
-        return <InputNumber min={0} />;
-      },
+      dataIndex: 'total_amount',
+      editable: false,
+      required: false,
     },
     {
       title: '状态',
-      dataIndex: 'status',
+      dataIndex: 'audit_status',
       editable: true,
       required: true,
       render(text) {
@@ -126,19 +125,20 @@ class Page extends Component {
     },
     {
       title: '创建人',
-      dataIndex: 'add_sys_user_name',
+      dataIndex: 'admin_user',
+      render: text => <div>{text.username}</div>,
     },
     {
       title: '创建时间',
-      dataIndex: 'create_time',
+      dataIndex: 'created_at',
     },
     {
       title: '审核人',
-      dataIndex: 'sys_user_name',
+      dataIndex: 'audit_user',
     },
     {
       title: '审核时间',
-      dataIndex: 'oper_time',
+      dataIndex: 'audit_time',
     },
     {
       title: '备注',
@@ -151,7 +151,7 @@ class Page extends Component {
       width: 60,
       fixed: 'right',
       actions(record) {
-        return record.status == 0 ? ['审核'] : [];
+        return record.audit_status == 0 ? ['审核'] : [];
       },
     },
   ];
@@ -159,11 +159,11 @@ class Page extends Component {
   modelColumns = active => [
     {
       title: '用户账号',
-      key: 'account',
+      key: 'username',
       required: true,
       custom() {
         return (
-          <InputNumber
+          <Input
             style={{ width: '100%' }}
             placeholder="请输入用户手机/邮箱账号"
           />
@@ -172,14 +172,14 @@ class Page extends Component {
     },
     {
       title: '商品名称',
-      key: 'goods_id',
+      key: 'product_group_id',
       custom() {
         return (
           <Select>
             {active &&
               active.map(row => (
                 <Option value={row.id} key={row.id}>
-                  {row.name}
+                  {row.product_group_name}
                 </Option>
               ))}
           </Select>
@@ -188,7 +188,7 @@ class Page extends Component {
     },
     {
       title: '数量(TB)',
-      key: 'hashrate',
+      key: 'num',
       required: true,
       custom() {
         return (
@@ -202,14 +202,13 @@ class Page extends Component {
     },
     {
       title: '折扣',
-      key: 'service_charge_rate',
+      key: 'discount',
       required: true,
       custom() {
         return (
           <InputNumber
             style={{ width: '100%' }}
             min={0}
-            max={1}
             step={0.1}
             placeholder="最多可输入小数位后两位,仅可输入正数"
           />
@@ -218,7 +217,7 @@ class Page extends Component {
     },
     {
       title: '技术服务费',
-      key: 'service_charge_rate',
+      key: 'service_fee',
       required: true,
       custom() {
         return (
@@ -226,7 +225,6 @@ class Page extends Component {
             style={{ width: '100%' }}
             placeholder="最多可输入小数位后两位,仅可输入正数"
             min={0}
-            max={1}
             step={0.1}
           />
         );
@@ -241,7 +239,7 @@ class Page extends Component {
             disabled
             style={{ width: '100%' }}
             placeholder="系统自动计算金额"
-            min={0}
+            value={1}
           />
         );
       },
@@ -254,23 +252,49 @@ class Page extends Component {
 
   componentDidMount() {
     this.loadData();
-    this.props.dispatch({
-      type: 'goods/queryActive',
-    });
+    this.asdda();
   }
 
   loadData = () => {
-    const { page, count, search } = this.state;
+    const {
+      page,
+      count,
+      user,
+      status,
+      timeEnd,
+      timeStart,
+      product_name,
+      order_code,
+    } = this.state;
     this.props.dispatch({
       type: 'replenishmentRecord/queryList',
       payload: {
         page: page,
         count: count,
-        search: search,
+        status: status,
+        timeEnd: timeEnd,
+        timeStart: timeStart,
+        product_name: product_name,
+        order_code: order_code,
+        user: user,
+        type: 2,
       },
     });
   };
-
+  asdda = () => {
+    this.props
+      .dispatch({
+        type: 'replenishmentRecord/queryActive',
+      })
+      .then(res => {
+        this.setState(
+          {
+            price: res[0].amount,
+          },
+          () => {},
+        );
+      });
+  };
   handleClose = () => {
     this.setState({ visible: false });
   };
@@ -281,7 +305,9 @@ class Page extends Component {
         type: 'replenishmentRecord/update',
         payload: { id: id, ...row },
       })
+
       .then(data => {
+        console.log(data);
         if (data != 'error') {
           this.loadData();
         }
@@ -289,21 +315,45 @@ class Page extends Component {
   };
 
   handleActions = (row, index) => {
+    console.log(row);
     if (index == 0) {
       Modal.confirm({
         title: '审核',
-
         content: (
           <div>
-            <div className={styles.information}>
-              <div>账号：{row.account}</div>
-              <div>商品名称: {row.goods_name} </div>
-              <div>订单金额: {row.amount} </div>
+            <div>
+              <div
+                style={{
+                  width: '300px',
+                  height: '30px',
+                  lineHeight: '30px',
+                  background: '#EAE8E8',
+                }}
+              >
+                {' '}
+                <div style={{ float: 'left' }}>订单编号:</div>{' '}
+                <div style={{ float: 'left', marginLeft: '5px' }}>
+                  {row.order_code}
+                </div>{' '}
+              </div>
+              <div
+                style={{
+                  width: '300px',
+                  height: '100px',
+                  lineHeight: '30px',
+                  border: '1px solid #EFEDED',
+                  marginBottom: '24px',
+                }}
+              >
+                <div>账号：{row.admin_user.username}</div>
+                <div>商品名称: {row.group.product_group_name} </div>
+                <div>订单金额: {row.product_amount} </div>
+              </div>
             </div>
             <Form ref={this.formRef}>
               <FormItem
                 label="审核"
-                name="status"
+                defaultValue={row.audit_status}
                 rules={[{ required: true, message: `请选择` }]}
               >
                 <Radio.Group>
@@ -312,6 +362,19 @@ class Page extends Component {
                 </Radio.Group>
               </FormItem>
             </Form>
+            <div>
+              <div
+                style={{ float: 'left', height: '60px', lineHeight: '60px' }}
+              >
+                备注:
+              </div>
+              <div style={{ float: 'left', marginLeft: '8px' }}>
+                <Input
+                  value={row.remark}
+                  style={{ width: '260px', height: '60px' }}
+                />
+              </div>
+            </div>
           </div>
         ),
         onOk: () => {
@@ -321,7 +384,7 @@ class Page extends Component {
               .then(values => {
                 this.props
                   .dispatch({
-                    type: 'replenishmentRecord/update',
+                    type: 'replenishmentRecord/Audit',
                     payload: {
                       id: row.id,
                       ...values,
@@ -414,11 +477,14 @@ class Page extends Component {
       },
     });
   };
-
+  addReplenishment = () => {
+    this.setState({
+      visible: true,
+    });
+  };
   render() {
     const { visible, page, count, search, selectedRowKeys } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
-
     const rowSelection =
       search && search.status == 0
         ? {
@@ -431,44 +497,51 @@ class Page extends Component {
       <div>
         <SearchGroup
           onSearch={e => {
-            this.state.page = 1;
-            if (e && e.time) {
-              e.time = [
-                e.time[0].format('YYYY-MM-DD'),
-                e.time[1].format('YYYY-MM-DD'),
-              ];
-            }
-            this.state.search = e;
+            // this.state.page = 1;
+            // if (e && e.time) {
+            //   e.time = [
+            //     e.time[0].format('YYYY-MM-DD'),
+            //     e.time[1].format('YYYY-MM-DD'),
+            //   ];
+            // }
+            this.setState({
+              page,
+              ...e,
+            });
             this.loadData();
           }}
           items={[
-            { label: '订单号', name: 'pid' },
-            { label: '账号', name: 'account' },
+            { label: '订单号', name: 'order_code' },
+            {
+              label: '账号',
+              name: 'user',
+              render: text => <div>{text.user_name}</div>,
+            },
             {
               label: '商品名称',
-              name: 'goods_name',
+              name: 'product_name',
             },
             {
               label: '支付状态',
-              name: 'asset',
+              name: 'status',
               custom: (
                 <Select>
-                  <Option value={0}>已完成</Option>
-                  <Option value={1}>已取消</Option>
-                  <Option value={2}>已下单</Option>
+                  <Option value={0}>已取消</Option>
+                  <Option value={1}>已下单</Option>
+                  <Option value={2}>已完成</Option>
                 </Select>
               ),
             },
             {
               label: '日期',
-              name: 'time',
+              name: 'created_at',
               custom: <DatePicker.RangePicker />,
             },
           ]}
         />
         <div className={styles.btnGroup}>
           <OperationGroup
-            onAdd={() => this.setState({ visible: true })}
+            onAdd={this.addReplenishment}
             onExport={all => {
               this.props.dispatch({
                 type: 'replenishmentRecord/export',
@@ -564,9 +637,10 @@ class Page extends Component {
           confirmLoading={addLoading}
           columns={this.modelColumns(active)}
         />
+
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
+          dataSource={data.data}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
@@ -588,7 +662,7 @@ class Page extends Component {
 function mapStateToProps(state) {
   return {
     data: state.replenishmentRecord.list,
-    active: state.goods.active,
+    active: state.replenishmentRecord.active,
     listLoading: state.loading.effects['replenishmentRecord/queryList'],
     addLoading: state.loading.effects['replenishmentRecord/add'],
     updateLoading: state.loading.effects['replenishmentRecord/update'],

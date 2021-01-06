@@ -5,6 +5,8 @@ import {
   Modal,
   Form,
   Input,
+  Popconfirm,
+  message,
   DatePicker,
   InputNumber,
   Tag,
@@ -12,7 +14,6 @@ import {
   Collapse,
   Radio,
 } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -26,14 +27,34 @@ const Option = Select.Option;
 class Page extends Component {
   state = {
     page: 1,
-    count: 10,
+    to: 10,
     visible: false,
     visible1: false,
-    editdata: null,
+    editdata: [],
     modal2Visible: false,
     previewVisible: false,
     previewImage: '',
     previewTitle: '',
+    ids: '',
+    product_type_name: '',
+    val1: '',
+    val2: '',
+    val3: '',
+    val4: '',
+    val5: '',
+    val6: '',
+    keys: '',
+    keyg: '',
+    aid: 1,
+    text: '确认上架吗?',
+    info: [
+      {
+        id: 1,
+        img: '',
+        title: '',
+        info: '',
+      },
+    ],
   };
 
   formRef = React.createRef();
@@ -46,11 +67,12 @@ class Page extends Component {
     },
     {
       title: '商品名称',
-      dataIndex: 'name',
+      dataIndex: 'type',
+      render: text => <div>{text.product_type_name}</div>,
     },
     {
       title: '简介',
-      dataIndex: 'slogan',
+      dataIndex: 'introduction',
     },
     {
       title: '售价',
@@ -60,19 +82,52 @@ class Page extends Component {
     {
       title: '状态',
       dataIndex: 'status',
-      render(text) {
-        switch (text) {
-          case 2:
-            return <Tag color="green">上架</Tag>;
-          case 1:
-            return <Tag color="blue">下架</Tag>;
-        }
-      },
+      render: (text, a) => (
+        <div>
+          {' '}
+          <Popconfirm
+            placement="top"
+            title={this.state.text}
+            onConfirm={() => {
+              this.confirm(a);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              style={{
+                backgroundColor: '#52C41A',
+                borderColor: '#52C41A',
+                display: text == 1 ? 'none' : 'block',
+              }}
+              type="primary"
+            >
+              上架
+            </Button>{' '}
+          </Popconfirm>
+          <Popconfirm
+            placement="top"
+            title={this.state.text}
+            onConfirm={() => {
+              this.putaway(a);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              style={{ display: text == 2 ? 'none' : 'block' }}
+              type="primary"
+            >
+              下架
+            </Button>
+          </Popconfirm>
+        </div>
+      ),
     },
     {
       title: '操作',
       operation: true,
-      showDelete: true,
+      showDelete: false,
       width: 60,
       fixed: 'right',
       actions() {
@@ -80,9 +135,57 @@ class Page extends Component {
       },
     },
   ];
-
+  confirm = e => {
+    let aid = e.id;
+    let statea = 1;
+    this.props.dispatch({
+      type: 'goods/Id',
+      payload: {
+        id: aid,
+      },
+    });
+    this.props
+      .dispatch({
+        type: 'goods/Change',
+        payload: {
+          id: aid,
+          status: statea,
+        },
+      })
+      .then(result => {
+        if (result != 'error') {
+          message.info('上架成功');
+          this.loadData();
+        }
+      });
+  };
+  putaway = e => {
+    let aid = e.id;
+    let statea = 2;
+    this.props.dispatch({
+      type: 'goods/Id',
+      payload: {
+        id: aid,
+      },
+    });
+    this.props
+      .dispatch({
+        type: 'goods/Change',
+        payload: {
+          id: aid,
+          status: statea,
+        },
+      })
+      .then(result => {
+        if (result != 'error') {
+          message.info('上架成功');
+          this.loadData();
+        }
+      });
+  };
   componentDidMount() {
     this.loadData();
+    this.loadProduct();
   }
 
   loadData = () => {
@@ -90,75 +193,157 @@ class Page extends Component {
       type: 'goods/queryList',
       payload: {
         page: this.state.page,
-        count: this.state.count,
+        to: this.state.to,
       },
     });
   };
-  handleAction = () => {
-    //编辑
-    this.setState({
-      visible1: true,
-    });
-  };
-  handleActions = (row, index) => {
-    // 添加
-    if (index == 0) {
-      this.props
-        .dispatch({
-          type: 'goods/get',
-          payload: { id: row.id },
-        })
-        .then(data => {
-          if (data != 'error') {
-            this.setState({
-              editdata: data,
-              visible: true,
-            });
-            this.formRef.current &&
-              this.formRef.current.setFieldsValue({
-                name: data.name,
-                en_name: data.en_name,
-                contract_duration: data.contract_duration,
-                en_highlight: data.en_highlight,
-                en_slogan: data.en_slogan,
-                en_tag: data.en_tag,
-                highlight: data.highlight,
-                weight_asset: data.weight_asset,
-                min_limit: data.min_limit,
-                price: data.price,
-                quantity: data.quantity,
-                remaining_quantity: data.remaining_quantity,
-                service_charge_rate: data.service_charge_rate,
-                settlement_period: data.settlement_period,
-                slogan: data.slogan,
-                start_time: moment(data.start_time, 'YYYY-MM-DD HH:mm:ss'),
-                tag: data.tag,
-                weight: data.weight,
-                contract_details: data.contract_details,
-                status: data.status,
-              });
-          }
+  loadProduct = () => {
+    this.props
+      .dispatch({
+        type: 'goods/get',
+      })
+      .then(data => {
+        this.setState({
+          editdata: data,
         });
-    }
+      });
+  };
+
+  handleAction = id => {
+    let aid = id.id;
+    this.props
+      .dispatch({
+        type: 'goods/List',
+        payload: {
+          id: aid,
+        },
+      })
+      .then(result => {
+        this.setState({
+          ids: result,
+          keyg: result.type.id,
+          visible1: true,
+        });
+      });
+  };
+  detailAdd = () => {
+    console.log(this.state.val1);
+    this.setState(
+      {
+        aid: this.state.aid + 1,
+      },
+      () => {
+        let arr = [...this.state.info];
+        arr.push({
+          id: this.state.aid,
+          img: this.state.val3,
+          title: this.state.val1,
+          info: this.state.val2,
+        });
+        this.setState({
+          info: arr,
+        });
+        console.log(arr);
+      },
+    );
+  };
+  detailRemove = () => {
+    let arr = [...this.state.info];
+    arr.pop();
+    this.setState({
+      info: arr,
+    });
+    console.log(arr);
+  };
+  redactRemove = () => {
+    let arr = [...this.state.ids.info];
+    arr.pop();
+    this.setState({
+      info: arr,
+    });
+    console.log(arr);
+  };
+  redactAdd = () => {
+    console.log(this.state.ids.info);
+    this.setState(
+      {
+        aid: this.state.aid + 1,
+      },
+      () => {
+        let arr = [...this.state.ids.info];
+        arr.push({
+          id: this.state.aid,
+          img: this.state.val3,
+          title: this.state.val4,
+          info: this.state.val5,
+        });
+        this.setState({
+          info: arr,
+        });
+        console.log(arr);
+      },
+    );
+  };
+  handleActions = () => {
+    // 添加
+    this.setState({
+      visible: true,
+    });
+    this.loadProduct();
+    this.formRef.current &&
+      this.formRef.current.setFieldsValue({
+        lowest_num: data.lowest_num,
+        specs: data.specs,
+        introduction: data.introduction,
+        product_type_id: data.product_type_id,
+        name: data.name,
+        en_name: data.en_name,
+        contract_duration: data.contract_duration,
+        en_highlight: data.en_highlight,
+        en_slogan: data.en_slogan,
+        en_tag: data.en_tag,
+        highlight: data.highlight,
+        weight_asset: data.weight_asset,
+        min_limit: data.min_limit,
+        price: data.price,
+        quantity: data.quantity,
+        remaining_quantity: data.remaining_quantity,
+        service_charge_rate: data.service_charge_rate,
+        settlement_period: data.settlement_period,
+        slogan: data.slogan,
+        start_time: moment(data.start_time, 'YYYY-MM-DD HH:mm:ss'),
+        tag: data.tag,
+        weight: data.weight,
+        contract_details: data.contract_details,
+        status: data.status,
+      });
   };
 
   handleClose = () => {
-    this.setState({ visible: false, editdata: null });
+    this.setState({
+      visible: false,
+      editdata: null,
+      keys: 0,
+      info: [
+        {
+          id: 1,
+          img: '',
+          title: '',
+          info: '',
+        },
+      ],
+      val1: '',
+      val2: '',
+      val3: '',
+    });
   };
 
   handleSubmit = () => {
     this.formRef.current.validateFields().then(row => {
-      if (row.contract_details)
-        row.contract_details = row.contract_details.toHTML();
-      if (row.start_time)
-        row.start_time = row.start_time.format('YYYY-MM-DD HH:mm:ss');
-      let isAdd = this.state.editdata == null;
-      if (!isAdd) {
-        row.id = this.state.editdata.id;
-      }
+      row.info = this.state.info.slice(1);
       this.props
         .dispatch({
-          type: isAdd ? 'goods/add' : 'goods/update',
+          type: 'goods/add',
           payload: row,
         })
         .then(data => {
@@ -175,20 +360,22 @@ class Page extends Component {
   readactCancel = () => {
     this.setState({
       visible1: false,
+      ids: undefined,
     });
   };
 
-  handleDel = id => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'goods/update',
-      payload: { id: id, deleted: 1 },
-    }).then(data => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  };
+  // handleDel = id => {
+  //   const { dispatch } = this.props;
+  //   dispatch({
+  //     type: 'goods/update',
+  //     payload: { id: id, deleted: 1 },
+  //   }).then(data => {
+
+  //     if (data != 'error') {
+  //       this.loadData();
+  //     }
+  //   });
+  // };
   // handleChange = info => {
   //   if (info.file.status === 'uploading') {
   //     this.setState({ loading: true });
@@ -219,15 +406,13 @@ class Page extends Component {
         file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
     });
   };
+  onSelect = key => {
+    console.log(key);
+    this.setState({
+      keys: key,
+    });
+  };
   render() {
-    const App = () => {
-      const [value, setValue] = React.useState(1);
-
-      const onChange = e => {
-        console.log('radio checked', e.target.value);
-        setValue(e.target.value);
-      };
-    };
     const { previewVisible, previewImage, previewTitle } = this.state;
     const { visible } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
@@ -241,13 +426,8 @@ class Page extends Component {
         span: 16,
       },
     };
-
     const Demo = () => {
       const [form] = Form.useForm();
-
-      const onGenderChange = value => {
-        console.log(value);
-      };
     };
     function getBase64(file) {
       return new Promise((resolve, reject) => {
@@ -258,17 +438,13 @@ class Page extends Component {
       });
     }
 
-    const text = `
-    分布式储存服务器
-`;
-
     return (
       <div className="goods">
-        <OperationGroup onAdd={() => this.setState({ visible: true })} />
+        <OperationGroup onAdd={this.handleActions} />
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
-          total={data ? data.total : 0}
+          dataSource={data.data}
+          total={data.total}
           loading={listLoading || updateLoading}
           onChange={pagination => {
             this.state.page = pagination.current;
@@ -283,7 +459,6 @@ class Page extends Component {
           title="添加"
           okText="提交"
           cancelText="取消"
-          width={800}
           visible={visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
@@ -292,222 +467,31 @@ class Page extends Component {
         >
           <Form layout="vertical" ref={this.formRef}>
             <Form.Item
-              className={styles.formItem}
-              label="算力名称（中文）"
-              name="name"
-              rules={[{ required: true }]}
-            >
-              <Input maxLength={100} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力名称（英文）"
-              name="en_name"
-              rules={[{ required: true }]}
-            >
-              <Input maxLength={100} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力简介（中文）"
-              name="slogan"
-              rules={[{ required: true }]}
-            >
-              <Input maxLength={100} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力简介（英文）"
-              name="en_slogan"
-              rules={[{ required: true }]}
-            >
-              <Input maxLength={100} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力标签（中文）"
-              name="tag"
-              rules={[{ required: true }]}
-            >
-              <Input maxLength={10} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力标签（英文）"
-              name="en_tag"
-              rules={[{ required: true }]}
-            >
-              <Input maxLength={10} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力属性（中文）"
-              name="highlight"
-            >
-              <Input maxLength={10} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力属性（英文）"
-              name="en_highlight"
-            >
-              <Input maxLength={10} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="挖矿币种"
-              name="weight_asset"
-            >
-              <Select>
-                <Option value="Filecoin">Filecoin</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="技术服务费"
-              name="service_charge_rate"
-            >
-              <InputNumber style={{ width: '100%' }} min={0} mac={1} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="合约开售时间"
-              name="start_time"
-            >
-              <DatePicker style={{ width: '100%' }} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="合约周期（天）"
-              name="contract_duration"
-            >
-              <InputNumber style={{ width: '100%' }} min={1} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="结算周期"
-              name="settlement_period"
-            >
-              <Input maxLength={100} />
-            </Form.Item>
-
-            <Form.Item className={styles.formItem} label="权重" name="weight">
-              <InputNumber style={{ width: '100%' }} min={0} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力单价（美元）"
-              name="price"
-            >
-              <InputNumber style={{ width: '100%' }} min={1} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="总份量（每份1TB）"
-              name="quantity"
-            >
-              <InputNumber style={{ width: '100%' }} min={1} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="剩余份量（每份1TB）"
-              name="remaining_quantity"
-            >
-              <InputNumber style={{ width: '100%' }} min={1} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="每次最小售卖份量（每份1TB）"
-              name="min_limit"
-            >
-              <InputNumber style={{ width: '100%' }} min={1} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="算力详情"
-              name="contract_details"
-            >
-              <Editor placeholder="内容" onChange={this.handleChange} />
-            </Form.Item>
-
-            <Form.Item
-              className={styles.formItem}
-              label="发布状态"
-              name="status"
-            >
-              <Select>
-                <Option value={1}>进行中</Option>
-                <Option value={2}>未开始</Option>
-                <Option value={3}>已结束</Option>
-                <Option value={99}>未发布</Option>
-                <Option value={1000}>奖励商品/不在前端展示</Option>
-              </Select>
-            </Form.Item>
-          </Form>
-        </Modal>
-
-        <Modal
-          title="编辑"
-          visible={this.state.visible1}
-          onOk={this.redactSubmit}
-          onCancel={this.readactCancel}
-        >
-          <Form
-            className={styles.ant_form}
-            {...layout}
-            ref={this.formRef1}
-            name="control-hooks"
-          >
-            <Form.Item
-              name="gender"
               label="商品名称"
-              placeholder="分布式储存服务器"
-              className={styles.form_item}
+              name="product_type_id"
               rules={[
                 {
                   required: true,
                 },
               ]}
             >
-              <Select onChange={this.onGenderChange} allowClear>
-                <Option value="product_type_id==1">分布式储存服务器</Option>
-                <Option value="product_type_id==2">FIL集群管理软件</Option>
-                <Option value="product_type_id==3">Mineos储存管理软件</Option>
-                <Option value="product_type_id==4">数据封存服务</Option>
-                <Option value="product_type_id==5">设备托管服务</Option>
+              <Select onChange={this.onSelect} allowClear>
+                {this.state.editdata &&
+                  this.state.editdata.map(item => {
+                    return (
+                      <Option key={item.id}>{item.product_type_name}</Option>
+                    );
+                  })}
               </Select>
             </Form.Item>
             <Form.Item
-              className={styles.form_item}
+              style={{ display: this.state.keys == 5 ? 'none' : 'block' }}
               name="specs"
               label="规格型号"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              className={styles.form_item}
               name="price"
               label="单价/台"
               rules={[
@@ -519,7 +503,22 @@ class Page extends Component {
               <Input />
             </Form.Item>
             <Form.Item
-              className={styles.form_item}
+              style={{
+                display:
+                  this.state.keys == 1
+                    ? 'none'
+                    : this.state.keys == 5
+                    ? 'none'
+                    : this.state.keys == 0
+                    ? 'none'
+                    : 'block',
+              }}
+              name="lowest_num"
+              label="最低起购/T"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               name="introduction"
               label="简介"
               rules={[
@@ -530,56 +529,95 @@ class Page extends Component {
             >
               <Input className={styles.form_input} />
             </Form.Item>
-            <Form.Item className={styles.form_item} name="details" label="详情">
+            <Form.Item name="info" label="详情">
               <Collapse className={styles.form_Collapse}>
-                <Panel header="分布式储存服务器" key="1">
-                  <div className={styles.form_details}>
-                    <div className={styles.details}>
-                      <>
-                        <Upload limit={1}></Upload>
-                        <Modal
-                          visible={previewVisible}
-                          title={previewTitle}
-                          footer={null}
-                          className="avatar-uploader"
-                          onCancel={this.handleCancel}
-                        >
-                          <img
-                            alt="example"
-                            style={{ width: '100%' }}
-                            src={previewImage}
+                <Panel
+                  header={
+                    this.state.keys == 1
+                      ? '分布式存储服务器'
+                      : this.state.keys == 2
+                      ? 'FIL集群管理软件'
+                      : this.state.keys == 3
+                      ? 'MineOS存储管理软件'
+                      : this.state.keys == 4
+                      ? '数据封装服务'
+                      : this.state.keys == 5
+                      ? '设备托管服务'
+                      : ''
+                  }
+                >
+                  {this.state.info.map((item, index) => {
+                    return (
+                      <div className={styles.form_details}>
+                        <div className={styles.details}>
+                          <>
+                            <Upload
+                              disabled={index == 0 ? false : true}
+                              name={index == 0 ? this.state.val3 : item.img}
+                              limit={1}
+                            ></Upload>
+                            <Modal
+                              visible={previewVisible}
+                              title={previewTitle}
+                              footer={null}
+                              className="avatar-uploader"
+                              onCancel={this.handleCancel}
+                            >
+                              <img
+                                alt="example"
+                                style={{ width: '100%' }}
+                                src={previewImage}
+                              />
+                            </Modal>
+                          </>
+                        </div>
+
+                        <div className={styles.form_right}>
+                          <div className={styles.form_details_top}>
+                            <Input
+                              readOnly={index == 0 ? false : true}
+                              value={index == 0 ? this.state.val1 : item.title}
+                              className={styles.form_details_title}
+                              placeholder="容量"
+                              onChange={e => {
+                                this.setState({ val1: e.target.value });
+                              }}
+                            />
+                            <Button
+                              type="primary"
+                              disabled={index == 0 ? false : true}
+                              onClick={this.detailAdd}
+                              className={styles.form_bottom1}
+                            >
+                              添加
+                            </Button>
+                            <Button
+                              type="primary"
+                              onClick={this.detailRemove}
+                              className={styles.form_bottom2}
+                              danger
+                              disabled={index == 0 ? false : true}
+                            >
+                              删除
+                            </Button>
+                          </div>
+                          <Input
+                            readOnly={index == 0 ? false : true}
+                            value={index == 0 ? this.state.val2 : item.info}
+                            className={styles.form_details_input}
+                            placeholder="稳定高容量,有多种容量可选"
+                            onChange={e => {
+                              this.setState({ val2: e.target.value });
+                            }}
                           />
-                        </Modal>
-                      </>
-                    </div>
-                    <div className={styles.form_right}>
-                      <div className={styles.form_details_top}>
-                        <Input
-                          className={styles.form_details_title}
-                          placeholder="容量"
-                        />
-                        <Button type="primary" className={styles.form_bottom1}>
-                          添加
-                        </Button>
-                        <Button
-                          type="primary"
-                          className={styles.form_bottom2}
-                          danger
-                        >
-                          删除
-                        </Button>
+                        </div>
                       </div>
-                      <Input
-                        className={styles.form_details_input}
-                        placeholder="稳定高容量,有多种容量可选"
-                      />
-                    </div>
-                  </div>
+                    );
+                  })}
                 </Panel>
               </Collapse>
             </Form.Item>
             <Form.Item
-              className={styles.form_item}
               name="status"
               label="状态"
               rules={[
@@ -595,6 +633,184 @@ class Page extends Component {
             </Form.Item>
           </Form>
         </Modal>
+        {this.state.ids && (
+          <Modal
+            title="编辑"
+            visible={this.state.visible1}
+            onOk={this.handleSubmit}
+            onCancel={this.readactCancel}
+            destroyOnClose
+          >
+            <Form
+              className={styles.ant_form}
+              {...layout}
+              ref={this.formRef}
+              name="control-hooks"
+            >
+              <Form.Item
+                name="product_type_id"
+                initialValue={this.state.ids.type.product_type_name}
+                label="商品名称"
+                className={styles.form_item}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Select onChange={this.onSelect} disabled>
+                  {this.state.editdata > 0
+                    ? this.state.editdata.map(item => {
+                        return (
+                          <Option key={item.product_type_name}>
+                            {item.product_type_name}
+                          </Option>
+                        );
+                      })
+                    : null}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                className={styles.form_item}
+                name="specs"
+                style={{ display: this.state.keyg == 5 ? 'none' : '' }}
+                initialValue={this.state.ids.specs}
+                label="规格型号"
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                className={styles.form_item}
+                name="price"
+                label="单价/台"
+                initialValue={this.state.ids.price}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              {this.state.keyg == 1 ||
+              this.state.keyg == 5 ||
+              this.state.keyg == 0 ? null : (
+                <Form.Item
+                  className={styles.form_item}
+                  // style={{ display: this.state.keyg == 1 ? 'none' : this.state.keyg == 5 ? 'none' : this.state.keyg == 0 ? 'none' : 'block' }}
+                  name="lowest_num"
+                  label="最低起购/T"
+                  initialValue={this.state.ids.lowest_num}
+                >
+                  <Input />
+                </Form.Item>
+              )}
+
+              <Form.Item
+                className={styles.form_item}
+                name="introduction"
+                label="简介"
+                initialValue={this.state.ids.introduction}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input className={styles.form_input} />
+              </Form.Item>
+              <Form.Item
+                className={styles.form_item}
+                name="details"
+                label="详情"
+              >
+                <Collapse>
+                  <Panel header={this.state.ids.type.product_type_name}>
+                    {this.state.ids.info.map((item, index) => {
+                      return (
+                        <div className={styles.form_details}>
+                          <div className={styles.details}>
+                            <>
+                              <Upload limit={1}></Upload>
+                              <Modal
+                                visible={previewVisible}
+                                title={previewTitle}
+                                footer={null}
+                                className="avatar-uploader"
+                                onCancel={this.handleCancel}
+                              >
+                                <img
+                                  alt="example"
+                                  style={{ width: '100%' }}
+                                  src={previewImage}
+                                />
+                              </Modal>
+                            </>
+                          </div>
+                          <div className={styles.form_right}>
+                            <div className={styles.form_details_top}>
+                              <Input
+                                readOnly={index == 0 ? false : true}
+                                value={
+                                  index == 0 ? this.state.val4 : item.title
+                                }
+                                className={styles.form_details_title}
+                                placeholder="容量"
+                              />
+                              <Button
+                                onClick={this.redactAdd}
+                                disabled={index == 0 ? false : true}
+                                type="primary"
+                                className={styles.form_bottom1}
+                              >
+                                添加
+                              </Button>
+                              <Button
+                                type="primary"
+                                disabled={index == 0 ? false : true}
+                                className={styles.form_bottom2}
+                                onClick={this.redactRemove}
+                                danger
+                              >
+                                删除
+                              </Button>
+                            </div>
+                            <Input
+                              value={index == 0 ? this.state.val5 : item.info}
+                              value={item.info}
+                              readOnly={index == 0 ? false : true}
+                              className={styles.form_details_input}
+                              placeholder="稳定高容量,有多种容量可选"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </Panel>
+                </Collapse>
+              </Form.Item>
+              <Form.Item
+                className={styles.form_item}
+                name="status"
+                label="状态"
+                initialValue={this.state.ids.status}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Radio.Group
+                  onChange={this.onChange}
+                  value={this.state.ids.status}
+                >
+                  <Radio value={2}>上架</Radio>
+                  <Radio value={1}>下架</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Form>
+          </Modal>
+        )}
       </div>
     );
   }

@@ -19,7 +19,9 @@ export default {
       const data = yield call(api.authUserList, payload);
       yield put({ type: 'list', payload: { data: data } });
     },
-
+    *updateStatus({ payload }, { call }) {
+      return yield call(api.authUserUpdate, payload);
+    },
     *queryInvitationList({ payload }, { call, put }) {
       const data = yield call(api.authUserInvitationList, payload);
       yield put({ type: 'invitationList', payload: { data: data } });
@@ -51,7 +53,6 @@ export default {
     *checkInviteDetailExport({ payload }, { call }) {
       return yield call(api.authUserCheckInvitationDetailExport, payload);
     },
-
   },
 
   reducers: {
@@ -59,29 +60,28 @@ export default {
       return {
         ...state,
         list: data,
-      }
+      };
     },
 
     invitationList(state, { payload: { data } }) {
       return {
         ...state,
         invitationList: data,
-      }
+      };
     },
 
     inviteDetailList(state, { payload: { data } }) {
       return {
         ...state,
         inviteDetailList: data,
-      }
+      };
     },
 
     userDetail(state, { payload: { data } }) {
       return {
         ...state,
         userDetail: data,
-      }
+      };
     },
-
   },
-}
+};

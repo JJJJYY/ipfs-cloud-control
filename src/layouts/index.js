@@ -1,12 +1,11 @@
-
 import { Component } from 'react';
 import { Layout, ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
-import SiderMenu from "@/components/SiderMenu";
-import GlobalHeader from "@/components/GlobalHeader";
+import SiderMenu from '@/components/SiderMenu';
+import GlobalHeader from '@/components/GlobalHeader';
 import { connect, Redirect } from 'umi';
 import { getAuthority } from '@/utils/authority';
-import EditModal from '@/components/EditModal'
+import EditModal from '@/components/EditModal';
 import styles from './index.less';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
@@ -18,7 +17,7 @@ import 'moment/locale/zh-cn';
 import logo from '../img/logo.png';
 
 moment.locale('zh-cn');
-const { Header, Footer, Content } = Layout
+const { Header, Footer, Content } = Layout;
 const title = 'FILPool';
 const footer = 'Copyright © FILPool 2020.';
 
@@ -64,16 +63,20 @@ class BasicLayout extends Component {
   }
 
   loadData = () => {
-    this.props.dispatch({
-      type: 'sysuser/userMenu',
-    })
-  }
+    this.props
+      .dispatch({
+        type: 'sysuser/userMenu',
+      })
+      .then(result => {
+        console.log(result);
+      });
+  };
 
   handleMenuCollapse = () => {
     this.setState({
       collapsed: !this.state.collapsed,
     });
-  }
+  };
 
   handleMenuClick = ({ key }) => {
     if (key == 'passwd') {
@@ -82,13 +85,12 @@ class BasicLayout extends Component {
           title: '新密码',
           key: 'password',
           required: true,
-        }
+        },
       ];
       this.setState({
         visible: true,
         modalData: datas,
       });
-
     } else if (key === 'logout') {
       const { dispatch } = this.props;
       dispatch({
@@ -103,9 +105,13 @@ class BasicLayout extends Component {
     });
   };
 
-  handleSubmit = (values) => {
+  handleSubmit = values => {
     const user = getAuthority();
-    if (values.password) values.password = crypto.createHash('md5').update(values.password).digest('hex');
+    if (values.password)
+      values.password = crypto
+        .createHash('md5')
+        .update(values.password)
+        .digest('hex');
     this.props.dispatch({
       type: 'sysuser/update',
       payload: { id: user.id, ...values },
@@ -133,22 +139,27 @@ class BasicLayout extends Component {
 
   render() {
     const { children, location, confirmLoading, isMobile, menu } = this.props;
+    console.log(children, location);
     const { collapsed, visible, modalData } = this.state;
-
+    console.log(location.pathname);
     // 登录页面用其他的Layout
     if (location.pathname === '/login') {
-      return <UserLayout>{children}</UserLayout>
-
-    } else if (menu.length && location.pathname != '/' && location.pathname != '/403' && location.pathname != '/404' && location.pathname != '/500') {
+      return <UserLayout>{children}</UserLayout>;
+    } else if (
+      menu.length &&
+      location.pathname != '/' &&
+      location.pathname != '/403' &&
+      location.pathname != '/404' &&
+      location.pathname != '/500'
+    ) {
       var match = false;
       for (let item of menu) {
-        if (location.pathname == item.path) {
+        if (location.pathname == item.path_name) {
           match = true;
           break;
-
-        } else if (location.pathname.indexOf(item.path) != -1) {
+        } else if (location.pathname.indexOf(item.path_name) != -1) {
           for (let child of item.children) {
-            if (location.pathname == child.path) {
+            if (location.pathname == child.path_name) {
               match = true;
               break;
             }
@@ -156,7 +167,7 @@ class BasicLayout extends Component {
         }
       }
       if (!match) {
-        return <Redirect to="/403" />
+        return <Redirect to="/403" />;
       }
     }
 
@@ -168,16 +179,18 @@ class BasicLayout extends Component {
 
     const layout = (
       <Layout>
-        {menu.length && <SiderMenu
-          logo={logo}
-          title={title}
-          collapsed={collapsed}
-          menuData={menu}
-          location={location}
-          onCollapse={this.handleMenuCollapse}
-          isMobile={isMobile}
-          {...this.props}
-        />}
+        {menu.length && (
+          <SiderMenu
+            logo={logo}
+            title={title}
+            collapsed={collapsed}
+            menuData={menu}
+            location={location}
+            onCollapse={this.handleMenuCollapse}
+            isMobile={isMobile}
+            {...this.props}
+          />
+        )}
         <Layout
           style={{
             ...this.getLayoutStyle(),
@@ -191,23 +204,22 @@ class BasicLayout extends Component {
               logo={logo}
               currentUser={{
                 name: user && user.name,
-                avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+                avatar:
+                  'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
                 userid: user && user.id,
               }}
               onCollapse={this.handleMenuCollapse}
               onMenuClick={this.handleMenuClick}
             />
           </Header>
-          <Content className={contentClassName}>
-            {children}
-          </Content>
+          <Content className={contentClassName}>{children}</Content>
           <EditModal
             visible={visible}
             confirmLoading={confirmLoading}
             onOk={this.handleSubmit}
             onCancel={this.handleCancel}
             columns={modalData}
-            title='编辑'
+            title="编辑"
           />
           <Footer style={{ textAlign: 'center' }}>{footer}</Footer>
         </Layout>
@@ -217,12 +229,10 @@ class BasicLayout extends Component {
     return (
       <ConfigProvider locale={zhCN}>
         <ContainerQuery query={query}>
-          {params => (
-            <div className={classNames(params)}>{layout}</div>
-          )}
+          {params => <div className={classNames(params)}>{layout}</div>}
         </ContainerQuery>
       </ConfigProvider>
-    )
+    );
   }
 }
 

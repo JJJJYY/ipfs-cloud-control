@@ -9,6 +9,7 @@ import {
   Select,
   Table,
   Divider,
+  message,
   Col,
   Row,
   InputNumber,
@@ -35,10 +36,16 @@ class Page extends Component {
     page: 1,
     count: 10,
     search: null,
+    search: null,
+    status: null,
+    order_amount: null,
+    list: [],
     invitePage: 1,
     inviteCount: 10,
     rank: 0,
     userID: null,
+    account: '',
+    id: '',
   };
   formRef = React.createRef();
 
@@ -49,46 +56,39 @@ class Page extends Component {
     },
     {
       title: '账号',
-      dataIndex: 'account',
+      dataIndex: 'user_name',
     },
     {
       title: '消费金额',
-      dataIndex: 'up_user',
-      editable: true,
+      dataIndex: 'order_amount',
     },
     {
       title: '状态',
-      dataIndex: 'lock',
-      editable: true,
-      required: true,
-      valuePropName: 'checked',
-      render(text) {
-        return (
-          <div>
-            {
-              [<Tag color="green">正常</Tag>, <Tag color="black">冻结</Tag>][
-                text
-              ]
-            }
-          </div>
-        );
-      },
-      custom() {
-        return <Switch checkedChildren="冻结" unCheckedChildren="正常" />;
-      },
+      dataIndex: 'status',
+      render: (text, a) => (
+        <div>
+          <Switch
+            defaultChecked={text}
+            onChange={() => {
+              this.onChangeStatus(text, a);
+            }}
+          />
+        </div>
+      ),
     },
+
     {
       title: '注册时间',
-      dataIndex: 'create_time',
+      dataIndex: 'created_at',
     },
     {
       title: '操作',
       operation: true,
-      showEdit: true,
+      showEdit: false,
       width: 60,
       fixed: 'right',
       actions() {
-        return ['详情', '邀请纪录'];
+        return ['详情'];
       },
     },
   ];
@@ -96,195 +96,94 @@ class Page extends Component {
   columnsReward = [
     {
       title: '订单号',
-      dataIndex: 'invitation_count',
+      dataIndex: 'order_code',
     },
     {
       title: '商品名称',
-      dataIndex: 'brokerage',
-      render: text => <div>{parseFloat(text)} USDT</div>,
+      dataIndex: 'group',
+      render: text => <div>{text.product_group_name} </div>,
     },
     {
       title: '创建时间',
-      dataIndex: 'sum',
-      render: (_, record) => (
-        <div>
-          {parseFloat(record.children_purchase) +
-            parseFloat(record.grandchildren_purchase)}{' '}
-          TB
-        </div>
-      ),
+      dataIndex: 'created_at',
     },
     {
       title: '支付时间',
-      dataIndex: 'children_purchase',
+      dataIndex: 'pay_time',
       render: text => <div>{parseFloat(text)} TB</div>,
     },
     {
       title: '付款金额',
-      dataIndex: 'grandchildren_purchase',
+      dataIndex: 'total_amount',
       render: text => <div>{parseFloat(text)} TB</div>,
     },
     {
       title: '状态',
-      dataIndex: 'grandchildren_purchase',
-      render: text => <div>{parseFloat(text)} TB</div>,
-    },
-  ];
-
-  columnsBalance = [
-    {
-      title: '资产类型',
-      dataIndex: 'asset',
-    },
-    {
-      title: '总数量',
-      dataIndex: 'sum',
-      render: (_, record) => (
-        <div>
-          {parseFloat(
-            Number(record.available) +
-              Number(record.recharge) +
-              Number(record.frozen) +
-              Number(record.pledged),
-          )}
-        </div>
-      ),
-    },
-    {
-      title: '释放',
-      dataIndex: 'available',
-      render: text => <div>{parseFloat(text)}</div>,
-    },
-    {
-      title: '充提',
-      dataIndex: 'recharge',
-      render: text => <div>{parseFloat(text)}</div>,
-    },
-    {
-      title: '冻结',
-      dataIndex: 'frozen',
-      render: text => <div>{parseFloat(text)}</div>,
-    },
-    {
-      title: '质押',
-      dataIndex: 'pledged',
-      render: text => <div>{parseFloat(text)}</div>,
-    },
-    {
-      title: '操作',
-      key: 'operation',
-      render: (_, record) => (
-        <div>
-          <a onClick={() => this.handleExchange(record, true)}>充值</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleExchange(record, false)}>扣除</a>
-        </div>
-      ),
-    },
-  ];
-
-  columnsHashrate = [
-    {
-      title: '资产类型',
-      dataIndex: 'type',
-      render: text => (
-        <div>
-          {
-            [
-              '矿机租赁',
-              '赠送',
-              '兑换',
-              '推广赠送',
-              '注册送',
-              '活动奖励',
-              '矿机托管',
-              '推广奖励',
-              '其他',
-              '未知',
-            ][text - 1]
-          }
-        </div>
-      ),
-    },
-    {
-      title: '算力TB',
-      dataIndex: 'quantity',
-      render: text => <div>{parseFloat(text)}</div>,
-    },
-    // {
-    //   title: '操作',
-    //   key: 'operation',
-    //   render: () => (
-    //     <div>
-    //       <a>充值</a>
-    //       <Divider type='vertical' />
-    //       <a>扣除</a>
-    //     </div>
-    //   ),
-    // },
-  ];
-
-  columnsInvite = [
-    {
-      title: '邀请用户',
-      dataIndex: 'account',
-    },
-    {
-      title: '用户等级',
-      dataIndex: 'level',
-      render: text => (
-        <div>
-          {
-            [
-              '普通合伙人',
-              '铜牌合伙人',
-              '银牌合伙人',
-              '金牌合伙人',
-              '铂金合伙人',
-              '钻石合伙人',
-              '超级合伙人',
-            ][text + 1]
-          }
-        </div>
-      ),
-    },
-    {
-      title: '层级关系',
-      dataIndex: 'rank',
+      dataIndex: 'status',
       render(text) {
-        return text + '级';
+        return (
+          <div>
+            {
+              [
+                <Tag color="blue">已下单</Tag>,
+                <Tag color="green">已完成</Tag>,
+                <Tag color="black">已取消</Tag>,
+              ][text]
+            }
+          </div>
+        );
       },
     },
-    {
-      title: '购买算力',
-      dataIndex: 'quantity',
-      render: text => <div>{parseFloat(text)} TB</div>,
-    },
-    {
-      title: '团队业绩',
-      dataIndex: 'reward',
-      render: text => (
-        <div>
-          {parseFloat(text.children_purchase) +
-            parseFloat(text.grandchildren_purchase)}{' '}
-          TB
-        </div>
-      ),
-    },
   ];
+
+  onChangeStatus = (e, a) => {
+    let id = a.id;
+    let status;
+    if (e == 0) {
+      status = 1;
+      message.success('账号已解冻');
+    } else {
+      status = 0;
+      message.info('账号已冻结');
+    }
+    this.props.dispatch({
+      type: 'authUser/updateStatus',
+      payload: {
+        id: id,
+        status: status,
+      },
+    });
+  };
 
   componentDidMount() {
     this.loadData();
   }
 
+  // loadData = () => {
+  //   const { current_page, count,search } = this.state;
+  //   this.props.dispatch({
+  //     type: 'authUser/queryList',
+  //     payload: {
+  //       current_page: current_page,
+  //       count: count,
+  //       account: account,
+  //       search: search,
+  //       status: status,
+  //     },
+  //   });
+  // };
+
   loadData = () => {
-    const { page, count, search } = this.state;
+    const { page, count, search, account, status, id } = this.state;
     this.props.dispatch({
       type: 'authUser/queryList',
       payload: {
         page: page,
         count: count,
         search: search,
+        account: account,
+        status: status,
+        id: id,
       },
     });
   };
@@ -297,7 +196,7 @@ class Page extends Component {
       })
       .then(data => {
         if (data != 'error') {
-          this.setState({ visibleDrawer: true, userID: id });
+          this.setState({ visibleDrawer: true, userID: id, list: data });
         }
       });
   };
@@ -419,8 +318,10 @@ class Page extends Component {
       visibleDrawer,
       visibleInviteDrawer,
       page,
+      order_amount,
       count,
       search,
+      status,
       userID,
       invitePage,
       inviteCount,
@@ -438,32 +339,31 @@ class Page extends Component {
       <div>
         <SearchGroup
           onSearch={e => {
-            this.state.page = 1;
-            this.state.search = e;
+            console.log(e);
+            this.setState({
+              page,
+              ...e,
+            });
             this.loadData();
           }}
           items={[
             { label: 'UID', name: 'id' },
-            { label: '账号', name: 'account' },
-            { label: '邀请人', name: 'up_user' },
+            { label: '账户', name: 'account' },
+            {
+              label: '状态',
+              name: 'status',
+              custom: (
+                <Select>
+                  <Option value={0}>冻结</Option>
+                  <Option value={1}>正常</Option>
+                </Select>
+              ),
+            },
           ]}
-        />
-        <OperationGroup
-          onExport={all => {
-            this.props.dispatch({
-              type: 'authUser/userExport',
-              payload: {
-                page: page,
-                count: count,
-                search: search ? JSON.stringify(search) : null,
-                all: all,
-              },
-            });
-          }}
         />
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
+          dataSource={data.data}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
@@ -483,26 +383,32 @@ class Page extends Component {
           onClose={this.handleCloseDrawer}
           visible={visibleDrawer}
         >
-          {userDetail && (
+          {this.state.list && (
             <div>
               <Divider>用户信息</Divider>
               <Row>
                 <Col span={12}>
-                  <DescriptionItem title="账户" content={userDetail.account} />
+                  <DescriptionItem
+                    title="账户"
+                    content={this.state.list.user_name}
+                  />
                 </Col>
                 <Col span={12}>
                   <DescriptionItem
                     title="注册时间"
-                    content={userDetail.create_time}
+                    content={this.state.list.created_at}
                   />
                 </Col>
               </Row>
               <Row>
                 <Col span={12}>
-                  <DescriptionItem title="邮箱" content={userDetail.email} />
+                  <DescriptionItem
+                    title="邮箱"
+                    content={this.state.list.email}
+                  />
                 </Col>
                 <Col span={12}>
-                  <DescriptionItem title="UID" content={userDetail.id} />
+                  <DescriptionItem title="UID" content={this.state.list.id} />
                 </Col>
               </Row>
               <Row></Row>
@@ -510,7 +416,7 @@ class Page extends Component {
               <div style={{ width: '100%' }}>
                 <Table
                   columns={this.columnsReward}
-                  dataSource={[userDetail.reward]}
+                  dataSource={this.state.list.order}
                   pagination={false}
                   rowKey="invitation_count"
                 />

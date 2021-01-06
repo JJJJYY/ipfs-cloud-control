@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { TreeSelect, Modal, Form, Input, Radio, InputNumber, Switch, Tag } from 'antd';
+import {
+  TreeSelect,
+  Modal,
+  Form,
+  Input,
+  Radio,
+  InputNumber,
+  Switch,
+  Tag,
+} from 'antd';
 import { createFromIconfontCN } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
@@ -14,7 +23,7 @@ const IconFont = createFromIconfontCN({
 });
 
 class Page extends Component {
-  state = { 
+  state = {
     visible: false,
     sourceType: 0,
   };
@@ -26,31 +35,31 @@ class Page extends Component {
       dataIndex: 'name',
       editable: true,
       required: true,
-    },{
+    },
+    {
       title: '图标',
       dataIndex: 'icon',
       editable: true,
       render(text) {
-        return (
-          <IconFont type={text} />
-        );
+        return <IconFont type={text} />;
       },
-    },{
+    },
+    {
       title: '路径',
-      dataIndex: 'path',
+      dataIndex: 'path_name',
       editable: true,
       required: true,
-    },{
+    },
+    {
       title: '排序',
       dataIndex: 'sort_no',
       editable: true,
       required: true,
       custom() {
-        return (
-          <InputNumber min={0} />
-        )
+        return <InputNumber min={0} />;
       },
-    },{
+    },
+    {
       title: '是否启用',
       dataIndex: 'is_enable',
       editable: true,
@@ -58,15 +67,20 @@ class Page extends Component {
       valuePropName: 'checked',
       render(text) {
         return (
-          <div>{[<Tag color="black">关闭</Tag>, <Tag color="green">开启</Tag>][text]}</div>
+          <div>
+            {
+              [<Tag color="black">关闭</Tag>, <Tag color="green">开启</Tag>][
+                text
+              ]
+            }
+          </div>
         );
       },
       custom() {
-        return (
-          <Switch checkedChildren="开启" unCheckedChildren="关闭" />
-        )
+        return <Switch checkedChildren="开启" unCheckedChildren="关闭" />;
       },
-    },{
+    },
+    {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -87,21 +101,24 @@ class Page extends Component {
   };
 
   handleClose = () => {
-    this.setState({ visible: false })
-  }
+    this.setState({ visible: false });
+  };
 
   handleSubmit = () => {
     this.formRef.current.validateFields().then(row => {
-      this.props.dispatch({
-        type: 'sysmodule/add',
-        payload: row,
-      }).then((data) => {
-        if (data != 'error') {
-          this.loadData();
-          this.handleClose()
-        }
-      });
-    })
+      this.props
+        .dispatch({
+          type: 'sysmodule/add',
+          payload: row,
+        })
+        .then(data => {
+          console.log(data);
+          if (data != 'error') {
+            this.loadData();
+            this.handleClose();
+          }
+        });
+    });
   };
 
   handleSave = (row, id) => {
@@ -109,58 +126,59 @@ class Page extends Component {
     dispatch({
       type: 'sysmodule/update',
       payload: { id: id, ...row },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
-  handleDel = (id) => {
+  handleDel = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'sysmodule/update',
       payload: { id: id, deleted: 1 },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
-  handelChangeSource = (e) => {
+  handelChangeSource = e => {
     this.setState({ sourceType: e.target.value });
-  }
+  };
 
-  createChildNode = (datas) => {
+  createChildNode = datas => {
     return (
-      datas && datas.map((row) => (
+      datas &&
+      datas.map(row => (
         <TreeNode key={row.id} value={row.id} title={row.name}>
           {this.createChildNode(row.children)}
         </TreeNode>
       ))
-    )
-  }
+    );
+  };
 
   render() {
     const { visible, sourceType } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
-
+    console.log(data);
     return (
       <div>
         <OperationGroup onAdd={() => this.setState({ visible: true })} />
         <EditableTable
-          columns={this.columns} 
-          dataSource={data} 
+          columns={this.columns}
+          dataSource={data}
           loading={listLoading || updateLoading}
           onSave={this.handleSave}
           onDelete={this.handleDel}
-          rowKey="id" 
+          rowKey="id"
         />
         <Modal
           title="添加"
-          okText='提交'
-          cancelText='取消'
+          okText="提交"
+          cancelText="取消"
           width={600}
           visible={visible}
           onOk={this.handleSubmit}
@@ -168,11 +186,11 @@ class Page extends Component {
           confirmLoading={addLoading}
           destroyOnClose
         >
-          <Form layout='vertical' ref={this.formRef}>
+          <Form layout="vertical" ref={this.formRef}>
             <Form.Item
               className={styles.formItem}
-              label='菜单类型'
-              name='type'
+              label="菜单类型"
+              name="type"
               rules={[{ required: true }]}
               initialValue={sourceType}
             >
@@ -184,18 +202,18 @@ class Page extends Component {
 
             <Form.Item
               className={styles.formItem}
-              label='菜单名称'
-              name='name'
+              label="菜单名称"
+              name="name"
               rules={[{ required: true }]}
             >
               <Input maxLength={100} />
             </Form.Item>
 
-            {sourceType == 1 &&
+            {sourceType == 1 && (
               <Form.Item
                 className={styles.formItem}
-                label='上级菜单'
-                name='parent_id'
+                label="上级菜单"
+                name="parent_id"
                 rules={[{ required: true }]}
               >
                 <TreeSelect
@@ -208,30 +226,26 @@ class Page extends Component {
                   {data && this.createChildNode(data)}
                 </TreeSelect>
               </Form.Item>
-            }
+            )}
 
             <Form.Item
               className={styles.formItem}
-              label='菜单路径'
-              name='path'
+              label="菜单路径"
+              name="path"
               rules={[{ required: true }]}
             >
               <Input maxLength={100} />
             </Form.Item>
 
-            <Form.Item
-              className={styles.formItem}
-              label='菜单图标'
-              name='icon'
-            >
+            <Form.Item className={styles.formItem} label="菜单图标" name="icon">
               <Input maxLength={100} />
             </Form.Item>
 
             <div className={styles.formDiv}>
               <Form.Item
                 className={styles.formItem}
-                label='排序'
-                name='sort_no'
+                label="排序"
+                name="sort_no"
                 rules={[{ required: true }]}
               >
                 <InputNumber min={0} />
@@ -240,8 +254,8 @@ class Page extends Component {
               <Form.Item
                 className={styles.formItem}
                 style={{ marginLeft: '32px' }}
-                label='是否启用'
-                name='is_enable'
+                label="是否启用"
+                name="is_enable"
                 rules={[{ required: true }]}
                 initialValue={1}
                 valuePropName="checked"
@@ -252,7 +266,7 @@ class Page extends Component {
           </Form>
         </Modal>
       </div>
-    )
+    );
   }
 }
 

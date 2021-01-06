@@ -12,6 +12,7 @@ export default {
     *queryList({ payload }, { call, put }) {
       const data = yield call(api.goodsList, payload);
       yield put({ type: 'list', payload: { data: data } });
+      return data;
     },
 
     *add({ payload }, { call }) {
@@ -25,28 +26,35 @@ export default {
     *get({ payload }, { call }) {
       return yield call(api.goodsGet, payload);
     },
-
-    *queryActive({ payload }, { call, put }) {
-      const data = yield call(api.goodsGetActive, payload);
-      yield put({ type: 'active', payload: { data: data } });
+    *Change({ payload }, { call }) {
+      return yield call(api.goodsChange, payload);
+    },
+    *Id({ payload }, { call }) {
+      return yield call(api.goodsId, payload);
+    },
+    *List({ payload }, { call }) {
+      return yield call(api.groupList, payload);
     },
 
+    // *queryActive({ payload }, { call, put }) {
+    //   const data = yield call(api.goodsGetActive, payload);
+    //   yield put({ type: 'active', payload: { data: data } });
+    // },
   },
 
   reducers: {
-    list(state, { payload: {data} }) {
+    list(state, { payload: { data } }) {
       return {
         ...state,
         list: data,
-      }
+      };
     },
 
-    active(state, { payload: {data} }) {
+    active(state, { payload: { data } }) {
       return {
         ...state,
         active: data instanceof Array ? data : [],
-      }
+      };
     },
-    
   },
-}
+};

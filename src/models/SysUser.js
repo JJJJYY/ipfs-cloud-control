@@ -17,7 +17,7 @@ export default {
       if (data && data != 'error') {
         reloadAuthorized();
         setAuthority(data);
-        history.replace('/')
+        history.replace('/');
         yield put({ type: 'userMenu' });
       }
     },
@@ -26,9 +26,9 @@ export default {
       yield call(api.sysUserLogout);
       removeAuthority();
       reloadAuthorized();
-      history.replace('/login')
+      history.replace('/login');
     },
-    
+
     *add({ payload }, { call }) {
       return yield call(api.sysUserAdd, payload);
     },
@@ -49,24 +49,23 @@ export default {
     *userMenu(_, { call, put }) {
       const data = yield call(api.sysUserMenu);
       yield put({ type: 'menu', payload: { data: data } });
+      return data;
     },
-
   },
 
   reducers: {
-    list(state, { payload: {data} }) {
+    list(state, { payload: { data } }) {
       return {
         ...state,
         list: data,
-      }
+      };
     },
 
-    menu(state, { payload: {data} }) {
+    menu(state, { payload: { data } }) {
       return {
         ...state,
         menu: data instanceof Array ? data : [],
-      }
+      };
     },
-    
   },
-}
+};

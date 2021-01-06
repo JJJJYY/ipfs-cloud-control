@@ -2,31 +2,32 @@ import * as request from '../utils/reqGenerator';
 
 // ----------------------- SysUser -----------------------
 export async function sysUserLogin(params) {
-  return request.post('Portal.SysUser.Login', params);
+  console.log(params);
+  return request.post('staff/user/login', params);
 }
 
 export async function sysUserLogout() {
-  return request.post('Portal.SysUser.Logout');
+  return request.post('staff/user/logout');
 }
 
 export async function sysUserAdd(params) {
-  return request.post('Portal.SysUser.Add', params);
+  return request.post('staff/admin/add', params);
 }
 
 export async function sysUserUpdate(params) {
-  return request.post('Portal.SysUser.Update', params);
+  return request.post('staff/admin/update', params);
 }
 
 export async function sysUserList(params) {
-  return request.post('Portal.SysUser.List', params);
+  return request.post('staff/admin/list', params);
 }
 
 export async function sysUserRole(params) {
-  return request.post('Portal.SysUser.UserRole', params);
+  return request.post('staff/sys/user-role/user-role', params);
 }
 
 export async function sysUserMenu() {
-  return request.post('Portal.SysUser.UserMenu');
+  return request.post('staff/user/menu');
 }
 
 // ----------------------- SysUserRole -----------------------
@@ -36,46 +37,48 @@ export async function sysUserRoleAdd(params) {
 
 // ----------------------- SysRole -----------------------
 export async function sysRoleAdd(params) {
-  return request.post('Portal.SysRole.Add', params);
+  return request.post('staff/sys/role/add', params);
 }
 
 export async function sysRoleUpdate(params) {
-  return request.post('Portal.SysRole.Update', params);
+  return request.post('staff/sys/role/update', params);
 }
 
 export async function sysRoleList(params) {
-  return request.post('Portal.SysRole.List', params);
+  return request.post('staff/sys/role/list', params);
 }
 
 export async function sysRoleTree(params) {
-  return request.post('Portal.SysRole.RoleTree', params);
+  return request.post('staff/sys/role/roleTree', params);
 }
 
 export async function sysRoleOperate(params) {
-  return request.post('Portal.SysRole.RoleOperate', params);
+  return request.post('staff/sys/role/roleOperate', params);
 }
 
 // ----------------------- SysRoleModule -----------------------
 export async function sysRoleModuleEdit(params) {
-  return request.post('Portal.SysRoleModule.EditModules', params);
+  return request.post('staff/sys/role-module/editModules', params);
 }
 
 // ----------------------- SysRoleOperate -----------------------
+
 export async function sysRoleOperateEdit(params) {
   return request.post('Portal.SysRoleOperate.EditOperate', params);
 }
 
 // ----------------------- SysModule -----------------------
 export async function sysModuleAdd(params) {
-  return request.post('Portal.SysModule.Add', params);
+  console.log(params);
+  return request.post('staff/sys/module/add', params);
 }
 
 export async function sysModuleUpdate(params) {
-  return request.post('Portal.SysModule.Update', params);
+  return request.post('staff/sys/module/update', params);
 }
 
 export async function sysModuleTree(params) {
-  return request.post('Portal.SysModule.Tree', params);
+  return request.post('staff/sys/module/tree', params);
 }
 
 // ----------------------- SysOperate -----------------------
@@ -93,7 +96,7 @@ export async function sysOperateUpdate(params) {
 
 // ----------------------- 七牛 -----------------------
 export async function qiniu() {
-  return request.post('App.Qiniu.Token');
+  return request.post('staff/qiniu/token');
 }
 
 // ----------------------- Overview -----------------------
@@ -103,15 +106,14 @@ export async function overviewHome(params) {
 
 // ----------------------- AuthUser -----------------------
 export async function authUserUpdate(params) {
-  return request.post('Portal.AuthUser.Update', params);
+  return request.post('staff/user/update', params);
 }
-
 export async function authUserList(params) {
-  return request.post('Portal.AuthUser.List', params);
+  return request.post('staff/user/list', params);
 }
 
 export async function authUserInvitationList(params) {
-  return request.post('Portal.AuthUser.InvitationList', params);
+  return request.post('staff/user/info', params);
 }
 
 export async function authUserInviteDetailList(params) {
@@ -119,7 +121,7 @@ export async function authUserInviteDetailList(params) {
 }
 
 export async function authUserDetail(params) {
-  return request.post('Portal.AuthUser.Detail', params);
+  return request.post('staff/user/info', params);
 }
 
 export async function authUserExport(params) {
@@ -131,7 +133,9 @@ export async function authUserInvitationExport(params) {
 }
 
 export async function authUserInviteDetailExport(params) {
-  return params.all && params.agent ? request.post('Portal.AuthUser.ExportInviteDetail', params) : request.download('Portal.AuthUser.ExportInviteDetail', params);
+  return params.all && params.agent
+    ? request.post('Portal.AuthUser.ExportInviteDetail', params)
+    : request.download('Portal.AuthUser.ExportInviteDetail', params);
 }
 
 export async function authUserCheckInvitationDetailExport(params) {
@@ -180,39 +184,41 @@ export async function weightList(params) {
 }
 
 export async function weightTopList(params) {
-  return request.post('Portal.Weight.TopList', params);
+  return request.post('staff/order/index', params);
 }
 
 export async function weightUpdate(params) {
-  return request.post('Portal.Weight.Update', params);
+  return request.post('staff/order/edit', params);
 }
 
-export async function weightExport(params) {
-  return request.download('Portal.Weight.Export', params);
+export async function weightId(params) {
+  return request.post('staff/order/info', params);
 }
 
 // ----------------------- ReplenishmentRecord -----------------------
 export async function replenishmentRecordList(params) {
-  return request.post('Portal.ReplenishmentRecord.List', params);
+  return request.post('staff/order/index', params);
 }
 
 export async function replenishmentRecordAdd(params) {
-  return request.post('Portal.ReplenishmentRecord.Add', params);
+  return request.post('staff/order/add', params);
 }
 
+// export async function replenishmentRecordUpdate(params) {
+//   return request.post('staff/order/audit_info', params);
+// }
+
 export async function replenishmentRecordUpdate(params) {
-  return request.post('Portal.ReplenishmentRecord.Update', params);
+  return request.post('staff/order/edit', params);
 }
 
 export async function replenishmentRecordBatchAudit(params) {
-  return request.post('Portal.ReplenishmentRecord.BatchAudit', params);
+  return request.post('staff/product/groupList', params);
 }
 
-export async function replenishmentRecordExport(params) {
-  return request.download('Portal.ReplenishmentRecord.Export', params);
+export async function replenishmentRecordAudit(params) {
+  return request.download('staff/order/audit', params);
 }
-
-
 
 // ----------------------- Deposit -----------------------
 export async function depositList(params) {
@@ -246,53 +252,62 @@ export async function withdrawalExportFILTxt(params) {
 
 // ----------------------- Goods -----------------------
 export async function goodsList(params) {
-  return request.post('Portal.Goods.List', params);
+  return request.post('staff/product/index', params);
+}
+
+export async function goodsId(params) {
+  return request.post(`staff/product/index`, params);
 }
 
 export async function goodsUpdate(params) {
-  return request.post('Portal.Goods.Update', params);
+  return request.post('staff/product/edit', params);
 }
 
 export async function goodsAdd(params) {
-  return request.post('Portal.Goods.Add', params);
+  return request.post('staff/product/edit', params);
 }
 
 export async function goodsGet(params) {
-  return request.post('Portal.Goods.Get', params);
+  return request.post('staff/product/type', params);
 }
-
-export async function goodsGetActive() {
-  return request.post('Portal.Goods.GetActive');
+export async function goodsChange(params) {
+  return request.post('staff/product/change', params);
 }
+export async function groupList(params) {
+  return request.post('staff/product/info', params);
+}
+// export async function goodsGetActive() {
+//   return request.post('Portal.Goods.GetActive');
+// }
 
 // ----------------------- Announcement -----------------------
 export async function announcementList(params) {
-  return request.post('Portal.Announcement.List', params);
+  return request.post('staff/announcement/list', params);
 }
 
 export async function announcementUpdate(params) {
-  return request.post('Portal.Announcement.Update', params);
+  return request.post('staff/announcement/update', params);
 }
 
 export async function announcementAdd(params) {
-  return request.post('Portal.Announcement.Add', params);
+  return request.post('staff/announcement/add', params);
 }
 
 export async function announcementGet(params) {
-  return request.post('Portal.Announcement.Get', params);
+  return request.post('staff/announcement/get', params);
 }
 
 // ----------------------- Banner -----------------------
 export async function bannerList(params) {
-  return request.post('Portal.Banner.List', params);
+  return request.post('staff/banner/list', params);
 }
 
 export async function bannerUpdate(params) {
-  return request.post('Portal.Banner.Update', params);
+  return request.post('staff/banner/update', params);
 }
 
 export async function bannerAdd(params) {
-  return request.post('Portal.Banner.Add', params);
+  return request.post('staff/banner/add', params);
 }
 
 // ----------------------- Channel -----------------------
@@ -349,32 +364,32 @@ export async function linksInfoAdd(params) {
 
 // ----------------------- PartnerInfo -----------------------
 export async function partnerInfoList(params) {
-  return request.post('Portal.PartnerInfo.List', params);
+  return request.post('staff/partner_info/list', params);
 }
 
 export async function partnerInfoUpdate(params) {
-  return request.post('Portal.PartnerInfo.Update', params);
+  return request.post('staff/partner_info/update', params);
 }
 
 export async function partnerInfoAdd(params) {
-  return request.post('Portal.PartnerInfo.Add', params);
+  return request.post('staff/partner_info/add', params);
 }
 
 // ----------------------- HelpInfo -----------------------
 export async function helpInfoList(params) {
-  return request.post('Portal.HelpInfo.List', params);
+  return request.post('staff/help_info/list', params);
 }
 
 export async function helpInfoUpdate(params) {
-  return request.post('Portal.HelpInfo.Update', params);
+  return request.post('staff/help_info/update', params);
 }
 
 export async function helpInfoAdd(params) {
-  return request.post('Portal.HelpInfo.Add', params);
+  return request.post('staff/help_info/add', params);
 }
 
 export async function helpInfoGet(params) {
-  return request.post('Portal.HelpInfo.Get', params);
+  return request.post('staff/help_info/get', params);
 }
 
 // ----------------------- AdvertisementInfo -----------------------

@@ -7,7 +7,7 @@ import OperationGroup from '@/components/OperationGroup';
 import Upload from '@/components/Upload';
 
 class Page extends Component {
-  state = { 
+  state = {
     page: 1,
     visible: false,
   };
@@ -20,41 +20,47 @@ class Page extends Component {
       required: true,
       render(text) {
         return (
-          <a href={text} target='view_window'><img src={text} width={100} alt='' /></a>
+          <a href={text} target="view_window">
+            <img src={text} width={100} alt="" />
+          </a>
         );
       },
       custom() {
-        return (
-          <Upload />
-        )
+        return <Upload />;
       },
-    },{
+    },
+    {
       title: 'PC端图片',
       dataIndex: 'pc_image',
       editable: true,
       required: true,
       render(text) {
         return (
-          <a href={text} target='view_window'><img src={text} width={100} alt='' /></a>
+          <a href={text} target="view_window">
+            <img src={text} width={100} alt="" />
+          </a>
         );
       },
       custom() {
-        return (
-          <Upload />
-        )
+        return <Upload />;
       },
-    },{
+    },
+    {
       title: '跳转链接',
       dataIndex: 'url',
       editable: true,
-      render: (text) => (
-        <a target="_blank" href={text}>{text}</a>
+      render: text => (
+        <a target="_blank" href={text}>
+          {text}
+        </a>
       ),
-    },{
+    },
+    {
       title: '顺序',
       dataIndex: 'rank',
       editable: true,
-    },{
+    },
+    {
       title: '是否置顶',
       dataIndex: 'top',
       editable: true,
@@ -62,15 +68,16 @@ class Page extends Component {
       valuePropName: 'checked',
       render(text) {
         return (
-          <div>{[<Tag color="black">否</Tag>, <Tag color="green">是</Tag>][text]}</div>
+          <div>
+            {[<Tag color="black">否</Tag>, <Tag color="green">是</Tag>][text]}
+          </div>
         );
       },
       custom() {
-        return (
-          <Switch checkedChildren="是" unCheckedChildren="否" />
-        )
+        return <Switch checkedChildren="是" unCheckedChildren="否" />;
       },
-    },{
+    },
+    {
       title: '是否启用',
       dataIndex: 'is_enable',
       editable: true,
@@ -78,18 +85,20 @@ class Page extends Component {
       valuePropName: 'checked',
       render(text) {
         return (
-          <div>{[<Tag color="black">否</Tag>, <Tag color="green">是</Tag>][text]}</div>
+          <div>
+            {[<Tag color="black">否</Tag>, <Tag color="green">是</Tag>][text]}
+          </div>
         );
       },
       custom() {
-        return (
-          <Switch checkedChildren="是" unCheckedChildren="否" />
-        )
+        return <Switch checkedChildren="是" unCheckedChildren="否" />;
       },
-    },{
+    },
+    {
       title: '创建时间',
       dataIndex: 'create_time',
-    },{
+    },
+    {
       title: '操作',
       operation: true,
       showEdit: true,
@@ -105,50 +114,47 @@ class Page extends Component {
       key: 'image',
       required: true,
       custom() {
-        return (
-          <Upload />
-        )
-      }
-    },{
+        return <Upload />;
+      },
+    },
+    {
       title: 'PC图片',
       key: 'pc_image',
       required: true,
       custom() {
-        return (<Upload />)
-      }
-    },{
+        return <Upload />;
+      },
+    },
+    {
       title: '跳转链接',
       key: 'url',
-    },{
+    },
+    {
       title: '顺序',
       key: 'rank',
       custom() {
-        return (
-          <InputNumber style={{ width: '100%' }} min={1} />
-        )
-      }
-    },{
+        return <InputNumber style={{ width: '100%' }} min={1} />;
+      },
+    },
+    {
       title: '是否置顶',
       key: 'top',
       valuePropName: 'checked',
       value: false,
       custom() {
-        return (
-          <Switch checkedChildren="是" unCheckedChildren="否" />
-        )
+        return <Switch checkedChildren="是" unCheckedChildren="否" />;
       },
-    },{
+    },
+    {
       title: '是否启用',
       key: 'is_enable',
       valuePropName: 'checked',
       value: true,
       custom() {
-        return (
-          <Switch checkedChildren="是" unCheckedChildren="否" />
-        )
+        return <Switch checkedChildren="是" unCheckedChildren="否" />;
       },
     },
-  ]
+  ];
 
   componentDidMount() {
     this.loadData();
@@ -159,48 +165,53 @@ class Page extends Component {
       type: 'banner/queryList',
       payload: {
         page: this.state.page,
-      }
+      },
     });
   };
 
-
   handleClose = () => {
-    this.setState({ visible: false })
-  }
+    this.setState({ visible: false });
+  };
 
-  handleSubmit = (values) => {
-    this.props.dispatch({
-      type: 'banner/add',
-      payload: values,
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-        this.handleClose()
-      }
-    });
+  handleSubmit = values => {
+    this.props
+      .dispatch({
+        type: 'banner/add',
+        payload: values,
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+          this.handleClose();
+        }
+      });
   };
 
   handleSave = (row, id) => {
-    this.props.dispatch({
-      type: 'banner/update',
-      payload: { id: id, ...row },
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  }
+    this.props
+      .dispatch({
+        type: 'banner/update',
+        payload: { id: id, ...row },
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+        }
+      });
+  };
 
-  handleDel = (id) => {
-    this.props.dispatch({
-      type: 'banner/update',
-      payload: { id: id, deleted: 1 },
-    }).then((data) => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  }
+  handleDel = id => {
+    this.props
+      .dispatch({
+        type: 'banner/update',
+        payload: { id: id, deleted: 1 },
+      })
+      .then(data => {
+        if (data != 'error') {
+          this.loadData();
+        }
+      });
+  };
 
   render() {
     const { visible } = this.state;
@@ -210,17 +221,17 @@ class Page extends Component {
       <div>
         <OperationGroup onAdd={() => this.setState({ visible: true })} />
         <EditableTable
-          columns={this.columns} 
-          dataSource={data ? data.list : []}
+          columns={this.columns}
+          dataSource={data.data}
           total={data ? data.total : 0}
           loading={listLoading || updateLoading}
-          onChange={(pagination) => {
+          onChange={pagination => {
             this.state.page = pagination.current;
-            this.loadData()
+            this.loadData();
           }}
           onSave={this.handleSave}
           onDelete={this.handleDel}
-          rowKey="id" 
+          rowKey="id"
         />
         <EditModal
           visible={visible}
@@ -230,7 +241,7 @@ class Page extends Component {
           columns={this.modelColumns}
         />
       </div>
-    )
+    );
   }
 }
 

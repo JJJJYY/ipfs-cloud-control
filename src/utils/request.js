@@ -3,10 +3,15 @@ import { message } from 'antd';
 import { getDvaApp, history } from 'umi';
 import { getAuthority } from '@/utils/authority';
 
-const fetchData = (response) => {
+const fetchData = response => {
   return new Promise((resolve, reject) => {
     let json = response;
-    if (json.ret != 200) {
+    console.log(json.code);
+    let token = json.data.token;
+    if ((json.code = 200)) {
+      localStorage.getItem('token', token);
+    } else if (localStorage.getItem('', token)) {
+      history.location.pathname == '/login';
       const errortext = json.msg;
       message.error(errortext);
       const error = new Error(errortext);
@@ -16,7 +21,7 @@ const fetchData = (response) => {
     }
     resolve(json.data);
   });
-}
+};
 
 /**
  * Requests a URL, returning a promise.
@@ -29,15 +34,14 @@ export default function request(url, option) {
   const options = {
     ...option,
   };
-  // options.body['AuthKey'] = localStorage.getItem('Bg_AuthKey');
+  // options.body['token'] = localStorage.getItem('Bg_AuthKey');
 
-  const defaultOptions = {
-    credentials: 'include',
-  };
+  const defaultOptions = {};
   const newOptions = { ...defaultOptions, ...options };
   const user = getAuthority();
   if (user && user.token) {
     newOptions.headers = {
+      Authorization: 'Bearer ' + user.token,
       ...newOptions.headers,
     };
   }

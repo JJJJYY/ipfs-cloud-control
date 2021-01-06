@@ -28,7 +28,14 @@ class Page extends Component {
     visibleDrawer: false,
     page: 1,
     count: 10,
-    search: null,
+    ids: '',
+    id: '',
+    user: '',
+    status: '',
+    product_name: '',
+    order_code: '',
+    timeStart: '',
+    timeEnd: '',
     visible1: false,
     placement: 'right',
   };
@@ -37,7 +44,7 @@ class Page extends Component {
   columns = [
     {
       title: '订单号',
-      dataIndex: 'pid',
+      dataIndex: 'order_code',
     },
     {
       title: 'UID',
@@ -45,15 +52,17 @@ class Page extends Component {
     },
     {
       title: '账号',
-      dataIndex: 'account',
+      dataIndex: 'user',
+      render: text => <div>{text.user_name}</div>,
     },
     {
       title: '商品名称',
-      dataIndex: 'related_name',
+      dataIndex: 'group',
+      render: text => <div>{text.product_group_name}</div>,
     },
     {
       title: '数量',
-      dataIndex: 'quantity',
+      dataIndex: 'num',
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
@@ -63,7 +72,7 @@ class Page extends Component {
     },
     {
       title: '技术服务费',
-      dataIndex: 'service_charge_rate',
+      dataIndex: 'service_fee',
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
@@ -73,7 +82,7 @@ class Page extends Component {
     },
     {
       title: '折扣',
-      dataIndex: 'service_charge_rate',
+      dataIndex: 'discount',
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
@@ -83,13 +92,9 @@ class Page extends Component {
     },
     {
       title: '订单金额',
-      dataIndex: 'payment_quantity',
-      editable: true,
-      required: true,
-      render: text => <div>{parseFloat(text)}</div>,
-      custom() {
-        return <InputNumber min={0} />;
-      },
+      dataIndex: 'total_amount',
+      editable: false,
+      required: false,
     },
     {
       title: '状态',
@@ -101,10 +106,9 @@ class Page extends Component {
           <div>
             {
               [
-                <Tag color="black">未付款</Tag>,
-                <Tag color="green">已付款</Tag>,
-                <Tag color="black">关闭</Tag>,
-                <Tag color="black">超时</Tag>,
+                <Tag color="black">已取消</Tag>,
+                <Tag color="green">已下单</Tag>,
+                <Tag color="black">已完成</Tag>,
               ][text]
             }
           </div>
@@ -129,7 +133,7 @@ class Page extends Component {
     },
     {
       title: '创建时间',
-      dataIndex: 'create_time',
+      dataIndex: 'created_at',
     },
     {
       title: '备注',
@@ -156,33 +160,24 @@ class Page extends Component {
   columnsReward = [
     {
       title: '商品名称',
-      dataIndex: 'invitation_count',
+      dataIndex: 'product_name',
     },
     {
       title: '型号',
-      dataIndex: 'brokerage',
-      render: text => <div>{parseFloat(text)} USDT</div>,
+      dataIndex: 'specs',
     },
     {
       title: '单价',
-      dataIndex: 'sum',
-      render: (_, record) => (
-        <div>
-          {parseFloat(record.children_purchase) +
-            parseFloat(record.grandchildren_purchase)}{' '}
-          TB
-        </div>
-      ),
+      dataIndex: 'price',
+      render: text => <div>{text}元/T</div>,
     },
     {
       title: '数量',
-      dataIndex: 'children_purchase',
-      render: text => <div>{parseFloat(text)} TB</div>,
+      dataIndex: 'quantity',
     },
     {
       title: '小计',
-      dataIndex: 'grandchildren_purchase',
-      render: text => <div>{parseFloat(text)} TB</div>,
+      dataIndex: 'total_amount',
     },
     {
       title: '订单状态',
@@ -196,13 +191,27 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const { page, count, search } = this.state;
+    const {
+      page,
+      count,
+      user,
+      status,
+      timeEnd,
+      timeStart,
+      product_name,
+      order_code,
+    } = this.state;
     this.props.dispatch({
       type: 'weight/queryTopList',
       payload: {
         page: page,
         count: count,
-        search: search,
+        status: status,
+        timeEnd: timeEnd,
+        timeStart: timeStart,
+        product_name: product_name,
+        order_code: order_code,
+        user: user,
         number: 1,
       },
     });
@@ -220,7 +229,24 @@ class Page extends Component {
     });
   };
 
-  handleActions = () => {
+  handleActions = id => {
+    let idi = id.id;
+    this.props
+      .dispatch({
+        type: 'weight/Id',
+        payload: { id: idi },
+      })
+      .then(result => {
+        this.setState(
+          {
+            ids: result,
+          },
+          () => {
+            console.log(this.state.ids);
+          },
+        );
+      });
+
     this.setState({
       visible1: true,
     });
@@ -231,7 +257,15 @@ class Page extends Component {
     });
   };
   render() {
-    const { page, count, search } = this.state;
+    const {
+      page,
+      count,
+      account,
+      status,
+      timeEnd,
+      timeStart,
+      product_name,
+    } = this.state;
     const { data, listLoading, updateLoading } = this.props;
     const { placement, visible1 } = this.state;
 
@@ -239,42 +273,43 @@ class Page extends Component {
       <div>
         <SearchGroup
           onSearch={e => {
-            this.state.page = 1;
-            if (e && e.time) {
-              e.time = [
-                e.time[0].format('YYYY-MM-DD'),
-                e.time[1].format('YYYY-MM-DD'),
-              ];
-            }
-            this.state.search = e;
+            // if (e && e.time) {
+            //   e.time = [
+            //     e.time[0].format('YYYY-MM-DD'),
+            //     e.time[1].format('YYYY-MM-DD'),
+            //   ];
+            // }
+            this.setState({
+              page: page,
+              ...e,
+            });
             this.loadData();
           }}
           items={[
-            { label: '订单号', name: 'pid' },
-            { label: '账号', name: 'account' },
-            { label: '商品名称', name: 'related_name' },
+            { label: '订单号', name: 'order_code' },
+            { label: '账号', name: 'user' },
+            { label: '商品名称', name: 'product_name' },
             {
-              label: '支付状态',
+              label: '状态',
               name: 'status',
               custom: (
                 <Select>
-                  <Option value={0}>未付款</Option>
-                  <Option value={1}>已付款</Option>
-                  <Option value={2}>关闭</Option>
-                  <Option value={3}>超时</Option>
+                  <Option value={0}>已取消</Option>
+                  <Option value={1}>已下单</Option>
+                  <Option value={2}>已完成</Option>
                 </Select>
               ),
             },
             {
               label: '日期',
-              name: 'time',
+              name: 'timeStart',
               custom: <DatePicker.RangePicker />,
             },
           ]}
         />
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
+          dataSource={data.data}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
@@ -287,120 +322,162 @@ class Page extends Component {
           onSave={this.handleSave}
           rowKey="id"
         />
-        <Drawer
-          width={840}
-          placement={placement}
-          onClose={this.onClose}
-          visible={visible1}
-        >
-          <Divider>用户信息</Divider>
-          <Row>
-            <Col span={12}>
-              <DescriptionItem title="账户" content={'121212'} />
-            </Col>
-            <Col span={12}>
-              <DescriptionItem
-                title="姓名"
-                content={
-                  ['223', '654', '55', '44', '33', '22', '11']['2313211']
-                }
+
+        {this.state.ids ? (
+          <Drawer
+            width={840}
+            placement={placement}
+            onClose={this.onClose}
+            visible={visible1}
+          >
+            <Divider>用户信息</Divider>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="账户"
+                  content={this.state.ids.user.user_name}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="姓名"
+                  content={this.state.ids.user.user_name}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="手机"
+                  content={this.state.ids.user.phone}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem title="备注" content={this.state.ids.remark} />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem title="UID" content={this.state.ids.id} />
+              </Col>
+            </Row>
+            <Divider>订单记录</Divider>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="订单状态"
+                  content={
+                    this.state.ids.status == 0
+                      ? '已取消'
+                      : this.state.ids.status == 1
+                      ? '已下单'
+                      : this.state.ids.status == 2
+                      ? '已完成'
+                      : ''
+                  }
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="订单号"
+                  content={this.state.ids.order_code}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="产品名称"
+                  content={this.state.ids.group.product_group_name}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="创建时间"
+                  content={this.state.ids.created_at}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="完成时间"
+                  content={this.state.ids.updated_at}
+                />
+              </Col>
+            </Row>
+            <Divider>产品信息</Divider>
+            <div style={{ width: '100%' }}>
+              <Table
+                columns={this.columnsReward}
+                dataSource={this.state.ids.info}
+                pagination={false}
+                rowKey="invitation_count"
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <DescriptionItem title="手机" content={'phone'} />
-            </Col>
-            <Col span={12}>
-              <DescriptionItem title="备注" content={'撒大声地'} />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <DescriptionItem title="UID" content={'id'} />
-            </Col>
-          </Row>
-          <Divider>订单记录</Divider>
-          <Row>
-            <Col span={12}>
-              <DescriptionItem title="订单状态" content={'已完成'} />
-            </Col>
-            <Col span={12}>
-              <DescriptionItem title="订单号" content={'232312232'} />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <DescriptionItem title="产品名称" content={'存储云服务'} />
-            </Col>
-            <Col span={12}>
-              <DescriptionItem title="创建时间" content={'2020-1-1-14:00'} />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <DescriptionItem title="完成时间" content={'2020-1-1-14:00'} />
-            </Col>
-          </Row>
-          <Divider>产品信息</Divider>
-          <div style={{ width: '100%' }}>
-            <Table
-              columns={this.columnsReward}
-              dataSource={['reward']}
-              pagination={false}
-              rowKey="invitation_count"
-            />
-          </div>
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              borderBottom: '1px solid #f0f0f0',
-              height: '54.6px',
-            }}
-          >
-            <div style={{ width: '132.8px', padding: '16px' }}>技术服务费</div>
-            <div style={{ width: '147.6px', padding: '16px' }}>20%</div>
-          </div>
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              borderBottom: '1px solid #f0f0f0',
-              height: '54.6px',
-            }}
-          >
-            <div style={{ width: '132.8px', padding: '16px' }}>专项折扣</div>
-            <div style={{ width: '147.6px', padding: '16px' }}>9.5折</div>
-          </div>
-          <div style={{ width: '100%', height: '50px', marginTop: '50px' }}>
-            <div style={{ float: 'right', display: 'flex' }}>
-              <div style={{ lineHeight: '32px', marginRight: '10px' }}>
-                数量
-              </div>
-              <div>
-                <Input style={{ width: '50px' }} disabled value="1" />
-              </div>
-              <div style={{ lineHeight: '32px', marginLeft: '10px' }}>集群</div>
             </div>
-          </div>
-          <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
-            <div style={{ float: 'right', display: 'flex' }}>
-              <div style={{ marginRight: '7px', lineHeight: '28px' }}>
-                总配置费用:
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                borderBottom: '1px solid #f0f0f0',
+                height: '54.6px',
+              }}
+            >
+              <div style={{ width: '132.8px', padding: '16px' }}>
+                技术服务费
               </div>
-              <div
-                style={{
-                  fontSize: '18px',
-                  color: 'orange',
-                  marginRight: '20px',
-                }}
-              >
-                ¥202021
+              <div style={{ width: '147.6px', padding: '16px' }}>
+                {this.state.ids.service_fee}
               </div>
             </div>
-          </div>
-        </Drawer>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                borderBottom: '1px solid #f0f0f0',
+                height: '54.6px',
+              }}
+            >
+              <div style={{ width: '132.8px', padding: '16px' }}>专项折扣</div>
+              <div style={{ width: '147.6px', padding: '16px' }}>
+                {this.state.ids.discount}
+              </div>
+            </div>
+            <div style={{ width: '100%', height: '50px', marginTop: '50px' }}>
+              <div style={{ float: 'right', display: 'flex' }}>
+                <div style={{ lineHeight: '32px', marginRight: '10px' }}>
+                  数量
+                </div>
+                <div>
+                  <Input
+                    style={{ width: '50px', textAlign: 'center' }}
+                    readOnly
+                    value={this.state.ids.num}
+                  />
+                </div>
+                <div style={{ lineHeight: '32px', marginLeft: '20px' }}>
+                  集群
+                </div>
+              </div>
+            </div>
+            <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
+              <div style={{ float: 'right', display: 'flex' }}>
+                <div style={{ marginRight: '7px', lineHeight: '28px' }}>
+                  总配置费用:
+                </div>
+                <div
+                  style={{
+                    fontSize: '18px',
+                    color: 'orange',
+                    marginRight: '20px',
+                  }}
+                >
+                  ¥{this.state.ids.total_amount}
+                </div>
+              </div>
+            </div>
+          </Drawer>
+        ) : null}
       </div>
     );
   }

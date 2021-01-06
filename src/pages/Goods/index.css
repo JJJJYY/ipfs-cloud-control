@@ -17,3 +17,6 @@
       width: 95px;
      
   }
+.ant-collapse-header{
+    min-height: 47px;
+}

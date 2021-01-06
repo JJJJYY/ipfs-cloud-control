@@ -1,4 +1,4 @@
-import 'braft-editor/dist/index.css'
+import 'braft-editor/dist/index.css';
 import React, { Component } from 'react';
 import { Modal, Form, Input, InputNumber } from 'antd';
 import { connect } from 'umi';
@@ -19,13 +19,16 @@ class Page extends Component {
     {
       title: '标题',
       dataIndex: 'title',
-    }, {
+    },
+    {
       title: '创建时间',
-      dataIndex: 'create_time',
-    }, {
+      dataIndex: 'created_at',
+    },
+    {
       title: '排序',
       dataIndex: 'rank',
-    }, {
+    },
+    {
       title: '操作',
       operation: true,
       showDelete: true,
@@ -46,34 +49,36 @@ class Page extends Component {
       type: 'announcement/queryList',
       payload: {
         page: this.state.page,
-      }
+      },
     });
   };
 
   handleActions = (row, index) => {
     if (index == 0) {
-      this.props.dispatch({
-        type: 'announcement/get',
-        payload: { id: row.id },
-      }).then((data) => {
-        if (data != 'error') {
-          this.setState({
-            editdata: data,
-            visible: true,
-          })
-          this.formRef.current.setFieldsValue({
-            title: data.title,
-            rank: data.rank,
-            content: data.content,
-          })
-        }
-      })
+      this.props
+        .dispatch({
+          type: 'announcement/get',
+          payload: { id: row.id },
+        })
+        .then(data => {
+          if (data != 'error') {
+            this.setState({
+              editdata: data,
+              visible: true,
+            });
+            this.formRef.current.setFieldsValue({
+              title: data.title,
+              rank: data.rank,
+              content: data.content,
+            });
+          }
+        });
     }
-  }
+  };
 
   handleClose = () => {
-    this.setState({ visible: false, editdata: null })
-  }
+    this.setState({ visible: false, editdata: null });
+  };
 
   handleSubmit = () => {
     this.formRef.current.validateFields().then(row => {
@@ -82,41 +87,43 @@ class Page extends Component {
       if (!isAdd) {
         row.id = this.state.editdata.id;
       }
-      this.props.dispatch({
-        type: isAdd ? 'announcement/add' : 'announcement/update',
-        payload: row,
-      }).then((data) => {
-        if (data != 'error') {
-          this.loadData();
-          this.handleClose()
-        }
-      });
-    })
-  }
+      this.props
+        .dispatch({
+          type: isAdd ? 'announcement/add' : 'announcement/update',
+          payload: row,
+        })
+        .then(data => {
+          if (data != 'error') {
+            this.loadData();
+            this.handleClose();
+          }
+        });
+    });
+  };
 
   handleSave = (row, id) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'announcement/update',
       payload: { id: id, ...row },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
-  handleDel = (id) => {
+  handleDel = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'announcement/update',
       payload: { id: id, deleted: 1 },
-    }).then((data) => {
+    }).then(data => {
       if (data != 'error') {
         this.loadData();
       }
     });
-  }
+  };
 
   render() {
     const { visible } = this.state;
@@ -127,12 +134,12 @@ class Page extends Component {
         <OperationGroup onAdd={() => this.setState({ visible: true })} />
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
+          dataSource={data.data}
           total={data ? data.total : 0}
           loading={listLoading || updateLoading}
-          onChange={(pagination) => {
+          onChange={pagination => {
             this.state.page = pagination.current;
-            this.loadData()
+            this.loadData();
           }}
           onSave={this.handleSave}
           onDelete={this.handleDel}
@@ -141,44 +148,36 @@ class Page extends Component {
         />
         <Modal
           title="添加"
-          okText='提交'
-          cancelText='取消'
+          okText="提交"
+          cancelText="取消"
           width={800}
           visible={visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={addLoading || updateLoading}
-        // destroyOnClose
+          // destroyOnClose
         >
-          <Form layout='vertical' ref={this.formRef}>
+          <Form layout="vertical" ref={this.formRef}>
             <Form.Item
               className={styles.formItem}
-              label='标题'
-              name='title'
+              label="标题"
+              name="title"
               rules={[{ required: true }]}
             >
               <Input maxLength={100} />
             </Form.Item>
 
-            <Form.Item
-              className={styles.formItem}
-              label='内容'
-              name='content'
-            >
-              <Editor placeholder='内容' onChange={this.handleChange} />
+            <Form.Item className={styles.formItem} label="内容" name="content">
+              <Editor placeholder="内容" onChange={this.handleChange} />
             </Form.Item>
 
-            <Form.Item
-              className={styles.formItem}
-              label='排序'
-              name='rank'
-            >
+            <Form.Item className={styles.formItem} label="排序" name="rank">
               <InputNumber style={{ width: '100%' }} min={0} />
             </Form.Item>
           </Form>
         </Modal>
       </div>
-    )
+    );
   }
 }
 
