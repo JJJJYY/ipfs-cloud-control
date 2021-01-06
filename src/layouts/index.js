@@ -63,13 +63,9 @@ class BasicLayout extends Component {
   }
 
   loadData = () => {
-    this.props
-      .dispatch({
-        type: 'sysuser/userMenu',
-      })
-      .then(result => {
-        console.log(result);
-      });
+    this.props.dispatch({
+      type: 'sysuser/userMenu',
+    });
   };
 
   handleMenuCollapse = () => {
@@ -139,9 +135,9 @@ class BasicLayout extends Component {
 
   render() {
     const { children, location, confirmLoading, isMobile, menu } = this.props;
-    console.log(children, location);
+
     const { collapsed, visible, modalData } = this.state;
-    console.log(location.pathname);
+
     // 登录页面用其他的Layout
     if (location.pathname === '/login') {
       return <UserLayout>{children}</UserLayout>;
@@ -203,7 +199,7 @@ class BasicLayout extends Component {
               isMobile={isMobile}
               logo={logo}
               currentUser={{
-                name: user && user.name,
+                name: user && user.username,
                 avatar:
                   'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
                 userid: user && user.id,

@@ -126,8 +126,8 @@ class Page extends Component {
     },
     {
       title: '创建人',
-      dataIndex: 'admin_user',
-      render: text => <div>{text.username}</div>,
+      dataIndex: 'user',
+      render: text => <div>{text.nick_name}</div>,
     },
     {
       title: '创建时间',
@@ -135,7 +135,8 @@ class Page extends Component {
     },
     {
       title: '审核人',
-      dataIndex: 'audit_user',
+      dataIndex: 'admin_user',
+      render: text => <div>{text.username}</div>,
     },
     {
       title: '审核时间',
@@ -314,9 +315,10 @@ class Page extends Component {
         }
       });
   };
-  handleGetInputValue = event => {
+  handleMaxBackUp = () => {
+    let aee = event.target.value;
     this.setState({
-      remark: event.target.value,
+      remark: aee,
     });
   };
   handleActions = (row, index) => {
@@ -375,8 +377,8 @@ class Page extends Component {
               </div>
               <div style={{ float: 'left', marginLeft: '8px' }}>
                 <Input
-                  onChange={this.handleGetInputValue}
-                  value={this.state.remark}
+                  onChange={event => this.handleMaxBackUp(event)}
+                  defaultValue=""
                   style={{ width: '260px', height: '60px' }}
                 />
               </div>
@@ -385,6 +387,7 @@ class Page extends Component {
         ),
         onOk: () => {
           const { remark } = this.state;
+          console.log(remark);
           return new Promise((resolve, reject) => {
             this.formRef.current
               .validateFields()
@@ -458,6 +461,7 @@ class Page extends Component {
         </div>
       ),
       onOk: () => {
+        console.log(this.stater.remark);
         return new Promise((resolve, reject) => {
           this.formRef.current
             .validateFields()

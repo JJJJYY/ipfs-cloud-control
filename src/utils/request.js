@@ -5,15 +5,18 @@ import { getAuthority } from '@/utils/authority';
 
 const fetchData = response => {
   return new Promise((resolve, reject) => {
+    console.log(response);
     let json = response;
-    console.log(json.code);
+    console.log(json.msg);
     let token = json.data.token;
-    if ((json.code = 200)) {
+    if (json.code == 200) {
       localStorage.getItem('token', token);
-    } else if (localStorage.getItem('', token)) {
-      history.location.pathname == '/login';
+    } else {
+      console.log(111);
       const errortext = json.msg;
+      console.log(errortext);
       message.error(errortext);
+      history.location.pathname == '/login';
       const error = new Error(errortext);
       error.name = json.ret;
       error.response = response;

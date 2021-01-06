@@ -46,6 +46,9 @@ class Page extends Component {
     keys: '',
     keyg: '',
     aid: 1,
+    sid: 1,
+    lus: '',
+    infoa: [],
     text: '确认上架吗?',
     info: [
       {
@@ -53,6 +56,15 @@ class Page extends Component {
         img: '',
         title: '',
         info: '',
+      },
+    ],
+    infos: [
+      {
+        id: 1,
+        img: '',
+        title: '',
+        info: '',
+        status: '',
       },
     ],
   };
@@ -219,8 +231,10 @@ class Page extends Component {
         },
       })
       .then(result => {
+        console.log(result.info);
         this.setState({
           ids: result,
+          lus: result.info,
           keyg: result.type.id,
           visible1: true,
         });
@@ -256,31 +270,31 @@ class Page extends Component {
     console.log(arr);
   };
   redactRemove = () => {
-    let arr = [...this.state.ids.info];
-    arr.pop();
+    let add = [...this.state.ids.info];
+    add.pop();
     this.setState({
-      info: arr,
+      lus: add,
     });
-    console.log(arr);
+    console.log(add);
   };
   redactAdd = () => {
-    console.log(this.state.ids.info);
+    console.log(this.state.infos);
     this.setState(
       {
-        aid: this.state.aid + 1,
+        sid: this.state.sid + 1,
       },
       () => {
-        let arr = [...this.state.ids.info];
-        arr.push({
-          id: this.state.aid,
+        let add = [...this.state.infos];
+        add.push({
+          id: this.state.sid,
           img: this.state.val3,
           title: this.state.val4,
           info: this.state.val5,
         });
         this.setState({
-          info: arr,
+          infos: add,
         });
-        console.log(arr);
+        console.log(this.state.infos);
       },
     );
   };
@@ -340,6 +354,7 @@ class Page extends Component {
 
   handleSubmit = () => {
     this.formRef.current.validateFields().then(row => {
+      console.log(row.info);
       row.info = this.state.info.slice(1);
       this.props
         .dispatch({
@@ -350,6 +365,23 @@ class Page extends Component {
           if (data != 'error') {
             this.loadData();
             this.handleClose();
+          }
+        });
+    });
+  };
+  handleSubmits = () => {
+    this.formRef.current.validateFields().then(row => {
+      console.log(row.info);
+      row.info = this.state.ids.info;
+      this.props
+        .dispatch({
+          type: 'goods/add',
+          payload: row,
+        })
+        .then(data => {
+          if (data != 'error') {
+            this.loadData();
+            this.readactCancel();
           }
         });
     });
@@ -413,7 +445,13 @@ class Page extends Component {
     });
   };
   render() {
-    const { previewVisible, previewImage, previewTitle } = this.state;
+    const {
+      previewVisible,
+      previewImage,
+      previewTitle,
+      val5,
+      val6,
+    } = this.state;
     const { visible } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const { Option } = Select;
@@ -637,7 +675,7 @@ class Page extends Component {
           <Modal
             title="编辑"
             visible={this.state.visible1}
-            onOk={this.handleSubmit}
+            onOk={this.handleSubmits}
             onCancel={this.readactCancel}
             destroyOnClose
           >
@@ -649,7 +687,7 @@ class Page extends Component {
             >
               <Form.Item
                 name="product_type_id"
-                initialValue={this.state.ids.type.product_type_name}
+                initialValue={this.state.ids.type.id}
                 label="商品名称"
                 className={styles.form_item}
                 rules={[
@@ -662,7 +700,7 @@ class Page extends Component {
                   {this.state.editdata > 0
                     ? this.state.editdata.map(item => {
                         return (
-                          <Option key={item.product_type_name}>
+                          <Option key={item.id}>
                             {item.product_type_name}
                           </Option>
                         );
@@ -750,24 +788,26 @@ class Page extends Component {
                           <div className={styles.form_right}>
                             <div className={styles.form_details_top}>
                               <Input
-                                readOnly={index == 0 ? false : true}
-                                value={
-                                  index == 0 ? this.state.val4 : item.title
-                                }
+                                // readOnly={index == 0 ? false : true}
+                                // index == 0 ? this.state.val4 :
+                                value={item.title}
+                                onChange={e => {
+                                  this.setState({ val4: e.target.value });
+                                }}
                                 className={styles.form_details_title}
                                 placeholder="容量"
                               />
                               <Button
                                 onClick={this.redactAdd}
-                                disabled={index == 0 ? false : true}
+                                disabled
                                 type="primary"
                                 className={styles.form_bottom1}
                               >
-                                添加
+                                修改
                               </Button>
                               <Button
                                 type="primary"
-                                disabled={index == 0 ? false : true}
+                                // disabled={index == 0 ? false : true}
                                 className={styles.form_bottom2}
                                 onClick={this.redactRemove}
                                 danger
@@ -776,9 +816,12 @@ class Page extends Component {
                               </Button>
                             </div>
                             <Input
-                              value={index == 0 ? this.state.val5 : item.info}
+                              // index == 0 ? this.state.val5 :
                               value={item.info}
-                              readOnly={index == 0 ? false : true}
+                              onChange={e => {
+                                this.setState({ val5: e.target.value });
+                              }}
+                              // readOnly={index == 0 ? false : true}
                               className={styles.form_details_input}
                               placeholder="稳定高容量,有多种容量可选"
                             />

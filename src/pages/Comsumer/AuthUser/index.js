@@ -68,6 +68,8 @@ class Page extends Component {
       render: (text, a) => (
         <div>
           <Switch
+            checkedChildren="正常"
+            unCheckedChildren="冻结"
             defaultChecked={text}
             onChange={() => {
               this.onChangeStatus(text, a);
@@ -141,10 +143,8 @@ class Page extends Component {
     let status;
     if (e == 0) {
       status = 1;
-      message.success('账号已解冻');
     } else {
       status = 0;
-      message.info('账号已冻结');
     }
     this.props.dispatch({
       type: 'authUser/updateStatus',
