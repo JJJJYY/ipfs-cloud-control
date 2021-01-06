@@ -35,6 +35,7 @@ class Page extends Component {
     order_code: '',
     price: '',
     amount: '',
+    remark: '',
     discount: '',
     selectedRowKeys: [],
   };
@@ -313,7 +314,11 @@ class Page extends Component {
         }
       });
   };
-
+  handleGetInputValue = event => {
+    this.setState({
+      remark: event.target.value,
+    });
+  };
   handleActions = (row, index) => {
     console.log(row);
     if (index == 0) {
@@ -347,13 +352,13 @@ class Page extends Component {
               >
                 <div>账号：{row.admin_user.username}</div>
                 <div>商品名称: {row.group.product_group_name} </div>
-                <div>订单金额: {row.product_amount} </div>
+                <div>订单金额: {row.total_amount} </div>
               </div>
             </div>
             <Form ref={this.formRef}>
               <FormItem
                 label="审核"
-                defaultValue={row.audit_status}
+                name="audit_status"
                 rules={[{ required: true, message: `请选择` }]}
               >
                 <Radio.Group>
@@ -370,7 +375,8 @@ class Page extends Component {
               </div>
               <div style={{ float: 'left', marginLeft: '8px' }}>
                 <Input
-                  value={row.remark}
+                  onChange={this.handleGetInputValue}
+                  value={this.state.remark}
                   style={{ width: '260px', height: '60px' }}
                 />
               </div>
@@ -378,16 +384,18 @@ class Page extends Component {
           </div>
         ),
         onOk: () => {
+          const { remark } = this.state;
           return new Promise((resolve, reject) => {
             this.formRef.current
               .validateFields()
               .then(values => {
                 this.props
                   .dispatch({
-                    type: 'replenishmentRecord/Audit',
+                    type: 'replenishmentRecord/auditUpdate',
                     payload: {
                       id: row.id,
                       ...values,
+                      remark: remark,
                     },
                   })
                   .then(data => {

@@ -204,9 +204,9 @@ export async function replenishmentRecordAdd(params) {
   return request.post('staff/order/add', params);
 }
 
-// export async function replenishmentRecordUpdate(params) {
-//   return request.post('staff/order/audit_info', params);
-// }
+export async function replenishmentRecordauditUpdate(params) {
+  return request.post('staff/order/audit', params);
+}
 
 export async function replenishmentRecordUpdate(params) {
   return request.post('staff/order/edit', params);

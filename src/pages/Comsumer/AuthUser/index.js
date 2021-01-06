@@ -340,10 +340,8 @@ class Page extends Component {
         <SearchGroup
           onSearch={e => {
             console.log(e);
-            this.setState({
-              page,
-              ...e,
-            });
+            this.state.page = 1;
+            this.state.search = e;
             this.loadData();
           }}
           items={[

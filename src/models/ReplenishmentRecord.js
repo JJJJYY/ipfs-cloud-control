@@ -22,6 +22,9 @@ export default {
     *update({ payload }, { call }) {
       return yield call(api.replenishmentRecordUpdate, payload);
     },
+    *auditUpdate({ payload }, { call }) {
+      return yield call(api.replenishmentRecordauditUpdate, payload);
+    },
 
     *batchAudit({ payload }, { call }) {
       return yield call(api.replenishmentRecordBatchAudit, payload);
