@@ -259,6 +259,7 @@ class Page extends Component {
             this.setState({
               ids: result,
               keyg: result.type.id,
+              lus: result.info,
               visible1: true,
             });
           });
@@ -322,7 +323,7 @@ class Page extends Component {
 
   handleSubmit = () => {
     this.formRef.current.validateFields().then(row => {
-      row.info = this.state.info;
+      row.info = this.state.lus;
       console.log(row);
       this.props
         .dispatch({
@@ -340,8 +341,8 @@ class Page extends Component {
   handleSubmits = () => {
     this.formRef.current.validateFields().then(row => {
       const { rdd } = this.state;
-      console.log('rdd', rdd);
-      row.info = this.state.ids.info;
+      console.log('rdd', this.state.lus);
+      row.info = this.state.lus;
       this.props
         .dispatch({
           type: 'goods/add',
@@ -447,8 +448,11 @@ class Page extends Component {
     const onFinish = values => {
       console.log('Received values of form:', values);
       message.success('添加成功');
+      // values.info.forEach(e => {
+      //   e.id = Date.parse(new Date())
+      // });
       this.setState({
-        info: values.info,
+        lus: values.info,
       });
     };
     return (
@@ -863,7 +867,6 @@ class Page extends Component {
                             style={{ display: 'flex', marginBottom: 8 }}
                             align="baseline"
                           >
-                            {console.log('2222', field)}
                             <div className={styles.form_List}>
                               <div className={styles.form_List1}>
                                 <Form.Item
