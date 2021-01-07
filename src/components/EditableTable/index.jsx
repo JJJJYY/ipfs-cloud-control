@@ -18,21 +18,36 @@ const EditableCell = ({
           style={{ margin: 0 }}
           name={dataIndex}
           valuePropName={valuePropName}
-          rules={[{
-            required: required,
-            message: `输入${title}`
-          }]}
+          rules={[
+            {
+              required: required,
+              message: `输入${title}`,
+            },
+          ]}
         >
           {custom ? custom(record) : <Input style={{ minWidth: 120 }} />}
         </Form.Item>
       ) : (
-          restProps.children
-        )}
+        restProps.children
+      )}
     </td>
-  )
-}
+  );
+};
 
-const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total, current, loading, onChange, pagination, rowKey, rowSelection }) => {
+const EditableTable = ({
+  onSave,
+  onDelete,
+  onActions,
+  dataSource,
+  columns,
+  total,
+  current,
+  loading,
+  onChange,
+  pagination,
+  rowKey,
+  rowSelection,
+}) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
 
@@ -45,18 +60,17 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
     setEditingKey(record.id);
   };
 
-  const save = (id) => {
+  const save = id => {
     form.validateFields().then(row => {
       if (onSave) onSave(row, id);
       setEditingKey('');
     });
-  }
+  };
 
   const handleMenuClick = (record, index) => {
     if (index == -1) {
-      edit(record)
+      edit(record);
       return;
-
     } else if (index == -2) {
       Modal.confirm({
         title: '删除?',
@@ -71,19 +85,19 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
       return;
     }
     if (onActions) onActions(record, index);
-  }
+  };
 
   const ecolumns = columns.map(col => {
     if (col.operation) {
       return {
         ...col,
-        render: (record) => {
+        render: record => {
           const editable = isEditing(record);
-
           var actionCount = 0;
           if (col.showEdit) actionCount++;
           if (col.showDelete) actionCount++;
-          if (col.actions && col.actions(record).length) actionCount += col.actions(record).length;
+          if (col.actions && col.actions(record).length)
+            actionCount += col.actions(record).length;
           return (
             <div>
               {editable ? (
@@ -103,47 +117,61 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
                   </a>
                 </span>
               ) : (
-                  <span>
-                    {actionCount > 1 ?
-                      (
-                        <Dropdown disabled={editingKey !== ''} trigger={['click']} overlay={
-                          <Menu onClick={(e) => handleMenuClick(record, e.key)}>
-                            {col.showEdit &&
-                              <Menu.Item key={-1} >
-                                编辑
-                            </Menu.Item>
-                            }{col.showDelete &&
-                              <Menu.Item key={-2} >
-                                删除
-                            </Menu.Item>
-                            }
-                            {(col.showEdit || col.showDelete) && col.actions && <Menu.Divider />}
-                            {col.actions && col.actions(record).map((title, index) => (
-                              <Menu.Item key={index} >
-                                {title}
-                              </Menu.Item>
-                            ))}
-                          </Menu>
-                        }>
+                <span>
+                  {actionCount > 1 ? (
+                    <Dropdown
+                      disabled={editingKey !== ''}
+                      trigger={['click']}
+                      overlay={
+                        <Menu onClick={e => handleMenuClick(record, e.key)}>
+                          {col.showEdit && <Menu.Item key={-1}>编辑</Menu.Item>}
+                          {col.showDelete && (
+                            <Menu.Item key={-2}>删除</Menu.Item>
+                          )}
+                          {(col.showEdit || col.showDelete) && col.actions && (
+                            <Menu.Divider />
+                          )}
+                          {col.actions &&
+                            col
+                              .actions(record)
+                              .map((title, index) => (
+                                <Menu.Item key={index}>{title}</Menu.Item>
+                              ))}
+                        </Menu>
+                      }
+                    >
+                      <div>
+                        {// 隐藏
+                        col.statusShow && col.statusShow(record) ? null : (
                           <a>更多</a>
-                        </Dropdown>
-                      ) : (
-                        <span>
-                          {col.showEdit &&
-                            <a disabled={editingKey !== ''} onClick={() => edit(record)}>编辑</a>
-                          }{col.showDelete &&
-                            <a onClick={() => handleMenuClick(record, -2)}>删除</a>
-                          }{col.actions && col.actions(record).length != 0 &&
-                            <a onClick={() => handleMenuClick(record, 0)}>{col.actions(record)[0]}</a>
-                          }
-                        </span>
-                      )
-                    }
-                  </span>
-                )}
+                        )}
+                      </div>
+                    </Dropdown>
+                  ) : (
+                    <span>
+                      {col.showEdit && (
+                        <a
+                          disabled={editingKey !== ''}
+                          onClick={() => edit(record)}
+                        >
+                          编辑
+                        </a>
+                      )}
+                      {col.showDelete && (
+                        <a onClick={() => handleMenuClick(record, -2)}>删除</a>
+                      )}
+                      {col.actions && col.actions(record).length != 0 && (
+                        <a onClick={() => handleMenuClick(record, 0)}>
+                          {col.actions(record)[0]}
+                        </a>
+                      )}
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
           );
-        }
+        },
       };
     }
     if (!col.editable) {
@@ -158,8 +186,8 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
         required: col.required,
         custom: col.custom,
         valuePropName: col.valuePropName,
-        editing: isEditing(record)
-      })
+        editing: isEditing(record),
+      }),
     };
   });
 
@@ -169,7 +197,7 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
   } else {
     page = {
       total: parseInt(total),
-      showTotal: (total) => {
+      showTotal: total => {
         return `总数:${total}`;
       },
     };
@@ -183,7 +211,7 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
       <Table
         style={{ backgroundColor: 'white' }}
         scroll={{ x: 'max-content' }}
-        tableLayout='auto'
+        tableLayout="auto"
         components={{
           body: {
             cell: EditableCell,
@@ -198,7 +226,7 @@ const EditableTable = ({ onSave, onDelete, onActions, dataSource, columns, total
         rowSelection={rowSelection}
       />
     </Form>
-  )
-}
+  );
+};
 
 export default EditableTable;

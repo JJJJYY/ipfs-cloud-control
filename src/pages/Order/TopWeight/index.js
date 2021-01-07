@@ -147,6 +147,11 @@ class Page extends Component {
       showEdit: true,
       width: 60,
       fixed: 'right',
+      statusShow(e) {
+        // 隐藏
+        let show = e.status == 0;
+        return show;
+      },
       actions() {
         return ['详情'];
       },
@@ -286,6 +291,7 @@ class Page extends Component {
             },
           ]}
         />
+        {/* 订单列表 */}
         <EditableTable
           columns={this.columns}
           dataSource={data.data}

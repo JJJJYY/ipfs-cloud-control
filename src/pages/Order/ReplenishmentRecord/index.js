@@ -148,6 +148,11 @@ class Page extends Component {
       showEdit: true,
       width: 60,
       fixed: 'right',
+      statusShow(e) {
+        // 隐藏
+        let show = e.audit_status == 2;
+        return show;
+      },
       actions(record) {
         return record.audit_status == 0
           ? ['审核']
