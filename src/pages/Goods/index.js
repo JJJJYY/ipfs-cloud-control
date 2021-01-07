@@ -27,7 +27,7 @@ const Option = Select.Option;
 class Page extends Component {
   state = {
     page: 1,
-    to: 10,
+    count: 10,
     visible: false,
     visible1: false,
     editdata: [],
@@ -87,10 +87,27 @@ class Page extends Component {
       dataIndex: 'introduction',
     },
     {
-      title: '售价',
+      title: '单价/元',
       dataIndex: 'price',
       render: text => <div>{parseFloat(text)}</div>,
     },
+    // {
+    //   title: '状态',
+    //   dataIndex: 'status',
+
+    //   render(text) {
+    //     return (
+    //       <div>
+    //         {
+    //           [
+    //             <Tag color="black">上架</Tag>,
+    //             <Tag color="black">下架</Tag>,
+    //           ][text]
+    //         }
+    //       </div>
+    //     );
+    //   }
+    // },
     {
       title: '状态',
       dataIndex: 'status',
@@ -205,7 +222,7 @@ class Page extends Component {
       type: 'goods/queryList',
       payload: {
         page: this.state.page,
-        to: this.state.to,
+        count: this.state.count,
       },
     });
   };
@@ -531,7 +548,7 @@ class Page extends Component {
             </Form.Item>
             <Form.Item
               name="price"
-              label="单价/台"
+              label="单价/T"
               rules={[
                 {
                   required: true,
@@ -567,6 +584,7 @@ class Page extends Component {
             >
               <Input className={styles.form_input} />
             </Form.Item>
+
             <Form.Item name="info" label="详情">
               <Collapse className={styles.form_Collapse}>
                 <Panel
@@ -591,7 +609,7 @@ class Page extends Component {
                           <>
                             <Upload
                               disabled={index == 0 ? false : true}
-                              name={index == 0 ? this.state.val3 : item.img}
+                              name={item.img}
                               limit={1}
                             ></Upload>
                             <Modal
@@ -687,7 +705,19 @@ class Page extends Component {
             >
               <Form.Item
                 name="product_type_id"
-                initialValue={this.state.ids.type.id}
+                initialValue={
+                  this.state.ids.type.id == 1
+                    ? '分布式存储服务器'
+                    : this.state.ids.type.id == 2
+                    ? 'FIL集群管理软件'
+                    : this.state.ids.type.id == 3
+                    ? 'MineOS存储管理软件'
+                    : this.state.ids.type.id == 4
+                    ? '数据封装服务'
+                    : this.state.ids.type.id == 5
+                    ? '设备托管服务'
+                    : ''
+                }
                 label="商品名称"
                 className={styles.form_item}
                 rules={[
@@ -847,8 +877,8 @@ class Page extends Component {
                   onChange={this.onChange}
                   value={this.state.ids.status}
                 >
-                  <Radio value={2}>上架</Radio>
-                  <Radio value={1}>下架</Radio>
+                  <Radio value={1}>上架</Radio>
+                  <Radio value={2}>下架</Radio>
                 </Radio.Group>
               </Form.Item>
             </Form>

@@ -32,6 +32,7 @@ class Page extends Component {
     id: '',
     user: '',
     status: '',
+    search: null,
     product_name: '',
     order_code: '',
     timeStart: '',
@@ -117,16 +118,10 @@ class Page extends Component {
       custom() {
         return (
           <Select>
-            <Option disabled value={0}>
-              未付款
-            </Option>
-            <Option disabled value={1}>
-              已付款
-            </Option>
+            <Option value={0}>未付款</Option>
+            <Option value={1}>已付款</Option>
             <Option value={2}>关闭</Option>
-            <Option disabled value={3}>
-              超时
-            </Option>
+            <Option value={3}>超时</Option>
           </Select>
         );
       },
@@ -191,27 +186,13 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const {
-      page,
-      count,
-      user,
-      status,
-      timeEnd,
-      timeStart,
-      product_name,
-      order_code,
-    } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'weight/queryTopList',
       payload: {
         page: page,
         count: count,
-        status: status,
-        timeEnd: timeEnd,
-        timeStart: timeStart,
-        product_name: product_name,
-        order_code: order_code,
-        user: user,
+        search: search,
         number: 1,
       },
     });
@@ -279,10 +260,8 @@ class Page extends Component {
             //     e.time[1].format('YYYY-MM-DD'),
             //   ];
             // }
-            this.setState({
-              page: page,
-              ...e,
-            });
+            this.state.search = e;
+            this.state.page = 1;
             this.loadData();
           }}
           items={[

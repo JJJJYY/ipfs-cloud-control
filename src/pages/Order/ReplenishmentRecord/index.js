@@ -31,6 +31,7 @@ class Page extends Component {
     count: 10,
     user: '',
     status: '',
+    search: null,
     product_name: '',
     order_code: '',
     price: '',
@@ -136,7 +137,6 @@ class Page extends Component {
     {
       title: '审核人',
       dataIndex: 'admin_user',
-      render: text => <div>{text.username}</div>,
     },
     {
       title: '审核时间',
@@ -153,7 +153,11 @@ class Page extends Component {
       width: 60,
       fixed: 'right',
       actions(record) {
-        return record.audit_status == 0 ? ['审核'] : [];
+        return record.audit_status == 0
+          ? ['审核']
+          : [''] || record.audit_status == 2
+          ? ['']
+          : [''];
       },
     },
   ];
@@ -258,27 +262,13 @@ class Page extends Component {
   }
 
   loadData = () => {
-    const {
-      page,
-      count,
-      user,
-      status,
-      timeEnd,
-      timeStart,
-      product_name,
-      order_code,
-    } = this.state;
+    const { page, count, search } = this.state;
     this.props.dispatch({
       type: 'replenishmentRecord/queryList',
       payload: {
         page: page,
         count: count,
-        status: status,
-        timeEnd: timeEnd,
-        timeStart: timeStart,
-        product_name: product_name,
-        order_code: order_code,
-        user: user,
+        search: search,
         type: 2,
       },
     });
@@ -516,10 +506,8 @@ class Page extends Component {
             //     e.time[1].format('YYYY-MM-DD'),
             //   ];
             // }
-            this.setState({
-              page,
-              ...e,
-            });
+            this.state.search = e;
+            this.state.page = 1;
             this.loadData();
           }}
           items={[
@@ -534,13 +522,13 @@ class Page extends Component {
               name: 'product_name',
             },
             {
-              label: '支付状态',
-              name: 'status',
+              label: '状态',
+              name: 'audit_status',
               custom: (
                 <Select>
-                  <Option value={0}>已取消</Option>
-                  <Option value={1}>已下单</Option>
-                  <Option value={2}>已完成</Option>
+                  <Option value={0}>待审核</Option>
+                  <Option value={1}>已通过</Option>
+                  <Option value={2}>已拒绝</Option>
                 </Select>
               ),
             },

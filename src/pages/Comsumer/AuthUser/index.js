@@ -112,12 +112,10 @@ class Page extends Component {
     {
       title: '支付时间',
       dataIndex: 'pay_time',
-      render: text => <div>{parseFloat(text)} TB</div>,
     },
     {
       title: '付款金额',
       dataIndex: 'total_amount',
-      render: text => <div>{parseFloat(text)} TB</div>,
     },
     {
       title: '状态',
