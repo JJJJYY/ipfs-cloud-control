@@ -84,7 +84,7 @@ class Page extends Component {
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
       custom() {
-        return <InputNumber min={0.0} step={0.1} />;
+        return <InputNumber min={0.1} max={1} step={0.1} />;
       },
     },
     {
@@ -124,7 +124,7 @@ class Page extends Component {
     {
       title: '创建人',
       dataIndex: 'user',
-      render: text => <div>{text.nick_name}</div>,
+      render: text => <div>{text.user_name}</div>,
     },
     {
       title: '创建时间',
@@ -132,7 +132,7 @@ class Page extends Component {
     },
     {
       title: '审核人',
-      dataIndex: 'admin_user',
+      dataIndex: 'audit_user',
     },
     {
       title: '审核时间',
@@ -140,7 +140,7 @@ class Page extends Component {
     },
     {
       title: '备注',
-      key: 'remark',
+      dataIndex: 'remark',
     },
     {
       title: '操作',
@@ -338,7 +338,7 @@ class Page extends Component {
                   marginBottom: '24px',
                 }}
               >
-                <div>账号：{row.admin_user.username}</div>
+                <div>账号：{row.user.user_name}</div>
                 <div>商品名称: {row.group.product_group_name} </div>
                 <div>订单金额: {row.total_amount} </div>
               </div>
@@ -483,6 +483,8 @@ class Page extends Component {
   render() {
     const { visible, page, count, search, selectedRowKeys } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
+    console.log(addLoading);
+
     const rowSelection =
       search && search.status == 0
         ? {
@@ -530,7 +532,7 @@ class Page extends Component {
             },
             {
               label: '日期',
-              name: 'created_at',
+              name: 'timeStart',
               custom: <DatePicker.RangePicker />,
             },
           ]}

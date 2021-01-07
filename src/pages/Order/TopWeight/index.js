@@ -88,7 +88,7 @@ class Page extends Component {
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
       custom() {
-        return <InputNumber min={0} max={1} step={0.1} />;
+        return <InputNumber min={0.1} max={1} step={0.1} />;
       },
     },
     {
@@ -118,10 +118,9 @@ class Page extends Component {
       custom() {
         return (
           <Select>
-            <Option value={0}>未付款</Option>
-            <Option value={1}>已付款</Option>
-            <Option value={2}>关闭</Option>
-            <Option value={3}>超时</Option>
+            <Option value={0}>已取消</Option>
+            <Option value={1}>已下单</Option>
+            <Option value={2}>已完成</Option>
           </Select>
         );
       },
@@ -154,7 +153,7 @@ class Page extends Component {
   ];
   columnsReward = [
     {
-      title: '商品名称',
+      title: '产品名称',
       dataIndex: 'product_name',
     },
     {
@@ -164,7 +163,7 @@ class Page extends Component {
     {
       title: '单价',
       dataIndex: 'price',
-      render: text => <div>{text}元/T</div>,
+      render: text => <div>{text}元/台</div>,
     },
     {
       title: '数量',
@@ -173,11 +172,7 @@ class Page extends Component {
     {
       title: '小计',
       dataIndex: 'total_amount',
-    },
-    {
-      title: '订单状态',
-      dataIndex: 'grandchildren_purchase',
-      render: text => <div>已完成</div>,
+      render: text => <div style={{ color: 'orange' }}>¥{text}</div>,
     },
   ];
 
@@ -318,13 +313,18 @@ class Page extends Component {
                 />
               </Col>
               <Col span={12}>
+                <DescriptionItem title="UID" content={this.state.ids.id} />
+              </Col>
+            </Row>
+            <Divider>收货信息</Divider>
+
+            <Row>
+              <Col span={12}>
                 <DescriptionItem
                   title="姓名"
                   content={this.state.ids.user.user_name}
                 />
               </Col>
-            </Row>
-            <Row>
               <Col span={12}>
                 <DescriptionItem
                   title="手机"
@@ -335,11 +335,7 @@ class Page extends Component {
                 <DescriptionItem title="备注" content={this.state.ids.remark} />
               </Col>
             </Row>
-            <Row>
-              <Col span={12}>
-                <DescriptionItem title="UID" content={this.state.ids.id} />
-              </Col>
-            </Row>
+
             <Divider>订单记录</Divider>
             <Row>
               <Col span={12}>
@@ -384,8 +380,22 @@ class Page extends Component {
                   content={this.state.ids.updated_at}
                 />
               </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="订单状态"
+                  content={
+                    this.state.ids.status == 0
+                      ? '已取消'
+                      : this.state.ids.status == 1
+                      ? '已下单'
+                      : this.state.ids.status == 2
+                      ? '已完成'
+                      : ''
+                  }
+                />
+              </Col>
             </Row>
-            <Divider>产品信息</Divider>
+            <Divider>产品名称</Divider>
             <div style={{ width: '100%' }}>
               <Table
                 columns={this.columnsReward}
