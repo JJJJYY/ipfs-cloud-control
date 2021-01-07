@@ -206,7 +206,7 @@ class Page extends Component {
               name="name"
               rules={[{ required: true }]}
             >
-              <Input maxLength={100} />
+              <Input allowClear maxLength={100} />
             </Form.Item>
 
             {sourceType == 1 && (
@@ -234,11 +234,11 @@ class Page extends Component {
               name="path"
               rules={[{ required: true }]}
             >
-              <Input maxLength={100} />
+              <Input allowClear maxLength={100} />
             </Form.Item>
 
             <Form.Item className={styles.formItem} label="菜单图标" name="icon">
-              <Input maxLength={100} />
+              <Input allowClear maxLength={100} />
             </Form.Item>
 
             <div className={styles.formDiv}>

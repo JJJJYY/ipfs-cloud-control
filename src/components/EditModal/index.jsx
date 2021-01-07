@@ -49,7 +49,11 @@ export default class EditModal extends Component {
               {...this.formLayout}
               key={data.key}
             >
-              {data.custom ? data.custom(data.value) : <Input placeholder="" />}
+              {data.custom ? (
+                data.custom(data.value)
+              ) : (
+                <Input allowClear placeholder="" />
+              )}
             </FormItem>
           ))}
         </Form>

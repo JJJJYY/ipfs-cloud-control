@@ -128,10 +128,12 @@ class Page extends Component {
     {
       title: '跳转链接',
       key: 'url',
+      required: true,
     },
     {
       title: '顺序',
       key: 'rank',
+      required: true,
       custom() {
         return <InputNumber style={{ width: '100%' }} min={1} />;
       },
