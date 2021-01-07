@@ -12,8 +12,10 @@ import {
   Tag,
   Button,
   Collapse,
+  Space,
   Radio,
 } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -463,6 +465,11 @@ class Page extends Component {
       keys: key,
     });
   };
+
+  handleSubmit = e => {
+    console.log(e);
+  };
+
   render() {
     const {
       previewVisible,
@@ -483,9 +490,7 @@ class Page extends Component {
         span: 16,
       },
     };
-    const Demo = () => {
-      const [form] = Form.useForm();
-    };
+
     function getBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -596,8 +601,87 @@ class Page extends Component {
             >
               <Input className={styles.form_input} />
             </Form.Item>
-
-            <Form.Item name="info" label="详情">
+            <div>
+              <Form
+                name="dynamic_form_nest_item"
+                onSubmit={this.handleSubmit}
+                autoComplete="off"
+              >
+                <Form.List name="users">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map(field => (
+                        <Space
+                          key={field.key}
+                          style={{ display: 'flex', marginBottom: 8 }}
+                          align="baseline"
+                        >
+                          <div className={styles.form_List}>
+                            <div className={styles.form_List1}>
+                              <Form.Item
+                                {...field}
+                                name={[field.name, 'img']}
+                                fieldKey={[field.fieldKey, 'img']}
+                                rules={[
+                                  { required: true, message: '请上传图片' },
+                                ]}
+                              >
+                                <Upload limit={1}></Upload>
+                              </Form.Item>
+                            </div>
+                            <div className={styles.form_List2}>
+                              <Form.Item
+                                {...field}
+                                style={{ width: '340px' }}
+                                name={[field.name, 'first']}
+                                fieldKey={[field.fieldKey, 'first']}
+                                rules={[
+                                  { required: true, message: '请输入容量' },
+                                ]}
+                              >
+                                <Input
+                                  style={{ width: '340px' }}
+                                  placeholder="First Name"
+                                />
+                              </Form.Item>
+                              <Form.Item
+                                {...field}
+                                style={{ marginTop: '15px' }}
+                                name={[field.name, 'last']}
+                                fieldKey={[field.fieldKey, 'last']}
+                                rules={[
+                                  { required: true, message: '请输入多种容量' },
+                                ]}
+                              >
+                                <Input placeholder="Last Name" />
+                              </Form.Item>
+                            </div>
+                          </div>
+                          <MinusCircleOutlined
+                            onClick={() => remove(field.name)}
+                          />
+                        </Space>
+                      ))}
+                      <Form.Item>
+                        <Button onClick={() => add()} block>
+                          添加
+                        </Button>
+                      </Form.Item>
+                    </>
+                  )}
+                </Form.List>
+                <Form.Item>
+                  <Button
+                    style={{ width: '100%' }}
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    确定
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
+            {/* <Form.Item name="info" label="详情">
               <Collapse className={styles.form_Collapse}>
                 <Panel
                   header={
@@ -684,7 +768,7 @@ class Page extends Component {
                   })}
                 </Panel>
               </Collapse>
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               name="status"
               label="状态"
@@ -805,7 +889,7 @@ class Page extends Component {
               >
                 <Input className={styles.form_input} />
               </Form.Item>
-              <Form.Item
+              {/* <Form.Item
                 className={styles.form_item}
                 name="details"
                 label="详情"
@@ -879,7 +963,7 @@ class Page extends Component {
                     })}
                   </Panel>
                 </Collapse>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item
                 className={styles.form_item}
                 name="status"
