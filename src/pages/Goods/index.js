@@ -30,7 +30,7 @@ class Page extends Component {
     count: 10,
     visible: false,
     visible1: false,
-    editdata: [],
+    editdata: null,
     modal2Visible: false,
     previewVisible: false,
     previewImage: '',
@@ -232,6 +232,7 @@ class Page extends Component {
         type: 'goods/get',
       })
       .then(data => {
+        console.log(data);
         this.setState({
           editdata: data,
         });
