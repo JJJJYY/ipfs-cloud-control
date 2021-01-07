@@ -2,7 +2,6 @@ import request from './request';
 
 export function post(api, data) {
   let url = '/api/' + api;
-  console.log(url);
   return request(url, {
     method: 'POST',
     data: {

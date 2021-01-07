@@ -167,7 +167,7 @@ class BasicLayout extends Component {
       }
     }
 
-    const user = getAuthority();
+    const user = getAuthority().user;
     const width = this.getHeadWidth();
     const contentClassName = classNames(styles.content, {
       [styles.isMobile]: isMobile,

@@ -5,10 +5,13 @@ import { getAuthority } from '@/utils/authority';
 
 const fetchData = response => {
   return new Promise((resolve, reject) => {
-    console.log(response);
     let json = response;
-    console.log(json.msg);
+    console.log(response);
     let token = json.data.token;
+    if (response.code == 403) {
+      console.log('41111');
+      // history.location.pathname == '/login';
+    }
     if (json.code == 200) {
       localStorage.getItem('token', token);
     } else {

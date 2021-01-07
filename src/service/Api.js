@@ -2,7 +2,6 @@ import * as request from '../utils/reqGenerator';
 
 // ----------------------- SysUser -----------------------
 export async function sysUserLogin(params) {
-  console.log(params);
   return request.post('staff/user/login', params);
 }
 
