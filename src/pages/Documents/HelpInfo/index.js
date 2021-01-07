@@ -77,13 +77,12 @@ class Page extends Component {
               editdata: data,
               visible: true,
             });
-            this.formRef.current &&
-              this.formRef.current.setFieldsValue({
-                title: data.title,
-                rank: data.rank,
-                is_enable: data.is_enable,
-                content: data.content,
-              });
+            this.formRef.current.setFieldsValue({
+              title: data.title,
+              rank: data.rank,
+              is_enable: data.is_enable,
+              content: data.content,
+            });
           }
         });
     }
@@ -165,6 +164,7 @@ class Page extends Component {
           cancelText="取消"
           width={800}
           visible={visible}
+          forceRender={true}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={addLoading || updateLoading}

@@ -47,8 +47,7 @@ class Page extends Component {
     val6: '',
     keys: '',
     keyg: '',
-    aid: 1,
-    sid: 1,
+    rdd: '',
     aiids: '',
     lus: [],
     infoa: [],
@@ -243,82 +242,30 @@ class Page extends Component {
   };
 
   handleAction = id => {
-    let aid = id.id;
-    this.props
-      .dispatch({
-        type: 'goods/List',
-        payload: {
-          id: aid,
-        },
-      })
-      .then(result => {
-        console.log(result.info);
-        this.setState({
-          ids: result,
-          lus: result.info,
-          keyg: result.type.id,
-          visible1: true,
-        });
-      });
-  };
-  detailAdd = () => {
-    console.log(this.state.val1);
     this.setState(
       {
-        aid: this.state.aid + 1,
+        rdd: id.id,
       },
       () => {
-        let arr = [...this.state.info];
-        arr.push({
-          id: this.state.aid,
-          img: this.state.val3,
-          title: this.state.val1,
-          info: this.state.val2,
-        });
-        this.setState({
-          info: arr,
-        });
-        console.log(arr);
+        this.props
+          .dispatch({
+            type: 'goods/List',
+            payload: {
+              id: id.id,
+            },
+          })
+          .then(result => {
+            console.log(result);
+            this.setState({
+              ids: result,
+              keyg: result.type.id,
+              visible1: true,
+            });
+          });
       },
     );
   };
-  detailRemove = () => {
-    let arr = [...this.state.info];
-    arr.pop();
-    this.setState({
-      info: arr,
-    });
-    console.log(arr);
-  };
-  redactRemove = () => {
-    let add = [...this.state.ids.info];
-    add.pop();
-    this.setState({
-      lus: add,
-    });
-    console.log(add);
-  };
-  redactAdd = () => {
-    console.log(this.state.infos);
-    this.setState(
-      {
-        sid: this.state.sid + 1,
-      },
-      () => {
-        let add = [...this.state.infos];
-        add.push({
-          id: this.state.sid,
-          img: this.state.val3,
-          title: this.state.val4,
-          info: this.state.val5,
-        });
-        this.setState({
-          infos: add,
-        });
-        console.log(this.state.infos);
-      },
-    );
-  };
+
   handleActions = () => {
     // 添加
     this.setState({
@@ -392,12 +339,16 @@ class Page extends Component {
   };
   handleSubmits = () => {
     this.formRef.current.validateFields().then(row => {
-      console.log(row.info);
+      const { rdd } = this.state;
+      console.log('rdd', rdd);
       row.info = this.state.ids.info;
       this.props
         .dispatch({
           type: 'goods/add',
-          payload: row,
+          payload: {
+            ...row,
+            id: rdd,
+          },
         })
         .then(data => {
           if (data != 'error') {
@@ -805,29 +756,24 @@ class Page extends Component {
             onCancel={this.readactCancel}
             destroyOnClose
           >
-            <Form
-              className={styles.ant_form}
-              {...layout}
-              ref={this.formRef}
-              name="control-hooks"
-            >
+            <Form {...layout} ref={this.formRef} name="control-hooks">
               <Form.Item
                 name="product_type_id"
                 initialValue={
-                  this.state.ids.type.id == 1
-                    ? '分布式存储服务器'
-                    : this.state.ids.type.id == 2
-                    ? 'FIL集群管理软件'
-                    : this.state.ids.type.id == 3
-                    ? 'MineOS存储管理软件'
-                    : this.state.ids.type.id == 4
-                    ? '数据封装服务'
-                    : this.state.ids.type.id == 5
-                    ? '设备托管服务'
-                    : ''
+                  this.state.ids.type.id
+                  // == 1
+                  //   ? '分布式存储服务器'
+                  //   : this.state.ids.type.id == 2
+                  //   ? 'FIL集群管理软件'
+                  //   : this.state.ids.type.id == 3
+                  //   ? 'MineOS存储管理软件'
+                  //   : this.state.ids.type.id == 4
+                  //   ? '数据封装服务'
+                  //   : this.state.ids.type.id == 5
+                  //   ? '设备托管服务'
+                  //   : ''
                 }
                 label="商品名称"
-                className={styles.form_item}
                 rules={[
                   {
                     required: true,
@@ -847,7 +793,6 @@ class Page extends Component {
                 </Select>
               </Form.Item>
               <Form.Item
-                className={styles.form_item}
                 name="specs"
                 style={{ display: this.state.keyg == 5 ? 'none' : '' }}
                 initialValue={this.state.ids.specs}
@@ -856,7 +801,6 @@ class Page extends Component {
                 <Input allowClear />
               </Form.Item>
               <Form.Item
-                className={styles.form_item}
                 name="price"
                 label={
                   this.state.ids.type.id == 1
@@ -878,7 +822,6 @@ class Page extends Component {
               this.state.keyg == 5 ||
               this.state.keyg == 0 ? null : (
                 <Form.Item
-                  className={styles.form_item}
                   // style={{ display: this.state.keyg == 1 ? 'none' : this.state.keyg == 5 ? 'none' : this.state.keyg == 0 ? 'none' : 'block' }}
                   name="lowest_num"
                   label="最低起购/T"
@@ -889,7 +832,6 @@ class Page extends Component {
               )}
 
               <Form.Item
-                className={styles.form_item}
                 name="introduction"
                 label="简介"
                 initialValue={this.state.ids.introduction}
@@ -1075,7 +1017,6 @@ class Page extends Component {
                 </Collapse>
               </Form.Item> */}
               <Form.Item
-                className={styles.form_item}
                 name="status"
                 label="状态"
                 initialValue={this.state.ids.status}

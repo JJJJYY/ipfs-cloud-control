@@ -67,6 +67,8 @@ class Page extends Component {
               editdata: data,
               visible: true,
             });
+            // console.log(this.formRef.current)
+
             this.formRef.current.setFieldsValue({
               title: data.title,
               rank: data.rank,
@@ -102,17 +104,18 @@ class Page extends Component {
     });
   };
 
-  handleSave = (row, id) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'announcement/update',
-      payload: { id: id, ...row },
-    }).then(data => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  };
+  // handleSave = (row, id) => {
+  //    console.log(row)
+  //   const { dispatch } = this.props;
+  //   dispatch({
+  //     type: 'announcement/update',
+  //     payload: { id: id, ...row },
+  //   }).then(data => {
+  //     if (data != 'error') {
+  //       this.loadData();
+  //     }
+  //   });
+  // };
 
   handleDel = id => {
     const { dispatch } = this.props;
@@ -152,6 +155,7 @@ class Page extends Component {
           okText="提交"
           cancelText="取消"
           width={800}
+          forceRender={true}
           visible={visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
