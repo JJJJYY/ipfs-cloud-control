@@ -6,16 +6,10 @@ import { getAuthority } from '@/utils/authority';
 const fetchData = response => {
   return new Promise((resolve, reject) => {
     let json = response;
-    console.log(response);
     let token = json.data.token;
-    if (response.code == 403) {
-      console.log('41111');
-      // history.location.pathname == '/login';
-    }
     if (json.code == 200) {
       localStorage.getItem('token', token);
     } else {
-      console.log(111);
       const errortext = json.msg;
       console.log(errortext);
       message.error(errortext);
@@ -56,6 +50,11 @@ export default function request(url, option) {
 
   return umirequest(url, newOptions)
     .then(response => {
+      console.log(response);
+      // token失效
+      if (response.code == 403) {
+        history.push('/login');
+      }
       return fetchData(response);
     })
     .catch(e => {
