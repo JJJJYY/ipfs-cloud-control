@@ -56,6 +56,7 @@ export default function request(url, option) {
         message.info(response.msg);
       }
       if (response.code == 403) {
+        message.info(response.msg);
         history.push('/login');
       }
       return fetchData(response);
