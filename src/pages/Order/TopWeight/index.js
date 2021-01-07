@@ -109,7 +109,7 @@ class Page extends Component {
               [
                 <Tag color="black">已取消</Tag>,
                 <Tag color="green">已下单</Tag>,
-                <Tag color="black">已完成</Tag>,
+                <Tag color="blue">已完成</Tag>,
               ][text]
             }
           </div>
@@ -167,12 +167,11 @@ class Page extends Component {
     },
     {
       title: '单价',
-      dataIndex: 'price',
-      render: text => <div>{text}元/台</div>,
+      dataIndex: 'make_price',
     },
     {
       title: '数量',
-      dataIndex: 'quantity',
+      dataIndex: 'make_quantity',
     },
     {
       title: '小计',
@@ -418,10 +417,8 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '132.8px', padding: '16px' }}>
-                技术服务费
-              </div>
-              <div style={{ width: '147.6px', padding: '16px' }}>
+              <div style={{ width: '233px', padding: '16px' }}>技术服务费</div>
+              <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.service_fee}
               </div>
             </div>
@@ -433,8 +430,8 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '132.8px', padding: '16px' }}>专项折扣</div>
-              <div style={{ width: '147.6px', padding: '16px' }}>
+              <div style={{ width: '233px', padding: '16px' }}>专项折扣</div>
+              <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.discount}
               </div>
             </div>

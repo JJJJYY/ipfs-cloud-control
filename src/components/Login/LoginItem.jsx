@@ -7,7 +7,12 @@ import styles from './index.less';
 
 const FormItem = Form.Item;
 
-const getFormItemOptions = ({ onChange, defaultValue, customProps = {}, rules }) => {
+const getFormItemOptions = ({
+  onChange,
+  defaultValue,
+  customProps = {},
+  rules,
+}) => {
   const options = {
     rules: rules || customProps.rules,
   };
@@ -55,11 +60,17 @@ const LoginItem = props => {
           <Row gutter={8}>
             <Col span={16}>
               <FormItem name={name} {...options}>
-                <Input {...customProps} {...inputProps} />
+                <Input allowClear {...customProps} {...inputProps} />
               </FormItem>
             </Col>
             <Col span={8}>
-              <img className={styles.getCaptcha} src={coreUrl} onClick={() => setCoreUrl('/public/ImageCode.php?' + Math.random())} />
+              <img
+                className={styles.getCaptcha}
+                src={coreUrl}
+                onClick={() =>
+                  setCoreUrl('/public/ImageCode.php?' + Math.random())
+                }
+              />
             </Col>
           </Row>
         )}
@@ -69,7 +80,7 @@ const LoginItem = props => {
 
   return (
     <FormItem name={name} {...options}>
-      <Input {...customProps} {...otherProps} />
+      <Input allowClear {...customProps} {...otherProps} />
     </FormItem>
   );
 };

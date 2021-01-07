@@ -77,12 +77,13 @@ class Page extends Component {
               editdata: data,
               visible: true,
             });
-            this.formRef.current.setFieldsValue({
-              title: data.title,
-              rank: data.rank,
-              is_enable: data.is_enable,
-              content: data.content,
-            });
+            this.formRef.current &&
+              this.formRef.current.setFieldsValue({
+                title: data.title,
+                rank: data.rank,
+                is_enable: data.is_enable,
+                content: data.content,
+              });
           }
         });
     }
@@ -176,7 +177,7 @@ class Page extends Component {
               name="title"
               rules={[{ required: true }]}
             >
-              <Input maxLength={100} />
+              <Input allowClear maxLength={100} />
             </Form.Item>
 
             <Form.Item className={styles.formItem} label="内容" name="content">

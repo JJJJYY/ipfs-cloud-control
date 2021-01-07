@@ -25,7 +25,11 @@ const EditableCell = ({
             },
           ]}
         >
-          {custom ? custom(record) : <Input style={{ minWidth: 120 }} />}
+          {custom ? (
+            custom(record)
+          ) : (
+            <Input allowClear style={{ minWidth: 120 }} />
+          )}
         </Form.Item>
       ) : (
         restProps.children

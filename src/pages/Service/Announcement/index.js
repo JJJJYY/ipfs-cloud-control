@@ -61,6 +61,7 @@ class Page extends Component {
           payload: { id: row.id },
         })
         .then(data => {
+          console.log(data);
           if (data != 'error') {
             this.setState({
               editdata: data,
@@ -164,7 +165,7 @@ class Page extends Component {
               name="title"
               rules={[{ required: true }]}
             >
-              <Input maxLength={100} />
+              <Input allowClear maxLength={100} />
             </Form.Item>
 
             <Form.Item className={styles.formItem} label="内容" name="content">

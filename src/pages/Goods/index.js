@@ -551,7 +551,7 @@ class Page extends Component {
               name="specs"
               label="规格型号"
             >
-              <Input />
+              <Input allowClear />
             </Form.Item>
             <Form.Item
               name="price"
@@ -572,7 +572,7 @@ class Page extends Component {
                 },
               ]}
             >
-              <Input />
+              <Input maxLength={10} allowClear />
             </Form.Item>
             <Form.Item
               style={{
@@ -588,7 +588,7 @@ class Page extends Component {
               name="lowest_num"
               label="最低起购/T"
             >
-              <Input />
+              <Input allowClear />
             </Form.Item>
             <Form.Item
               name="introduction"
@@ -599,7 +599,7 @@ class Page extends Component {
                 },
               ]}
             >
-              <Input className={styles.form_input} />
+              <Input allowClear maxLength={200} className={styles.form_input} />
             </Form.Item>
             <div>
               <Form
@@ -636,10 +636,12 @@ class Page extends Component {
                                 name={[field.name, 'first']}
                                 fieldKey={[field.fieldKey, 'first']}
                                 rules={[
-                                  { required: true, message: '请输入容量' },
+                                  { required: true, message: '请输入内容' },
                                 ]}
                               >
                                 <Input
+                                  maxLength={20}
+                                  allowClear
                                   style={{ width: '340px' }}
                                   placeholder="First Name"
                                 />
@@ -650,10 +652,10 @@ class Page extends Component {
                                 name={[field.name, 'last']}
                                 fieldKey={[field.fieldKey, 'last']}
                                 rules={[
-                                  { required: true, message: '请输入多种容量' },
+                                  { required: true, message: '请输入内容' },
                                 ]}
                               >
-                                <Input placeholder="Last Name" />
+                                <Input allowClear placeholder="Last Name" />
                               </Form.Item>
                             </div>
                           </div>
@@ -841,7 +843,7 @@ class Page extends Component {
                 initialValue={this.state.ids.specs}
                 label="规格型号"
               >
-                <Input />
+                <Input allowClear />
               </Form.Item>
               <Form.Item
                 className={styles.form_item}
@@ -860,7 +862,7 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Input />
+                <Input maxLength={10} allowClear />
               </Form.Item>
               {this.state.keyg == 1 ||
               this.state.keyg == 5 ||
@@ -872,7 +874,7 @@ class Page extends Component {
                   label="最低起购/T"
                   initialValue={this.state.ids.lowest_num}
                 >
-                  <Input />
+                  <Input allowClear />
                 </Form.Item>
               )}
 
@@ -887,7 +889,7 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Input className={styles.form_input} />
+                <Input allowClear className={styles.form_input} />
               </Form.Item>
               {/* <Form.Item
                 className={styles.form_item}

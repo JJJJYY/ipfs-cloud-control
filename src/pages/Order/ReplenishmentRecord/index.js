@@ -171,6 +171,7 @@ class Page extends Component {
       custom() {
         return (
           <Input
+            allowClear
             style={{ width: '100%' }}
             placeholder="请输入用户手机/邮箱账号"
           />
@@ -202,7 +203,7 @@ class Page extends Component {
           <InputNumber
             style={{ width: '100%' }}
             placeholder="请输入正数"
-            min={0}
+            step={0}
           />
         );
       },
@@ -368,6 +369,7 @@ class Page extends Component {
               </div>
               <div style={{ float: 'left', marginLeft: '8px' }}>
                 <Input
+                  allowClear
                   onChange={event => this.handleMaxBackUp(event)}
                   defaultValue=""
                   style={{ width: '260px', height: '60px' }}
