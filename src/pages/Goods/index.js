@@ -50,7 +50,7 @@ class Page extends Component {
     aid: 1,
     sid: 1,
     aiids: '',
-    lus: '',
+    lus: [],
     infoa: [],
     text: '确认上架吗?',
     info: [
@@ -375,8 +375,8 @@ class Page extends Component {
 
   handleSubmit = () => {
     this.formRef.current.validateFields().then(row => {
-      console.log(row.info);
-      row.info = this.state.info.slice(1);
+      row.info = this.state.info;
+      console.log(row);
       this.props
         .dispatch({
           type: 'goods/add',
@@ -444,7 +444,6 @@ class Page extends Component {
   //     );
   //   }
   // };
-
   handleCancel = () => this.setState({ previewVisible: false });
 
   handlePreview = async file => {
@@ -465,11 +464,6 @@ class Page extends Component {
       keys: key,
     });
   };
-
-  handleSubmit = e => {
-    console.log(e);
-  };
-
   render() {
     const {
       previewVisible,
@@ -499,7 +493,13 @@ class Page extends Component {
         reader.onerror = error => reject(error);
       });
     }
-
+    const onFinish = values => {
+      console.log('Received values of form:', values);
+      message.success('添加成功');
+      this.setState({
+        info: values.info,
+      });
+    };
     return (
       <div className="goods">
         <OperationGroup onAdd={this.handleActions} />
@@ -605,9 +605,10 @@ class Page extends Component {
               <Form
                 name="dynamic_form_nest_item"
                 onSubmit={this.handleSubmit}
+                onFinish={onFinish}
                 autoComplete="off"
               >
-                <Form.List name="users">
+                <Form.List name="info">
                   {(fields, { add, remove }) => (
                     <>
                       {fields.map(field => (
@@ -633,8 +634,8 @@ class Page extends Component {
                               <Form.Item
                                 {...field}
                                 style={{ width: '340px' }}
-                                name={[field.name, 'first']}
-                                fieldKey={[field.fieldKey, 'first']}
+                                name={[field.name, 'title']}
+                                fieldKey={[field.fieldKey, 'title']}
                                 rules={[
                                   { required: true, message: '请输入容量' },
                                 ]}
@@ -647,8 +648,8 @@ class Page extends Component {
                               <Form.Item
                                 {...field}
                                 style={{ marginTop: '15px' }}
-                                name={[field.name, 'last']}
-                                fieldKey={[field.fieldKey, 'last']}
+                                name={[field.name, 'info']}
+                                fieldKey={[field.fieldKey, 'info']}
                                 rules={[
                                   { required: true, message: '请输入多种容量' },
                                 ]}
@@ -667,10 +668,19 @@ class Page extends Component {
                           添加
                         </Button>
                       </Form.Item>
+                      <Form.Item>
+                        <Button
+                          style={{ width: '100%' }}
+                          type="primary"
+                          htmlType="submit"
+                        >
+                          确定
+                        </Button>
+                      </Form.Item>
                     </>
                   )}
                 </Form.List>
-                <Form.Item>
+                {/* <Form.Item>
                   <Button
                     style={{ width: '100%' }}
                     type="primary"
@@ -678,7 +688,7 @@ class Page extends Component {
                   >
                     确定
                   </Button>
-                </Form.Item>
+                </Form.Item> */}
               </Form>
             </div>
             {/* <Form.Item name="info" label="详情">
@@ -889,6 +899,104 @@ class Page extends Component {
               >
                 <Input className={styles.form_input} />
               </Form.Item>
+              <div>
+                {console.log('111', this.state.lus)}
+                <Form
+                  name="dynamic_form_nest_item"
+                  onSubmit={this.handleSubmit}
+                  onFinish={onFinish}
+                  autoComplete="off"
+                  initialValues={{
+                    info: this.state.lus,
+                  }}
+                >
+                  <Form.List name="info">
+                    {(fields, { add, remove }) => (
+                      <>
+                        {fields.map(field => (
+                          <Space
+                            key={field.key}
+                            style={{ display: 'flex', marginBottom: 8 }}
+                            align="baseline"
+                          >
+                            {console.log('2222', field)}
+                            <div className={styles.form_List}>
+                              <div className={styles.form_List1}>
+                                <Form.Item
+                                  {...field}
+                                  name={[field.name, 'img']}
+                                  fieldKey={[field.fieldKey, 'img']}
+                                  rules={[
+                                    { required: true, message: '请上传图片' },
+                                  ]}
+                                >
+                                  <Upload limit={1}></Upload>
+                                </Form.Item>
+                              </div>
+                              <div className={styles.form_List2}>
+                                <Form.Item
+                                  {...field}
+                                  style={{ width: '340px' }}
+                                  name={[field.name, 'title']}
+                                  fieldKey={[field.fieldKey, 'title']}
+                                  rules={[
+                                    { required: true, message: '请输入容量' },
+                                  ]}
+                                >
+                                  <Input
+                                    style={{ width: '340px' }}
+                                    placeholder="First Name"
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  {...field}
+                                  style={{ marginTop: '15px' }}
+                                  name={[field.name, 'info']}
+                                  fieldKey={[field.fieldKey, 'info']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: '请输入多种容量',
+                                    },
+                                  ]}
+                                >
+                                  <Input placeholder="Last Name" />
+                                </Form.Item>
+                              </div>
+                            </div>
+                            <MinusCircleOutlined
+                              onClick={() => remove(field.name)}
+                            />
+                          </Space>
+                        ))}
+                        <Form.Item>
+                          <Button onClick={() => add()} block>
+                            添加
+                          </Button>
+                        </Form.Item>
+                        <Form.Item>
+                          <Button
+                            style={{ width: '100%' }}
+                            type="primary"
+                            htmlType="submit"
+                          >
+                            确定
+                          </Button>
+                        </Form.Item>
+                      </>
+                    )}
+                  </Form.List>
+                  {/* <Form.Item>
+                  <Button
+                    style={{ width: '100%' }}
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    确定
+                  </Button>
+                </Form.Item> */}
+                </Form>
+              </div>
               {/* <Form.Item
                 className={styles.form_item}
                 name="details"
