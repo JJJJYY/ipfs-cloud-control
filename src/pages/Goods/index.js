@@ -47,6 +47,7 @@ class Page extends Component {
     keyg: '',
     aid: 1,
     sid: 1,
+    aiids: '',
     lus: '',
     infoa: [],
     text: '确认上架吗?',
@@ -548,10 +549,20 @@ class Page extends Component {
             </Form.Item>
             <Form.Item
               name="price"
-              label="单价/T"
+              label={
+                this.state.keys == 1
+                  ? '单价/台'
+                  : this.state.keys == 5
+                  ? '单价/年/台'
+                  : '单价/T'
+              }
               rules={[
                 {
                   required: true,
+                },
+                {
+                  pattern: /^\d+$|^\d+[.]?\d+$/,
+                  message: '只能输入数字',
                 },
               ]}
             >
@@ -750,7 +761,13 @@ class Page extends Component {
               <Form.Item
                 className={styles.form_item}
                 name="price"
-                label="单价/台"
+                label={
+                  this.state.ids.type.id == 1
+                    ? '单价/台'
+                    : this.state.ids.type.id == 5
+                    ? '单价/年/台'
+                    : '单价/T'
+                }
                 initialValue={this.state.ids.price}
                 rules={[
                   {

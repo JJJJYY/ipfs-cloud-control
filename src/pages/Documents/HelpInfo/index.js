@@ -167,7 +167,7 @@ class Page extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={addLoading || updateLoading}
-          // destroyOnClose
+          destroyOnClose
         >
           <Form layout="vertical" ref={this.formRef}>
             <Form.Item

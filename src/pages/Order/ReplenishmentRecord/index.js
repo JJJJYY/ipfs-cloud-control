@@ -114,12 +114,8 @@ class Page extends Component {
       custom() {
         return (
           <Select placeholder="请选择">
-            <Option value={0} disabled>
-              待审核
-            </Option>
-            <Option value={1} disabled>
-              已通过
-            </Option>
+            <Option value={0}>待审核</Option>
+            <Option value={1}>已通过</Option>
             <Option value={2}>已拒绝</Option>
           </Select>
         );
