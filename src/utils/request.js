@@ -50,9 +50,13 @@ export default function request(url, option) {
 
   return umirequest(url, newOptions)
     .then(response => {
-      console.log(response);
+      console.log('response', response);
       // token失效
+      if (response.code == 402) {
+        message.info(response.msg);
+      }
       if (response.code == 403) {
+        message.info(response.msg);
         history.push('/login');
       }
       return fetchData(response);
