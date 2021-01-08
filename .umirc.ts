@@ -7,7 +7,7 @@ export default defineConfig({
   externals: {
     '@antv/data-set': 'DataSet',
   },
-  title: 'FILPool-管理后台',
+  title: '分布式云储存',
   // mock: false,
   ignoreMomentLocale: true,
   dynamicImport: {
