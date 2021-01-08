@@ -82,9 +82,9 @@ class Page extends Component {
         return (
           <div>
             {text === 1 ? (
-              <Tag color="black">下架</Tag>
+              <Tag color="black">上架</Tag>
             ) : (
-              <Tag color="green">上架</Tag>
+              <Tag color="green">下架</Tag>
             )}
           </div>
         );

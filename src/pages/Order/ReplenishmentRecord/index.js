@@ -58,7 +58,7 @@ class Page extends Component {
       render: text => <div>{text.product_group_name}</div>,
     },
     {
-      title: '数量(TB)',
+      title: '数量（集群）',
       dataIndex: 'num',
       editable: true,
       required: true,
