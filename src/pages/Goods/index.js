@@ -257,7 +257,7 @@ class Page extends Component {
       rdd: null,
       visible: true,
     });
-    this.loadProduct();
+    // this.loadProduct();
     this.formRef.current &&
       this.formRef.current.setFieldsValue({
         lowest_num: data.lowest_num,
@@ -325,7 +325,6 @@ class Page extends Component {
     });
   };
   onSelect = key => {
-    console.log(key);
     this.setState({
       keys: key,
     });
@@ -369,9 +368,6 @@ class Page extends Component {
                 id: rdd,
               };
             }
-            console.log('lus', this.state.lus);
-            console.log('rdd', this.state.rdd);
-            console.log('rowId', rowId);
             row.info = this.state.lus;
             this.props
               .dispatch({
@@ -534,7 +530,7 @@ class Page extends Component {
                 <Form.List name="info">
                   {(fields, { add, remove }) => (
                     <>
-                      {fields.map(field => (
+                      {fields.map((field, index) => (
                         <Space
                           key={field.key}
                           style={{ display: 'flex', marginBottom: 8 }}
@@ -558,6 +554,7 @@ class Page extends Component {
                                 style={{ width: '340px' }}
                                 name={[field.name, 'title']}
                                 fieldKey={[field.fieldKey, 'title']}
+                                key={index + 1}
                                 rules={[
                                   { required: true, message: '请输入标题' },
                                 ]}
@@ -574,6 +571,7 @@ class Page extends Component {
                                 style={{ marginTop: '15px' }}
                                 name={[field.name, 'info']}
                                 fieldKey={[field.fieldKey, 'info']}
+                                key={index}
                                 rules={[
                                   { required: true, message: '请输入内容' },
                                 ]}
@@ -738,7 +736,7 @@ class Page extends Component {
                   <Form.List name="info">
                     {(fields, { add, remove }) => (
                       <>
-                        {fields.map(field => (
+                        {fields.map((field, index) => (
                           <Space
                             key={field.key}
                             style={{ display: 'flex', marginBottom: 8 }}
@@ -764,6 +762,7 @@ class Page extends Component {
                                   style={{ width: '340px' }}
                                   name={[field.name, 'title']}
                                   fieldKey={[field.fieldKey, 'title']}
+                                  key={index}
                                   rules={[{ required: false }]}
                                 >
                                   <Input
@@ -776,6 +775,7 @@ class Page extends Component {
                                   style={{ marginTop: '15px' }}
                                   name={[field.name, 'info']}
                                   fieldKey={[field.fieldKey, 'info']}
+                                  key={index + 1}
                                   rules={[
                                     {
                                       required: true,
