@@ -31,7 +31,10 @@ export async function sysUserMenu() {
 
 // ----------------------- SysUserRole -----------------------
 export async function sysUserRoleAdd(params) {
-  return request.post('Portal.SysUserRole.Add', params);
+  return request.post(
+    'staff/sys/user-role/add?sys_role_id&sys_user_id',
+    params,
+  );
 }
 
 // ----------------------- SysRole -----------------------
