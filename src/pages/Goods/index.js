@@ -43,6 +43,7 @@ class Page extends Component {
     rdd: null,
     lus: [],
     text: '确认上架吗?',
+    texta: '确认下架吗?',
     info: [
       {
         img: '',
@@ -125,9 +126,10 @@ class Page extends Component {
           >
             <Button
               style={{
-                color: '#1890FF',
-                display: text == 1 ? 'none' : 'block',
+                backgroundColor: 'green',
+                color: '#fff',
                 border: 'none',
+                display: text == 1 ? 'none' : 'block',
               }}
             >
               上架
@@ -135,7 +137,7 @@ class Page extends Component {
           </Popconfirm>
           <Popconfirm
             placement="top"
-            title={this.state.text}
+            title={this.state.texta}
             onConfirm={() => {
               this.putaway(a);
             }}
@@ -145,8 +147,9 @@ class Page extends Component {
             <Button
               style={{
                 display: text == 2 ? 'none' : 'block',
+                backgroundColor: '#1890FF',
+                color: '#fff',
                 border: 'none',
-                color: '#000',
               }}
             >
               下架

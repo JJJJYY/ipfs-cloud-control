@@ -220,7 +220,7 @@ class Page extends Component {
                     <Form.Item
                       label="角色"
                       name="sys_role_id"
-                      initialValue={data.userRole.sys_role_id || ''}
+                      initialValue={data.roles.sys_role_id}
                       rules={[{ required: true, message: `请选择角色` }]}
                     >
                       <Select placeholder="请选择角色">
