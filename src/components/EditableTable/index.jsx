@@ -64,7 +64,6 @@ const EditableTable = ({
     });
     setEditingKey(record.id);
   };
-
   const save = id => {
     form.validateFields().then(row => {
       if (onSave) onSave(row, id);

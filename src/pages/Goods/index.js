@@ -81,30 +81,11 @@ class Page extends Component {
       render(text) {
         return (
           <div>
-            {[
-              <Tag
-                color="black"
-                style={{
-                  display: text == 1 ? 'none' : 'block',
-                  width: '52px',
-                  height: '22px',
-                  textAlign: 'center',
-                }}
-              >
-                下架
-              </Tag>,
-              <Tag
-                color="green"
-                style={{
-                  display: text == 2 ? 'none' : 'block',
-                  width: '52px',
-                  height: '22px',
-                  textAlign: 'center',
-                }}
-              >
-                上架
-              </Tag>,
-            ]}
+            {text === 1 ? (
+              <Tag color="black">下架</Tag>
+            ) : (
+              <Tag color="green">上架</Tag>
+            )}
           </div>
         );
       },
