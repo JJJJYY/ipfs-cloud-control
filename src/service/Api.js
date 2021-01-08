@@ -71,7 +71,6 @@ export async function sysRoleOperateEdit(params) {
 
 // ----------------------- SysModule -----------------------
 export async function sysModuleAdd(params) {
-  console.log(params);
   return request.post('staff/sys/module/add', params);
 }
 

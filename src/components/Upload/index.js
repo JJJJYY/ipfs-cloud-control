@@ -36,7 +36,6 @@ class UploadItem extends Component {
   };
 
   beforeUpload = file => {
-    console.log(file);
     return new Promise((resolve, reject) => {
       const ispic =
         file.type === 'image/jpeg' ||

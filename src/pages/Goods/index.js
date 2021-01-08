@@ -218,7 +218,6 @@ class Page extends Component {
         type: 'goods/get',
       })
       .then(data => {
-        console.log(data);
         this.setState({
           editdata: data,
         });
@@ -239,7 +238,6 @@ class Page extends Component {
             },
           })
           .then(result => {
-            console.log('编辑', result);
             this.setState({
               ids: result,
               keyg: result.type.id,
@@ -353,14 +351,12 @@ class Page extends Component {
       });
     }
     const onFinish = values => {
-      console.log('Received values of form:', values);
       this.setState(
         {
           lus: values.info,
         },
         () => {
           this.formRef.current.validateFields().then(row => {
-            console.log(row);
             const { rdd } = this.state;
             let rowId = null;
             if (rdd) {
@@ -384,11 +380,13 @@ class Page extends Component {
                   // })
                   this.loadData();
                   if (rdd) {
+                    message.success('修改成功');
                     this.setState({
                       visible1: false,
                       ids: undefined,
                     });
                   } else {
+                    message.success('添加成功');
                     this.setState({
                       visible: false,
                       keys: 0,
@@ -576,7 +574,11 @@ class Page extends Component {
                                   { required: true, message: '请输入内容' },
                                 ]}
                               >
-                                <Input allowClear placeholder="请输入内容" />
+                                <Input
+                                  maxLength={100}
+                                  allowClear
+                                  placeholder="请输入内容"
+                                />
                               </Form.Item>
                             </div>
                           </div>
@@ -728,10 +730,13 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Input allowClear className={styles.form_input} />
+                <Input
+                  maxLength={200}
+                  allowClear
+                  className={styles.form_input}
+                />
               </Form.Item>
               <div>
-                {console.log('111', this.state.lus)}
                 <Form.Item label="详情" name="dynamic_form_nest_item">
                   <Form.List name="info">
                     {(fields, { add, remove }) => (
@@ -743,7 +748,6 @@ class Page extends Component {
                             align="baseline"
                           >
                             <div className={styles.form_List}>
-                              {console.log(field)}
                               <div className={styles.form_List1}>
                                 <Form.Item
                                   {...field}
@@ -766,6 +770,7 @@ class Page extends Component {
                                   rules={[{ required: false }]}
                                 >
                                   <Input
+                                    maxLength={20}
                                     style={{ width: '340px' }}
                                     placeholder="标题"
                                   />
@@ -783,7 +788,10 @@ class Page extends Component {
                                     },
                                   ]}
                                 >
-                                  <Input placeholder="请输入内容" />
+                                  <Input
+                                    maxLength={100}
+                                    placeholder="请输入内容"
+                                  />
                                 </Form.Item>
                               </div>
                             </div>

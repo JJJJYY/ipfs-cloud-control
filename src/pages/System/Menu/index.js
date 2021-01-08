@@ -112,7 +112,6 @@ class Page extends Component {
           payload: row,
         })
         .then(data => {
-          console.log(data);
           if (data != 'error') {
             this.loadData();
             this.handleClose();
@@ -163,7 +162,7 @@ class Page extends Component {
   render() {
     const { visible, sourceType } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
-    console.log(data);
+
     return (
       <div>
         <OperationGroup onAdd={() => this.setState({ visible: true })} />

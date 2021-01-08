@@ -36,7 +36,6 @@ class Page extends Component {
     page: 1,
     count: 10,
     search: null,
-    search: null,
     status: null,
     order_amount: null,
     list: [],
@@ -157,20 +156,6 @@ class Page extends Component {
     this.loadData();
   }
 
-  // loadData = () => {
-  //   const { current_page, count,search } = this.state;
-  //   this.props.dispatch({
-  //     type: 'authUser/queryList',
-  //     payload: {
-  //       current_page: current_page,
-  //       count: count,
-  //       account: account,
-  //       search: search,
-  //       status: status,
-  //     },
-  //   });
-  // };
-
   loadData = () => {
     const { page, count, search, account, status, id } = this.state;
     this.props.dispatch({
@@ -199,44 +184,11 @@ class Page extends Component {
       });
   };
 
-  loadUserInvite = () => {
-    const { invitePage, inviteCount, userID, rank } = this.state;
-    this.props
-      .dispatch({
-        type: 'authUser/queryInviteDetailList',
-        payload: {
-          id: userID,
-          page: invitePage,
-          count: inviteCount,
-          rank: rank,
-          maxrank: 2,
-        },
-      })
-      .then(data => {
-        if (data != 'error') {
-          this.setState({ visibleInviteDrawer: true });
-        }
-      });
-  };
-
-  handleSave = (row, id) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'authUser/update',
-      payload: { id: id, ...row },
-    }).then(data => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  };
-
   handleActions = (row, index) => {
     if (index == 0) {
       this.loadUserDetail(row.id);
     } else if (index == 1) {
       this.state.userID = row.id;
-      this.loadUserInvite({ rank: 0 });
     }
   };
 
@@ -247,67 +199,6 @@ class Page extends Component {
       userID: null,
       invitePage: 1,
       rank: 0,
-    });
-  };
-
-  handleExchange = (record, isAdd) => {
-    Modal.confirm({
-      title: (isAdd ? '充值' : '扣除') + record.asset,
-      content: (
-        <div>
-          <br />
-          <Form ref={this.formRef}>
-            <FormItem
-              label="类型"
-              name="type"
-              rules={[{ required: true, message: `请选择类型` }]}
-            >
-              <Select>
-                <Option value={2}>质押账户</Option>
-                <Option value={3}>充提账户</Option>
-              </Select>
-            </FormItem>
-            <FormItem
-              label="数量"
-              name="value"
-              rules={[{ required: true, message: `请输入数量` }]}
-            >
-              <InputNumber
-                style={{ width: '100%' }}
-                placeholder="请输入数量"
-                min={0}
-              />
-            </FormItem>
-          </Form>
-        </div>
-      ),
-      onOk: () => {
-        return new Promise((resolve, reject) => {
-          this.formRef.current
-            .validateFields()
-            .then(values => {
-              this.props
-                .dispatch({
-                  type: 'balance/exchange',
-                  payload: {
-                    auth_user_id: record.auth_user_id,
-                    asset: record.asset,
-                    value: isAdd ? values.value : -values.value,
-                    type: values.type,
-                  },
-                })
-                .then(data => {
-                  if (data != 'error') {
-                    resolve();
-                    this.loadUserDetail(this.state.userID);
-                  } else {
-                    reject();
-                  }
-                });
-            })
-            .catch(() => reject());
-        });
-      },
     });
   };
 
@@ -337,7 +228,6 @@ class Page extends Component {
       <div>
         <SearchGroup
           onSearch={e => {
-            console.log(e);
             this.state.page = 1;
             this.state.search = e;
             this.loadData();
@@ -368,7 +258,6 @@ class Page extends Component {
             this.state.count = pagination.pageSize;
             this.loadData();
           }}
-          onSave={this.handleSave}
           onActions={this.handleActions}
           rowKey="id"
         />
@@ -414,7 +303,7 @@ class Page extends Component {
                   columns={this.columnsReward}
                   dataSource={this.state.list.order}
                   pagination={false}
-                  rowKey="invitation_count"
+                  rowKey="id"
                 />
               </div>
             </div>
@@ -435,7 +324,6 @@ class Page extends Component {
                   onSearch={e => {
                     this.state.invitePage = 1;
                     this.state.rank = e ? e.rank : 0;
-                    this.loadUserInvite();
                   }}
                   items={[
                     {
@@ -472,7 +360,6 @@ class Page extends Component {
                   onChange={pagination => {
                     this.state.invitePage = pagination.current;
                     this.state.inviteCount = pagination.pageSize;
-                    this.loadUserInvite();
                   }}
                   pagination={{
                     total: inviteList ? inviteList.total : 0,

@@ -271,7 +271,6 @@ class Page extends Component {
       operatesCheck,
     } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
-    console.log(data);
 
     return (
       <div>

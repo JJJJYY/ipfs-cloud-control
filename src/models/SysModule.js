@@ -19,7 +19,7 @@ export default {
     *queryTree({ payload }, { call, put }) {
       const data = yield call(api.sysModuleTree, payload);
       yield put({ type: 'tree', payload: { data: data } });
-      console.log(data);
+
       return data;
     },
   },

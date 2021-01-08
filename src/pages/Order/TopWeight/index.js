@@ -192,7 +192,7 @@ class Page extends Component {
         page: page,
         count: count,
         search: search,
-        number: 1,
+        type: 1,
       },
     });
   };
@@ -221,9 +221,7 @@ class Page extends Component {
           {
             ids: result,
           },
-          () => {
-            console.log(this.state.ids);
-          },
+          () => {},
         );
       });
 

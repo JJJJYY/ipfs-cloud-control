@@ -37,7 +37,6 @@ export default {
     *queryActive({ payload }, { call, put }) {
       const data = yield call(api.replenishmentRecordBatchAudit, payload);
       yield put({ type: 'active', payload: { data: data } });
-      console.log(data.data);
       return data;
     },
   },

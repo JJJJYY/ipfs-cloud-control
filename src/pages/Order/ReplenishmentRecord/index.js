@@ -306,7 +306,6 @@ class Page extends Component {
       })
 
       .then(data => {
-        console.log(data);
         if (data != 'error') {
           this.loadData();
         }
@@ -319,7 +318,6 @@ class Page extends Component {
     });
   };
   handleActions = (row, index) => {
-    console.log(row);
     if (index == 0) {
       Modal.confirm({
         title: '审核',
@@ -385,7 +383,7 @@ class Page extends Component {
         ),
         onOk: () => {
           const { remark } = this.state;
-          console.log(remark);
+
           return new Promise((resolve, reject) => {
             this.formRef.current
               .validateFields()
@@ -459,7 +457,6 @@ class Page extends Component {
         </div>
       ),
       onOk: () => {
-        console.log(this.stater.remark);
         return new Promise((resolve, reject) => {
           this.formRef.current
             .validateFields()
@@ -495,7 +492,6 @@ class Page extends Component {
   render() {
     const { visible, page, count, search, selectedRowKeys } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
-    console.log(addLoading);
 
     const rowSelection =
       search && search.status == 0
@@ -605,7 +601,6 @@ class Page extends Component {
                               okText: '确认',
                             });
                           }
-                          console.log(info.file.response);
                         } else if (status === 'error') {
                           message.error('上传失败');
                         }

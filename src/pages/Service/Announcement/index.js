@@ -61,13 +61,11 @@ class Page extends Component {
           payload: { id: row.id },
         })
         .then(data => {
-          console.log(data);
           if (data != 'error') {
             this.setState({
               editdata: data,
               visible: true,
             });
-            // console.log(this.formRef.current)
 
             this.formRef.current.setFieldsValue({
               title: data.title,
@@ -104,19 +102,6 @@ class Page extends Component {
         });
     });
   };
-
-  // handleSave = (row, id) => {
-  //    console.log(row)
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: 'announcement/update',
-  //     payload: { id: id, ...row },
-  //   }).then(data => {
-  //     if (data != 'error') {
-  //       this.loadData();
-  //     }
-  //   });
-  // };
 
   handleDel = id => {
     const { dispatch } = this.props;

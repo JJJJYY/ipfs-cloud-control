@@ -20,10 +20,9 @@ export default {
       const data = yield call(api.sysRoleList, payload);
       yield put({ type: 'list', payload: { data: data } });
       let index = data.data.map(item => {
-        // console.log(item);
         return item;
       });
-      console.log(index);
+
       return index;
     },
 
