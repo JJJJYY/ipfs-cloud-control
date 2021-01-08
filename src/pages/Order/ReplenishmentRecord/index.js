@@ -530,7 +530,7 @@ class Page extends Component {
               label: '状态',
               name: 'audit_status',
               custom: (
-                <Select>
+                <Select allowClear>
                   <Option value={0}>待审核</Option>
                   <Option value={1}>已通过</Option>
                   <Option value={2}>已拒绝</Option>

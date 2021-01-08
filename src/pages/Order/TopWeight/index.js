@@ -271,7 +271,7 @@ class Page extends Component {
               label: '状态',
               name: 'status',
               custom: (
-                <Select>
+                <Select allowClear>
                   <Option value={0}>已取消</Option>
                   <Option value={1}>已下单</Option>
                   <Option value={2}>已完成</Option>

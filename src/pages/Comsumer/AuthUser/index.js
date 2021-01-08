@@ -349,7 +349,7 @@ class Page extends Component {
               label: '状态',
               name: 'status',
               custom: (
-                <Select>
+                <Select allowClear>
                   <Option value={0}>冻结</Option>
                   <Option value={1}>正常</Option>
                 </Select>

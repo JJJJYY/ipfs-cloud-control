@@ -448,9 +448,9 @@ class Page extends Component {
     const onFinish = values => {
       console.log('Received values of form:', values);
       message.success('添加成功');
-      // values.info.forEach(e => {
-      //   e.id = Date.parse(new Date())
-      // });
+      values.info.forEach(e => {
+        e.id = 0;
+      });
       this.setState({
         lus: values.info,
       });
@@ -599,7 +599,7 @@ class Page extends Component {
                                   maxLength={20}
                                   allowClear
                                   style={{ width: '340px' }}
-                                  placeholder="First Name"
+                                  placeholder="请输入内容"
                                 />
                               </Form.Item>
                               <Form.Item
@@ -611,7 +611,7 @@ class Page extends Component {
                                   { required: true, message: '请输入内容' },
                                 ]}
                               >
-                                <Input allowClear placeholder="Last Name" />
+                                <Input allowClear placeholder="请输入内容" />
                               </Form.Item>
                             </div>
                           </div>
@@ -887,12 +887,12 @@ class Page extends Component {
                                   name={[field.name, 'title']}
                                   fieldKey={[field.fieldKey, 'title']}
                                   rules={[
-                                    { required: true, message: '请输入容量' },
+                                    { required: true, message: '请输入内容' },
                                   ]}
                                 >
                                   <Input
                                     style={{ width: '340px' }}
-                                    placeholder="First Name"
+                                    placeholder="请输入内容"
                                   />
                                 </Form.Item>
                                 <Form.Item
@@ -903,11 +903,11 @@ class Page extends Component {
                                   rules={[
                                     {
                                       required: true,
-                                      message: '请输入多种容量',
+                                      message: '请输入内容',
                                     },
                                   ]}
                                 >
-                                  <Input placeholder="Last Name" />
+                                  <Input placeholder="请输入内容" />
                                 </Form.Item>
                               </div>
                             </div>
