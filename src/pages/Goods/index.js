@@ -33,23 +33,15 @@ class Page extends Component {
     visible: false,
     visible1: false,
     editdata: null,
-    modal2Visible: false,
     previewVisible: false,
     previewImage: '',
     previewTitle: '',
     ids: '',
     product_type_name: '',
-    val1: '',
-    val2: '',
-    val3: '',
-    val4: '',
-    val6: '',
     keys: '',
     keyg: '',
     rdd: null,
-    aiids: '',
     lus: [],
-    infoa: [],
     text: '确认上架吗?',
     info: [
       {
@@ -322,55 +314,9 @@ class Page extends Component {
           info: '',
         },
       ],
-      val1: '',
-      val2: '',
-      val3: '',
     });
   };
 
-  // handleSubmit = () => {
-  //   this.formRef.current.validateFields().then(row => {
-  //     row.info = this.state.lus;
-  //     console.log(row);
-  //     this.props
-  //       .dispatch({
-  //         type: 'goods/add',
-  //         payload: row,
-  //       })
-  //       .then(data => {
-  //         if (data != 'error') {
-  //           this.loadData();
-  //           this.handleClose();
-  //         }
-  //       });
-  //   });
-  // };
-  // handleSubmits = () => {
-  //   this.formRef.current.validateFields().then(row => {
-  //     console.log(row)
-  //     const { rdd } = this.state;
-  //     console.log('lus', this.state.lus);
-  //     console.log('rdd', this.state.rdd);
-  //     row.info = this.state.lus;
-  //     this.props
-  //       .dispatch({
-  //         type: 'goods/add',
-  //         payload: {
-  //           ...row,
-  //           id: rdd,
-  //         },
-  //       })
-  //       .then(data => {
-  //         if (data != 'error') {
-  //           this.setState({
-  //             rdd: null
-  //           })
-  //           this.loadData();
-  //           this.readactCancel();
-  //         }
-  //       });
-  //   });
-  // };
   redactSubmit = () => {
     this.formRef1.current.validateFields();
   };
@@ -401,7 +347,7 @@ class Page extends Component {
     });
   };
   render() {
-    const { previewVisible, previewImage, previewTitle, val6 } = this.state;
+    const { previewVisible, previewImage, previewTitle } = this.state;
     const { visible } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const { Option } = Select;
@@ -425,10 +371,6 @@ class Page extends Component {
     }
     const onFinish = values => {
       console.log('Received values of form:', values);
-      // message.success('添加成功');
-      // values.info.forEach(e => {
-      //   e.id = 0;
-      // });
       this.setState(
         {
           lus: values.info,
@@ -477,9 +419,6 @@ class Page extends Component {
                           info: '',
                         },
                       ],
-                      val1: '',
-                      val2: '',
-                      val3: '',
                     });
                   }
                 }
@@ -613,23 +552,7 @@ class Page extends Component {
               <Input allowClear maxLength={200} className={styles.form_input} />
             </Form.Item>
             <div>
-              <Form.Item
-                name="dynamic_form_nest_item"
-                label="详情"
-                // onSubmit={this.handleSubmit}
-                // onFinish={onFinish}
-                // autoComplete="off"
-                // initialValues={{
-                //   info: [
-                //     {
-                //       id: 1,
-                //       img: '',
-                //       title: '',
-                //       info: '',
-                //     },
-                //   ],
-                // }}
-              >
+              <Form.Item name="dynamic_form_nest_item" label="详情">
                 <Form.List name="info">
                   {(fields, { add, remove }) => (
                     <>
@@ -833,16 +756,7 @@ class Page extends Component {
               </Form.Item>
               <div>
                 {console.log('111', this.state.lus)}
-                <Form.Item
-                  label="详情"
-                  name="dynamic_form_nest_item"
-                  // onSubmit={this.handleSubmit}
-                  // onFinish={onFinish}
-                  // autoComplete="off"
-                  // initialValues={{
-                  //   info: this.state.lus,
-                  // }}
-                >
+                <Form.Item label="详情" name="dynamic_form_nest_item">
                   <Form.List name="info">
                     {(fields, { add, remove }) => (
                       <>
@@ -911,15 +825,6 @@ class Page extends Component {
                             添加
                           </Button>
                         </Form.Item>
-                        {/* <Form.Item>
-                          <Button
-                            style={{ width: '100%' }}
-                            type="primary"
-                            htmlType="submit"
-                          >
-                            确定
-                          </Button>
-                        </Form.Item> */}
                       </>
                     )}
                   </Form.List>
@@ -952,7 +857,6 @@ class Page extends Component {
                     取消
                   </Button>
                   <Button
-                    // onClick={this.handleSubmit}
                     style={{ padding: '4px 10px' }}
                     type="primary"
                     htmlType="submit"
