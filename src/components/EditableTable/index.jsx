@@ -41,6 +41,7 @@ const EditableCell = ({
 const EditableTable = ({
   onSave,
   onDelete,
+  onPutaway,
   onActions,
   dataSource,
   columns,
@@ -87,6 +88,18 @@ const EditableTable = ({
         },
       });
       return;
+    } else if (index == -3) {
+      Modal.confirm({
+        title: '上架?',
+        content: '确定上架吗',
+        okText: '提交',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: () => {
+          if (onPutaway) onPutaway(record.id);
+        },
+      });
+      return;
     }
     if (onActions) onActions(record, index);
   };
@@ -100,6 +113,7 @@ const EditableTable = ({
           var actionCount = 0;
           if (col.showEdit) actionCount++;
           if (col.showDelete) actionCount++;
+          if (col.putaway) actionCount++;
           if (col.actions && col.actions(record).length)
             actionCount += col.actions(record).length;
           return (
@@ -132,9 +146,9 @@ const EditableTable = ({
                           {col.showDelete && (
                             <Menu.Item key={-2}>删除</Menu.Item>
                           )}
-                          {(col.showEdit || col.showDelete) && col.actions && (
-                            <Menu.Divider />
-                          )}
+                          {col.putaway && <Menu.Item key={-3}>上架</Menu.Item>}
+                          {(col.showEdit || col.showDelete || col.putaway) &&
+                            col.actions && <Menu.Divider />}
                           {col.actions &&
                             col
                               .actions(record)
@@ -163,6 +177,9 @@ const EditableTable = ({
                       )}
                       {col.showDelete && (
                         <a onClick={() => handleMenuClick(record, -2)}>删除</a>
+                      )}
+                      {col.putaway && (
+                        <a onClick={() => handleMenuClick(record, -3)}>上架</a>
                       )}
                       {col.actions && col.actions(record).length != 0 && (
                         <a onClick={() => handleMenuClick(record, 0)}>

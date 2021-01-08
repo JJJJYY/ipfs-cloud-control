@@ -93,25 +93,42 @@ class Page extends Component {
       dataIndex: 'price',
       render: text => <div>{parseFloat(text)}</div>,
     },
-    // {
-    //   title: '状态',
-    //   dataIndex: 'status',
-
-    //   render(text) {
-    //     return (
-    //       <div>
-    //         {
-    //           [
-    //             <Tag color="black">上架</Tag>,
-    //             <Tag color="black">下架</Tag>,
-    //           ][text]
-    //         }
-    //       </div>
-    //     );
-    //   }
-    // },
     {
       title: '状态',
+      dataIndex: 'status',
+      render(text) {
+        return (
+          <div>
+            {[
+              <Tag
+                color="black"
+                style={{
+                  display: text == 1 ? 'none' : 'block',
+                  width: '52px',
+                  height: '22px',
+                  textAlign: 'center',
+                }}
+              >
+                下架
+              </Tag>,
+              <Tag
+                color="green"
+                style={{
+                  display: text == 2 ? 'none' : 'block',
+                  width: '52px',
+                  height: '22px',
+                  textAlign: 'center',
+                }}
+              >
+                上架
+              </Tag>,
+            ]}
+          </div>
+        );
+      },
+    },
+    {
+      title: '',
       dataIndex: 'status',
       render: (text, a) => (
         <div>
@@ -127,11 +144,10 @@ class Page extends Component {
           >
             <Button
               style={{
-                backgroundColor: '#52C41A',
-                borderColor: '#52C41A',
+                color: '#1890FF',
                 display: text == 1 ? 'none' : 'block',
+                border: 'none',
               }}
-              type="primary"
             >
               上架
             </Button>{' '}
@@ -146,8 +162,11 @@ class Page extends Component {
             cancelText="No"
           >
             <Button
-              style={{ display: text == 2 ? 'none' : 'block' }}
-              type="primary"
+              style={{
+                display: text == 2 ? 'none' : 'block',
+                border: 'none',
+                color: '#000',
+              }}
             >
               下架
             </Button>
@@ -158,7 +177,6 @@ class Page extends Component {
     {
       title: '操作',
       operation: true,
-      showDelete: false,
       width: 60,
       fixed: 'right',
       actions() {
@@ -369,18 +387,17 @@ class Page extends Component {
     });
   };
 
-  // handleDel = id => {
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: 'goods/update',
-  //     payload: { id: id, deleted: 1 },
-  //   }).then(data => {
-
-  //     if (data != 'error') {
-  //       this.loadData();
-  //     }
-  //   });
-  // };
+  handleDel = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'goods/update',
+      payload: { id: id, deleted: 1 },
+    }).then(data => {
+      if (data != 'error') {
+        this.loadData();
+      }
+    });
+  };
   // handleChange = info => {
   //   if (info.file.status === 'uploading') {
   //     this.setState({ loading: true });
@@ -448,9 +465,6 @@ class Page extends Component {
     const onFinish = values => {
       console.log('Received values of form:', values);
       message.success('添加成功');
-      values.info.forEach(e => {
-        e.id = 0;
-      });
       this.setState({
         lus: values.info,
       });
@@ -468,7 +482,7 @@ class Page extends Component {
             this.state.count = pagination.pageSize;
             this.loadData();
           }}
-          onDelete={this.handleDel}
+          onPutaway={this.putaway}
           onActions={this.handleAction}
           rowKey="id"
         />
@@ -784,17 +798,7 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Select onChange={this.onSelect} disabled>
-                  {this.state.editdata > 0
-                    ? this.state.editdata.map(item => {
-                        return (
-                          <Option key={item.id}>
-                            {item.product_type_name}
-                          </Option>
-                        );
-                      })
-                    : null}
-                </Select>
+                <Input disabled value={this.state.ids.type.product_type_name} />
               </Form.Item>
               <Form.Item
                 name="specs"

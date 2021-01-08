@@ -203,7 +203,9 @@ class Page extends Component {
           <InputNumber
             style={{ width: '100%' }}
             placeholder="请输入正数"
-            step={0}
+            min={1}
+            step={1}
+            precision=""
           />
         );
       },
@@ -216,8 +218,9 @@ class Page extends Component {
         return (
           <InputNumber
             style={{ width: '100%' }}
-            min={0}
+            min={0.1}
             step={0.1}
+            precision="2"
             placeholder="最多可输入小数位后两位,仅可输入正数"
           />
         );
@@ -227,12 +230,14 @@ class Page extends Component {
       title: '技术服务费',
       key: 'service_fee',
       required: true,
+
       custom() {
         return (
           <InputNumber
             style={{ width: '100%' }}
+            precision="2"
             placeholder="最多可输入小数位后两位,仅可输入正数"
-            min={0}
+            min={0.1}
             step={0.1}
           />
         );
