@@ -11,7 +11,6 @@ const fetchData = response => {
       localStorage.getItem('token', token);
     } else {
       const errortext = json.msg;
-      console.log(errortext);
       message.error(errortext);
       history.location.pathname == '/login';
       const error = new Error(errortext);

@@ -1,7 +1,7 @@
 import * as api from '../service/Api';
 
 export default {
-  namespace: 'dailyFilpoolMinerStatistics',
+  namespace: 'dailyMinerStatistics',
 
   state: {
     list: {},
@@ -12,7 +12,6 @@ export default {
       const data = yield call(api.dailyFilpoolMinerStatisticsList, payload);
       yield put({ type: 'list', payload: { data: data } });
     },
-
   },
 
   reducers: {
@@ -20,8 +19,7 @@ export default {
       return {
         ...state,
         list: data,
-      }
+      };
     },
-
   },
-}
+};

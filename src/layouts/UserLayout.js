@@ -3,10 +3,9 @@ import { ConfigProvider } from 'antd';
 import styles from './UserLayout.less';
 import zhCN from 'antd/es/locale/zh_CN';
 
-const title =  'FILPool管理后台';
+const title = '分布式云储存管理后台';
 
 class UserLayout extends PureComponent {
-
   render() {
     const { children } = this.props;
     return (

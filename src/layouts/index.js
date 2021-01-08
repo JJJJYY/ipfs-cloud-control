@@ -18,7 +18,7 @@ import logo from '../img/logo.png';
 
 moment.locale('zh-cn');
 const { Header, Footer, Content } = Layout;
-const title = 'FILPool';
+const title = '分布式云储存';
 const footer = 'Copyright © FILPool 2020.';
 
 const query = {
