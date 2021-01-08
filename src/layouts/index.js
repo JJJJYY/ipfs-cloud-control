@@ -110,7 +110,7 @@ class BasicLayout extends Component {
         .digest('hex');
     this.props.dispatch({
       type: 'sysuser/update',
-      payload: { id: user.id, ...values },
+      payload: { id: user.user.id, ...values },
     });
     this.handleCancel();
   };

@@ -110,7 +110,7 @@ class Page extends Component {
       },
     },
     {
-      title: '',
+      title: '上架/下架',
       dataIndex: 'status',
       render: (text, a) => (
         <div>
