@@ -90,6 +90,7 @@ class Page extends Component {
 
   handleClose = () => {
     this.setState({ visible: false, editdata: null });
+    this.formRef.current.resetFields();
   };
 
   handleSubmit = () => {

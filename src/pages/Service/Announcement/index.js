@@ -81,6 +81,7 @@ class Page extends Component {
 
   handleClose = () => {
     this.setState({ visible: false, editdata: null });
+    this.formRef.current.resetFields();
   };
 
   handleSubmit = () => {
@@ -160,9 +161,9 @@ class Page extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={addLoading || updateLoading}
-          destroyOnClose
+          destroyOnClose={false}
         >
-          <Form layout="vertical" ref={this.formRef}>
+          <Form preserve={false} layout="vertical" ref={this.formRef}>
             <Form.Item
               className={styles.formItem}
               label="标题"

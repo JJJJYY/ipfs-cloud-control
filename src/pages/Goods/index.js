@@ -43,7 +43,6 @@ class Page extends Component {
     val2: '',
     val3: '',
     val4: '',
-    val5: '',
     val6: '',
     keys: '',
     keyg: '',
@@ -86,6 +85,40 @@ class Page extends Component {
     {
       title: '状态',
       dataIndex: 'status',
+      render(text) {
+        return (
+          <div>
+            {[
+              <Tag
+                color="black"
+                style={{
+                  display: text == 1 ? 'none' : 'block',
+                  width: '52px',
+                  height: '22px',
+                  textAlign: 'center',
+                }}
+              >
+                下架
+              </Tag>,
+              <Tag
+                color="green"
+                style={{
+                  display: text == 2 ? 'none' : 'block',
+                  width: '52px',
+                  height: '22px',
+                  textAlign: 'center',
+                }}
+              >
+                上架
+              </Tag>,
+            ]}
+          </div>
+        );
+      },
+    },
+    {
+      title: '',
+      dataIndex: 'status',
       render: (text, a) => (
         <div>
           {' '}
@@ -100,11 +133,10 @@ class Page extends Component {
           >
             <Button
               style={{
-                backgroundColor: '#52C41A',
-                borderColor: '#52C41A',
+                color: '#1890FF',
                 display: text == 1 ? 'none' : 'block',
+                border: 'none',
               }}
-              type="primary"
             >
               上架
             </Button>{' '}
@@ -119,8 +151,11 @@ class Page extends Component {
             cancelText="No"
           >
             <Button
-              style={{ display: text == 2 ? 'none' : 'block' }}
-              type="primary"
+              style={{
+                display: text == 2 ? 'none' : 'block',
+                border: 'none',
+                color: '#000',
+              }}
             >
               下架
             </Button>
@@ -131,7 +166,6 @@ class Page extends Component {
     {
       title: '操作',
       operation: true,
-      showDelete: false,
       width: 60,
       fixed: 'right',
       actions() {
@@ -367,13 +401,7 @@ class Page extends Component {
     });
   };
   render() {
-    const {
-      previewVisible,
-      previewImage,
-      previewTitle,
-      val5,
-      val6,
-    } = this.state;
+    const { previewVisible, previewImage, previewTitle, val6 } = this.state;
     const { visible } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const { Option } = Select;
@@ -473,7 +501,7 @@ class Page extends Component {
             this.state.count = pagination.pageSize;
             this.loadData();
           }}
-          onDelete={this.handleDel}
+          onPutaway={this.putaway}
           onActions={this.handleAction}
           rowKey="id"
         />
