@@ -499,31 +499,25 @@ class Page extends Component {
             >
               <Input maxLength={9} allowClear />
             </Form.Item>
-            <Form.Item
-              style={{
-                display:
-                  this.state.keys == 1
-                    ? 'none'
-                    : this.state.keys == 5
-                    ? 'none'
-                    : this.state.keys == 0
-                    ? 'none'
-                    : 'block',
-              }}
-              name="lowest_num"
-              label="最低起购/T"
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  pattern: /^\d+$|^\d+[.]?\d+$/,
-                  message: '只能输入数字',
-                },
-              ]}
-            >
-              <Input maxLength={9} allowClear />
-            </Form.Item>
+            {this.state.keys == 1 ||
+            this.state.keys == 5 ||
+            this.state.keys == 0 ? null : (
+              <Form.Item
+                name="lowest_num"
+                label="最低起购/T"
+                rules={[
+                  {
+                    required: true,
+                  },
+                  {
+                    pattern: /^\d+$|^\d+[.]?\d+$/,
+                    message: '只能输入数字',
+                  },
+                ]}
+              >
+                <Input maxLength={9} allowClear />
+              </Form.Item>
+            )}
             <Form.Item
               name="introduction"
               label="简介"
