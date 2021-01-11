@@ -383,7 +383,6 @@ class Page extends Component {
         ),
         onOk: () => {
           const { remark } = this.state;
-
           return new Promise((resolve, reject) => {
             this.formRef.current
               .validateFields()

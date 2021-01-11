@@ -225,6 +225,7 @@ class Page extends Component {
   };
 
   handleAction = id => {
+    //编辑
     this.setState(
       {
         rdd: id.id,
@@ -299,9 +300,6 @@ class Page extends Component {
     });
   };
 
-  redactSubmit = () => {
-    this.formRef1.current.validateFields();
-  };
   readactCancel = () => {
     this.setState({
       visible1: false,
@@ -311,28 +309,15 @@ class Page extends Component {
 
   handleCancel = () => this.setState({ previewVisible: false });
 
-  handlePreview = async file => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    this.setState({
-      previewImage: file.url || file.preview,
-      previewVisible: true,
-      previewTitle:
-        file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
-    });
-  };
   onSelect = key => {
     this.setState({
       keys: key,
     });
   };
   render() {
-    const { previewVisible, previewImage, previewTitle } = this.state;
     const { visible } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const { Option } = Select;
-    const { Panel } = Collapse;
     const layout = {
       labelCol: {
         span: 8,
@@ -342,14 +327,6 @@ class Page extends Component {
       },
     };
 
-    function getBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
     const onFinish = values => {
       this.setState(
         {

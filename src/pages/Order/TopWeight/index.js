@@ -133,13 +133,7 @@ class Page extends Component {
       title: '备注',
       dataIndex: 'remark',
     },
-    // {
-    //   title: '质押数量',
-    //   dataIndex: 'pledged',
-    //   render: (text) => (
-    //     <div>{parseFloat(text)}</div>
-    //   ),
-    // },
+
     {
       title: '操作',
       operation: true,
@@ -235,15 +229,6 @@ class Page extends Component {
     });
   };
   render() {
-    const {
-      page,
-      count,
-      account,
-      status,
-      timeEnd,
-      timeStart,
-      product_name,
-    } = this.state;
     const { data, listLoading, updateLoading } = this.props;
     const { placement, visible1 } = this.state;
 
@@ -251,12 +236,6 @@ class Page extends Component {
       <div>
         <SearchGroup
           onSearch={e => {
-            // if (e && e.time) {
-            //   e.time = [
-            //     e.time[0].format('YYYY-MM-DD'),
-            //     e.time[1].format('YYYY-MM-DD'),
-            //   ];
-            // }
             this.state.search = e;
             this.state.page = 1;
             this.loadData();
@@ -404,7 +383,7 @@ class Page extends Component {
                 columns={this.columnsReward}
                 dataSource={this.state.ids.info}
                 pagination={false}
-                rowKey="invitation_count"
+                rowKey="id"
               />
             </div>
             <div
@@ -415,7 +394,7 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '206px', padding: '16px' }}>技术服务费</div>
+              <div style={{ width: '230px', padding: '16px' }}>技术服务费</div>
               <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.service_fee}
               </div>
@@ -428,38 +407,45 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '206px', padding: '16px' }}>专项折扣</div>
+              <div style={{ width: '230px', padding: '16px' }}>专项折扣</div>
               <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.discount}
               </div>
             </div>
             <div style={{ width: '100%', height: '50px', marginTop: '50px' }}>
-              <div style={{ float: 'right', display: 'flex' }}>
-                <div style={{ lineHeight: '32px', marginRight: '10px' }}>
+              <div style={{ float: 'right', width: '160px', display: 'flex' }}>
+                <div
+                  style={{ lineHeight: '32px', flex: 1, textAlign: 'center' }}
+                >
                   数量
                 </div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <Input
                     style={{ width: '50px', textAlign: 'center' }}
                     readOnly
                     value={this.state.ids.num}
                   />
                 </div>
-                <div style={{ lineHeight: '32px', marginLeft: '20px' }}>
+                <div
+                  style={{ lineHeight: '32px', flex: 1, textAlign: 'center' }}
+                >
                   集群
                 </div>
               </div>
             </div>
             <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
-              <div style={{ float: 'right', display: 'flex' }}>
-                <div style={{ marginRight: '7px', lineHeight: '28px' }}>
+              <div style={{ float: 'right', display: 'flex', width: '240px' }}>
+                <div
+                  style={{ flex: 1, textAlign: 'right', lineHeight: '28px' }}
+                >
                   总配置费用:
                 </div>
                 <div
                   style={{
                     fontSize: '18px',
                     color: 'orange',
-                    marginRight: '20px',
+                    flex: 1,
+                    textIndent: '10px',
                   }}
                 >
                   ¥{this.state.ids.total_amount}
