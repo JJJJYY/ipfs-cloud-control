@@ -160,7 +160,7 @@ class Page extends Component {
         title: '修改密码',
         content: (
           <div>
-            用户：{row.name}
+            用户：{row.username}
             <br />
             <br />
             <Form ref={this.formRef}>
@@ -213,14 +213,14 @@ class Page extends Component {
               title: '编辑用户角色',
               content: (
                 <div>
-                  用户：{row.name}
+                  用户：{row.username}
                   <br />
                   <br />
                   <Form ref={this.formRef}>
                     <Form.Item
                       label="角色"
                       name="sys_role_id"
-                      initialValue={data.roles.sys_role_id}
+                      initialValue={data.userRole.sys_role_id}
                       rules={[{ required: true, message: `请选择角色` }]}
                     >
                       <Select placeholder="请选择角色">
