@@ -40,6 +40,8 @@ class Page extends Component {
     discount: '',
     selectedRowKeys: [],
     dataActive: null,
+    discount: '',
+    totale: '',
   };
   formRef = React.createRef();
 
@@ -221,7 +223,6 @@ class Page extends Component {
             style={{ width: '100%' }}
             placeholder="请输入正数"
             onChange={that.onGenderChange}
-            defaultValue={1}
             min={1}
             step={1}
             precision=""
@@ -239,6 +240,7 @@ class Page extends Component {
             style={{ width: '100%' }}
             min={0.1}
             step={0.1}
+            onChange={that.onGenderChanges}
             precision="2"
             placeholder="最多可输入小数位后两位,仅可输入正数"
           />
@@ -280,7 +282,17 @@ class Page extends Component {
     this.asdda();
   }
   onGenderChange(value) {
-    console.log(value);
+    console.log(this);
+    //  let num = value
+    //   this.setState({
+    //     totale: this.state.price*num*this.state.discount
+    //   })
+    //   console.log(this.state.totale)
+  }
+  onGenderChanges(value) {
+    this.setState({
+      discount: value,
+    });
   }
   loadData = () => {
     const { page, count, search } = this.state;
@@ -305,7 +317,9 @@ class Page extends Component {
             dataActive: res,
             price: res[0].amount,
           },
-          () => {},
+          () => {
+            console.log(this.state.price);
+          },
         );
       });
   };
