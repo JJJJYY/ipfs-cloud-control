@@ -59,7 +59,7 @@ class Page extends Component {
       width: 60,
       fixed: 'right',
       actions() {
-        return ['授权页面', '授权操作'];
+        return ['授权页面'];
       },
     },
   ];

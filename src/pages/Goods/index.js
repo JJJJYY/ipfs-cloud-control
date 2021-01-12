@@ -227,6 +227,7 @@ class Page extends Component {
 
   handleAction = id => {
     //编辑
+
     this.setState(
       {
         rdd: id.id,
@@ -240,12 +241,18 @@ class Page extends Component {
             },
           })
           .then(result => {
-            this.setState({
-              ids: result,
-              keyg: result.type.id,
-              lus: result.info,
-              visible1: true,
+            this.formRef.current.setFieldsValue({
+              title: data.title,
+              rank: data.rank,
+              content: data.content,
             });
+            // this.setState({
+            //   ids: result,
+            //   keyg: result.type.id,
+            //   lus: result.info,
+            //   visible1: true,
+            // });
+            // console.log(this.state.lus)
           });
       },
     );
@@ -632,7 +639,7 @@ class Page extends Component {
           >
             <Form
               layout="vertical"
-              ref={this.formRef}
+              ref={this.formRef1}
               name="control-hooks"
               onSubmit={this.handleSubmit}
               onFinish={onFinish}
