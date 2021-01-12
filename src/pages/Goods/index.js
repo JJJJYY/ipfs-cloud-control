@@ -645,7 +645,7 @@ class Page extends Component {
                 ]}
               >
                 <Select
-                  defaultValue={this.state.ids.product_type_id}
+                  initialValue={this.state.ids.product_type_id}
                   onChange={this.onSelect}
                   disabled
                 >

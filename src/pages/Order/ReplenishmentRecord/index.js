@@ -56,12 +56,14 @@ class Page extends Component {
       title: '商品名称',
       dataIndex: 'group',
       render: text => <div>{text.product_group_name}</div>,
+      id: 'id',
     },
     {
       title: '数量（集群）',
       dataIndex: 'num',
       editable: true,
       required: true,
+
       render: text => <div>{parseFloat(text)}</div>,
       custom() {
         return <InputNumber min={0} />;
@@ -70,6 +72,7 @@ class Page extends Component {
     {
       title: '技术服务费',
       dataIndex: 'service_fee',
+
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
@@ -80,6 +83,7 @@ class Page extends Component {
     {
       title: '折扣',
       dataIndex: 'discount',
+
       editable: true,
       required: true,
       render: text => <div>{parseFloat(text)}</div>,
@@ -89,12 +93,14 @@ class Page extends Component {
     },
     {
       title: '订单金额',
+
       dataIndex: 'total_amount',
       editable: false,
       required: false,
     },
     {
       title: '状态',
+
       dataIndex: 'audit_status',
       editable: true,
       required: true,
@@ -123,27 +129,35 @@ class Page extends Component {
     },
     {
       title: '创建人',
-      dataIndex: 'user',
-      render: text => <div>{text.user_name}</div>,
+
+      dataIndex: 'admin_user',
+      render: text => <div>{text.username}</div>,
     },
     {
       title: '创建时间',
+
       dataIndex: 'created_at',
     },
     {
       title: '审核人',
-      dataIndex: 'audit_user',
+
+      dataIndex: 'audit_account',
     },
     {
       title: '审核时间',
+
       dataIndex: 'audit_time',
+      render: text => <div>{text == null ? '-' : text}</div>,
     },
     {
       title: '备注',
+
       dataIndex: 'remark',
+      render: text => <div>{text == null ? '-' : text}</div>,
     },
     {
       title: '操作',
+
       operation: true,
       showEdit: true,
       width: 60,
@@ -633,14 +647,15 @@ class Page extends Component {
             </Button>
           )}
         </div>
-        <EditModal
+        {/* <EditModal
           visible={visible}
           width={630}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={addLoading}
+          rowKey="id"
           columns={this.modelColumns(active)}
-        />
+        /> */}
 
         <EditableTable
           columns={this.columns}
@@ -648,6 +663,7 @@ class Page extends Component {
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
+          rowKey="id"
           onChange={pagination => {
             this.state.page = pagination.current;
             this.state.count = pagination.pageSize;
@@ -655,7 +671,6 @@ class Page extends Component {
           }}
           onSave={this.handleSave}
           onActions={this.handleActions}
-          rowKey="id"
           rowSelection={rowSelection}
         />
       </div>

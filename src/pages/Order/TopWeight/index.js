@@ -132,6 +132,7 @@ class Page extends Component {
     {
       title: '备注',
       dataIndex: 'remark',
+      render: text => <div>{text == null ? '-' : text}</div>,
     },
 
     {
@@ -295,7 +296,7 @@ class Page extends Component {
                 />
               </Col>
               <Col span={12}>
-                <DescriptionItem title="UID" content={this.state.ids.id} />
+                <DescriptionItem title="UID" content={this.state.ids.user.id} />
               </Col>
             </Row>
             <Divider>收货信息</Divider>
@@ -304,13 +305,13 @@ class Page extends Component {
               <Col span={12}>
                 <DescriptionItem
                   title="姓名"
-                  content={this.state.ids.user.user_name}
+                  content={this.state.ids.express.express_name}
                 />
               </Col>
               <Col span={12}>
                 <DescriptionItem
                   title="手机"
-                  content={this.state.ids.user.phone}
+                  content={this.state.ids.express.express_mobile}
                 />
               </Col>
               <Col span={12}>
