@@ -9,12 +9,14 @@ import {
   Select,
   Table,
   Divider,
+  Alert,
   message,
   Col,
   Row,
   InputNumber,
 } from 'antd';
 import { connect } from 'umi';
+import { PoweroffOutlined } from '@ant-design/icons';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
 import SearchGroup from '@/components/SearchGroup';
@@ -45,6 +47,8 @@ class Page extends Component {
     userID: null,
     account: '',
     id: '',
+    switchflag: false,
+    loadings: [],
   };
   formRef = React.createRef();
 
@@ -70,8 +74,8 @@ class Page extends Component {
             checkedChildren="正常"
             unCheckedChildren="冻结"
             defaultChecked={text}
-            onChange={() => {
-              this.onChangeStatus(text, a);
+            onChange={switchflag => {
+              this.onChangeStatus(switchflag, a);
             }}
           />
         </div>
@@ -111,6 +115,7 @@ class Page extends Component {
     {
       title: '支付时间',
       dataIndex: 'pay_time',
+      render: (text, a) => <div>{a.status == 2 ? text : '-'} </div>,
     },
     {
       title: '付款金额',
@@ -124,9 +129,9 @@ class Page extends Component {
           <div>
             {
               [
-                <Tag color="blue">已下单</Tag>,
-                <Tag color="green">已完成</Tag>,
                 <Tag color="black">已取消</Tag>,
+                <Tag color="green">已下单</Tag>,
+                <Tag color="blue">已完成</Tag>,
               ][text]
             }
           </div>
@@ -135,13 +140,13 @@ class Page extends Component {
     },
   ];
 
-  onChangeStatus = (e, a) => {
+  onChangeStatus = (switchflag, a) => {
     let id = a.id;
     let status;
-    if (e == 0) {
-      status = 1;
-    } else {
+    if (switchflag == false) {
       status = 0;
+    } else {
+      status = 1;
     }
     this.props.dispatch({
       type: 'authUser/updateStatus',
@@ -308,71 +313,6 @@ class Page extends Component {
               </div>
             </div>
           )}
-        </Drawer>
-
-        <Drawer
-          width={720}
-          placement="right"
-          onClose={this.handleCloseDrawer}
-          visible={visibleInviteDrawer}
-        >
-          <div>
-            <Divider>邀请纪录</Divider>
-            <Row>
-              <div style={{ width: '100%' }}>
-                <SearchGroup
-                  onSearch={e => {
-                    this.state.invitePage = 1;
-                    this.state.rank = e ? e.rank : 0;
-                  }}
-                  items={[
-                    {
-                      label: '层级关系',
-                      name: 'rank',
-                      custom: (
-                        <Select>
-                          <Option value={1}>1级</Option>
-                          <Option value={2}>2级</Option>
-                        </Select>
-                      ),
-                    },
-                  ]}
-                />
-                <OperationGroup
-                  onExport={all => {
-                    this.props.dispatch({
-                      type: 'authUser/inviteDetailExport',
-                      payload: {
-                        id: userID,
-                        page: invitePage,
-                        count: inviteCount,
-                        rank: rank ? rank : 0,
-                        maxrank: 2,
-                        all: all,
-                      },
-                    });
-                  }}
-                />
-                <Table
-                  columns={this.columnsInvite}
-                  loading={listLoading}
-                  dataSource={inviteList ? inviteList.list : []}
-                  onChange={pagination => {
-                    this.state.invitePage = pagination.current;
-                    this.state.inviteCount = pagination.pageSize;
-                  }}
-                  pagination={{
-                    total: inviteList ? inviteList.total : 0,
-                    current: inviteList ? inviteList.current : 0,
-                    showTotal: total => {
-                      return `总数:${total}`;
-                    },
-                  }}
-                  rowKey="id"
-                />
-              </div>
-            </Row>
-          </div>
         </Drawer>
       </div>
     );

@@ -39,6 +39,7 @@ class Page extends Component {
     remark: '',
     discount: '',
     selectedRowKeys: [],
+    dataActive: null,
   };
   formRef = React.createRef();
 
@@ -198,20 +199,22 @@ class Page extends Component {
       custom() {
         return (
           <Select>
-            {active &&
-              active.map(row => (
-                <Option value={row.id} key={row.id}>
-                  {row.product_group_name}
-                </Option>
-              ))}
+            {active.length > 0
+              ? active.map(row => (
+                  <Option value={row.id} key={row.id}>
+                    {row.product_group_name}
+                  </Option>
+                ))
+              : null}
           </Select>
         );
       },
     },
     {
-      title: '数量(TB)',
+      title: '数量(集群)',
       key: 'num',
       required: true,
+
       custom() {
         return (
           <InputNumber
@@ -244,7 +247,6 @@ class Page extends Component {
       title: '技术服务费',
       key: 'service_fee',
       required: true,
-
       custom() {
         return (
           <InputNumber
@@ -260,15 +262,10 @@ class Page extends Component {
     {
       title: '订单金额',
       key: 'amount',
+
       custom() {
-        return (
-          <Input
-            disabled
-            style={{ width: '100%' }}
-            placeholder="系统自动计算金额"
-            value={1}
-          />
-        );
+        console.log(active[0]);
+        return <Input readOnly style={{ width: '100%' }} />;
       },
     },
     {
@@ -302,6 +299,7 @@ class Page extends Component {
       .then(res => {
         this.setState(
           {
+            dataActive: res,
             price: res[0].amount,
           },
           () => {},
@@ -427,6 +425,7 @@ class Page extends Component {
   };
 
   handleSubmit = values => {
+    console.log(values);
     this.props
       .dispatch({
         type: 'replenishmentRecord/add',
@@ -505,7 +504,6 @@ class Page extends Component {
   render() {
     const { visible, page, count, search, selectedRowKeys } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
-
     const rowSelection =
       search && search.status == 0
         ? {
@@ -647,7 +645,7 @@ class Page extends Component {
             </Button>
           )}
         </div>
-        {/* <EditModal
+        <EditModal
           visible={visible}
           width={630}
           onOk={this.handleSubmit}
@@ -655,7 +653,7 @@ class Page extends Component {
           confirmLoading={addLoading}
           rowKey="id"
           columns={this.modelColumns(active)}
-        /> */}
+        />
 
         <EditableTable
           columns={this.columns}

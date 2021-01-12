@@ -42,6 +42,7 @@ class Page extends Component {
     keyg: '',
     rdd: null,
     lus: [],
+    loadings: false,
     text: '确认上架吗?',
     texta: '确认下架吗?',
     info: [
@@ -314,8 +315,9 @@ class Page extends Component {
       keys: key,
     });
   };
+
   render() {
-    const { visible } = this.state;
+    const { visible, loadings } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const { Option } = Select;
     const layout = {
@@ -330,10 +332,12 @@ class Page extends Component {
     const onFinish = values => {
       this.setState(
         {
+          loadings: true,
           lus: values.info,
         },
         () => {
           this.formRef.current.validateFields().then(row => {
+            console.log(row);
             const { rdd } = this.state;
             let rowId = null;
             if (rdd) {
@@ -365,6 +369,7 @@ class Page extends Component {
                   } else {
                     message.success('添加成功');
                     this.setState({
+                      loadings: false,
                       visible: false,
                       keys: 0,
                       info: [
@@ -382,6 +387,7 @@ class Page extends Component {
         },
       );
     };
+
     return (
       <div className="goods">
         <OperationGroup onAdd={this.handleActions} />
@@ -607,8 +613,9 @@ class Page extends Component {
                   style={{ padding: '4px 10px' }}
                   type="primary"
                   htmlType="submit"
+                  loading={loadings}
                 >
-                  确定
+                  {this.state.loadings ? '提交中' : '提交'}
                 </Button>
               </div>
             </Form.Item>
@@ -823,8 +830,9 @@ class Page extends Component {
                     style={{ padding: '4px 10px' }}
                     type="primary"
                     htmlType="submit"
+                    loading={loadings}
                   >
-                    确定
+                    {this.state.loadings ? '提交中' : '提交'}
                   </Button>
                 </div>
               </Form.Item>

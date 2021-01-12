@@ -51,7 +51,7 @@ export default {
     active(state, { payload: { data } }) {
       return {
         ...state,
-        active: data instanceof Array ? data : [],
+        active: msg || data,
       };
     },
   },

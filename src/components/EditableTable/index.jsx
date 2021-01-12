@@ -6,6 +6,7 @@ const EditableCell = ({
   required,
   custom,
   dataIndex,
+  status,
   id,
   title,
   record,
@@ -18,7 +19,7 @@ const EditableCell = ({
         <Form.Item
           style={{ margin: 0 }}
           name={dataIndex}
-          key={dataIndex}
+          key={status}
           valuePropName={valuePropName}
           rules={[
             {

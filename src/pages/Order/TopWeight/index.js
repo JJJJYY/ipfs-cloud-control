@@ -49,7 +49,8 @@ class Page extends Component {
     },
     {
       title: 'UID',
-      dataIndex: 'id',
+      dataIndex: 'user',
+      render: text => <div>{text.id} </div>,
     },
     {
       title: '账号',
@@ -360,7 +361,9 @@ class Page extends Component {
               <Col span={12}>
                 <DescriptionItem
                   title="完成时间"
-                  content={this.state.ids.updated_at}
+                  content={
+                    this.state.ids.status == 2 ? this.state.ids.updated_at : '-'
+                  }
                 />
               </Col>
               <Col span={12}>
