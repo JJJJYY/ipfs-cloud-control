@@ -51,7 +51,7 @@ export default {
     active(state, { payload: { data } }) {
       return {
         ...state,
-        active: msg || data,
+        active: data,
       };
     },
   },

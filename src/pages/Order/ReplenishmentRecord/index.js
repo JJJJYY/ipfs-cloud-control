@@ -178,7 +178,7 @@ class Page extends Component {
     },
   ];
 
-  modelColumns = active => [
+  modelColumns = (active, that) => [
     {
       title: '用户账号',
       key: 'username',
@@ -220,6 +220,8 @@ class Page extends Component {
           <InputNumber
             style={{ width: '100%' }}
             placeholder="请输入正数"
+            onChange={that.onGenderChange}
+            defaultValue={1}
             min={1}
             step={1}
             precision=""
@@ -264,7 +266,6 @@ class Page extends Component {
       key: 'amount',
 
       custom() {
-        console.log(active[0]);
         return <Input readOnly style={{ width: '100%' }} />;
       },
     },
@@ -278,7 +279,9 @@ class Page extends Component {
     this.loadData();
     this.asdda();
   }
-
+  onGenderChange(value) {
+    console.log(value);
+  }
   loadData = () => {
     const { page, count, search } = this.state;
     this.props.dispatch({
@@ -651,8 +654,9 @@ class Page extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={addLoading}
+          onGenderChange={this.onGenderChange}
           rowKey="id"
-          columns={this.modelColumns(active)}
+          columns={this.modelColumns(active, this)}
         />
 
         <EditableTable

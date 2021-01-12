@@ -9,7 +9,6 @@ export default class EditModal extends Component {
     wrapperCol: { span: 13 },
   };
   formRef = React.createRef();
-
   onOk = () => {
     this.formRef.current.validateFields().then(values => {
       const { onOk } = this.props;
