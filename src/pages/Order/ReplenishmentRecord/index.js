@@ -157,7 +157,7 @@ class Page extends Component {
       title: '备注',
 
       dataIndex: 'remark',
-      render: text => <div>{text == null ? '-' : text}</div>,
+      render: text => <div>{text == null ? '-' : text == '' ? '-' : text}</div>,
     },
     {
       title: '操作',
@@ -341,9 +341,7 @@ class Page extends Component {
             dataActive: res,
             price: res[0].amount,
           },
-          () => {
-            console.log(this.state.price);
-          },
+          () => {},
         );
       });
   };
@@ -466,7 +464,6 @@ class Page extends Component {
   };
 
   handleSubmit = values => {
-    console.log(values);
     this.props
       .dispatch({
         type: 'replenishmentRecord/add',
