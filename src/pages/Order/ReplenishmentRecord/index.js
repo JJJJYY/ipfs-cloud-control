@@ -40,8 +40,9 @@ class Page extends Component {
     discount: '',
     selectedRowKeys: [],
     dataActive: null,
-    discount: '',
-    totale: '',
+    discount: 0,
+    number: 0,
+    jobNumber: '',
   };
   formRef = React.createRef();
 
@@ -281,19 +282,30 @@ class Page extends Component {
     this.loadData();
     this.asdda();
   }
-  onGenderChange(value) {
-    console.log(this);
-    //  let num = value
-    //   this.setState({
-    //     totale: this.state.price*num*this.state.discount
-    //   })
-    //   console.log(this.state.totale)
-  }
-  onGenderChanges(value) {
-    this.setState({
-      discount: value,
-    });
-  }
+  onGenderChange = value => {
+    this.setState(
+      {
+        number: value,
+      },
+      () => {
+        this.refs.confirmRef.formRef.current.setFieldsValue({
+          amount: this.state.number * this.state.discount * this.state.price,
+        });
+      },
+    );
+  };
+  onGenderChanges = value => {
+    this.setState(
+      {
+        discount: value,
+      },
+      () => {
+        this.refs.confirmRef.formRef.current.setFieldsValue({
+          amount: this.state.number * this.state.discount * this.state.price,
+        });
+      },
+    );
+  };
   loadData = () => {
     const { page, count, search } = this.state;
     this.props.dispatch({
@@ -670,6 +682,7 @@ class Page extends Component {
           confirmLoading={addLoading}
           onGenderChange={this.onGenderChange}
           rowKey="id"
+          ref="confirmRef"
           columns={this.modelColumns(active, this)}
         />
 
