@@ -266,24 +266,7 @@ class Page extends Component {
         introduction: data.introduction,
         product_type_id: data.product_type_id,
         name: data.name,
-        en_name: data.en_name,
-        contract_duration: data.contract_duration,
-        en_highlight: data.en_highlight,
-        en_slogan: data.en_slogan,
-        en_tag: data.en_tag,
-        highlight: data.highlight,
-        weight_asset: data.weight_asset,
-        min_limit: data.min_limit,
         price: data.price,
-        quantity: data.quantity,
-        remaining_quantity: data.remaining_quantity,
-        service_charge_rate: data.service_charge_rate,
-        settlement_period: data.settlement_period,
-        slogan: data.slogan,
-        start_time: moment(data.start_time, 'YYYY-MM-DD HH:mm:ss'),
-        tag: data.tag,
-        weight: data.weight,
-        contract_details: data.contract_details,
         status: data.status,
       });
   };
@@ -337,7 +320,7 @@ class Page extends Component {
           lus: values.info,
         },
         () => {
-          this.formRef1.current.validateFields().then(row => {
+          this.formRef.current.validateFields().then(row => {
             const { rdd } = this.state;
             let rowId = null;
             if (rdd) {
@@ -365,6 +348,7 @@ class Page extends Component {
                     this.setState({
                       visible1: false,
                       ids: undefined,
+                      loadings: false,
                     });
                   } else {
                     message.success('添加成功');
