@@ -288,9 +288,15 @@ class Page extends Component {
         number: value,
       },
       () => {
-        this.refs.confirmRef.formRef.current.setFieldsValue({
-          amount: this.state.number * this.state.discount * this.state.price,
-        });
+        if (this.state.number * this.state.discount * this.state.price) {
+          this.refs.confirmRef.formRef.current.setFieldsValue({
+            amount: this.state.number * this.state.discount * this.state.price,
+          });
+        } else {
+          this.refs.confirmRef.formRef.current.setFieldsValue({
+            amount: 0,
+          });
+        }
       },
     );
   };
@@ -300,9 +306,15 @@ class Page extends Component {
         discount: value,
       },
       () => {
-        this.refs.confirmRef.formRef.current.setFieldsValue({
-          amount: this.state.number * this.state.discount * this.state.price,
-        });
+        if (this.state.number * this.state.discount * this.state.price) {
+          this.refs.confirmRef.formRef.current.setFieldsValue({
+            amount: this.state.number * this.state.discount * this.state.price,
+          });
+        } else {
+          this.refs.confirmRef.formRef.current.setFieldsValue({
+            amount: 0,
+          });
+        }
       },
     );
   };
