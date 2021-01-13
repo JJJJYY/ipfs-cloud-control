@@ -9,6 +9,7 @@ import Upload from '@/components/Upload';
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     visible: false,
   };
 
@@ -96,7 +97,7 @@ class Page extends Component {
     },
     {
       title: '创建时间',
-      dataIndex: 'create_time',
+      dataIndex: 'created_at',
     },
     {
       title: '操作',
@@ -167,6 +168,7 @@ class Page extends Component {
       type: 'banner/queryList',
       payload: {
         page: this.state.page,
+        count: this.state.count,
       },
     });
   };

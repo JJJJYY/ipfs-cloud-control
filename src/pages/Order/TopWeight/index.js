@@ -398,7 +398,7 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '230px', padding: '16px' }}>技术服务费</div>
+              <div style={{ width: '187px', padding: '16px' }}>技术服务费</div>
               <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.service_fee}
               </div>
@@ -411,7 +411,7 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '230px', padding: '16px' }}>专项折扣</div>
+              <div style={{ width: '187px', padding: '16px' }}>专项折扣</div>
               <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.discount}
               </div>

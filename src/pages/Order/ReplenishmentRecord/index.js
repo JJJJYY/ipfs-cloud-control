@@ -693,6 +693,7 @@ class Page extends Component {
           rowKey="id"
           ref="confirmRef"
           columns={this.modelColumns(active, this)}
+          maskClosable={false}
         />
 
         <EditableTable

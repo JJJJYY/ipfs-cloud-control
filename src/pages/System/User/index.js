@@ -12,6 +12,7 @@ class Page extends Component {
   state = {
     visible: false,
     page: 1,
+    count: 10,
   };
   formRef = React.createRef();
 
@@ -103,6 +104,7 @@ class Page extends Component {
       type: 'sysuser/queryList',
       payload: {
         page: this.state.page,
+        count: this.state.count,
       },
     });
   };

@@ -28,6 +28,7 @@ export default class EditModal extends Component {
     return (
       <Modal
         destroyOnClose
+        maskClosable={false}
         width={width ? width : 500}
         title={title ? title : '添加'}
         okText="提交"

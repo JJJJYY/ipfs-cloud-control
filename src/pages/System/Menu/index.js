@@ -24,6 +24,8 @@ const IconFont = createFromIconfontCN({
 
 class Page extends Component {
   state = {
+    page: 1,
+    count: 10,
     visible: false,
     sourceType: 0,
   };
@@ -97,6 +99,10 @@ class Page extends Component {
   loadData = () => {
     this.props.dispatch({
       type: 'sysmodule/queryTree',
+      payload: {
+        page: this.state.page,
+        count: this.state.count,
+      },
     });
   };
 

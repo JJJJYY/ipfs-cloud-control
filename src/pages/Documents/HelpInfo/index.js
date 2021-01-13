@@ -10,6 +10,7 @@ import styles from './index.less';
 class Page extends Component {
   state = {
     page: 1,
+    count: 10,
     visible: false,
     editdata: null,
   };
@@ -60,6 +61,7 @@ class Page extends Component {
       type: 'helpInfo/queryList',
       payload: {
         page: this.state.page,
+        count: this.state.count,
       },
     });
   };
@@ -170,6 +172,7 @@ class Page extends Component {
           onCancel={this.handleClose}
           confirmLoading={addLoading || updateLoading}
           destroyOnClose
+          maskClosable={false}
         >
           <Form layout="vertical" ref={this.formRef}>
             <Form.Item

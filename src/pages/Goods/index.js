@@ -231,6 +231,7 @@ class Page extends Component {
     this.setState(
       {
         rdd: id.id,
+        visible1: true,
       },
       () => {
         this.props
@@ -245,7 +246,6 @@ class Page extends Component {
               ids: result,
               keyg: result.type.id,
               lus: result.info,
-              visible1: true,
             });
           });
       },
@@ -398,6 +398,7 @@ class Page extends Component {
           footer={false}
           confirmLoading={addLoading || updateLoading}
           destroyOnClose
+          maskClosable={false}
         >
           <Form
             layout="vertical"
@@ -613,10 +614,11 @@ class Page extends Component {
             footer={false}
             onCancel={this.readactCancel}
             destroyOnClose
+            maskClosable={false}
           >
             <Form
               layout="vertical"
-              ref={this.formRef1}
+              ref={this.formRef}
               name="control-hooks"
               onSubmit={this.handleSubmit}
               onFinish={onFinish}
