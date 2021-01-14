@@ -247,6 +247,16 @@ class Page extends Component {
               keyg: result.type.id,
               lus: result.info,
             });
+            this.formRef1.current.setFieldsValue({
+              ids: result,
+              product_type_id: result.type.id,
+              specs: result.specs,
+              lowest_num: result.lowest_num,
+              introduction: result.introduction,
+              info: result.info,
+              status: result.status,
+              price: result.price,
+            });
           });
       },
     );
@@ -320,7 +330,7 @@ class Page extends Component {
           lus: values.info,
         },
         () => {
-          this.formRef.current.validateFields().then(row => {
+          this.formRef1.current.validateFields().then(row => {
             const { rdd } = this.state;
             let rowId = null;
             if (rdd) {
@@ -402,7 +412,7 @@ class Page extends Component {
         >
           <Form
             layout="vertical"
-            ref={this.formRef}
+            ref={this.formRef1}
             onFinish={onFinish}
             autoComplete="off"
             initialValues={{
@@ -618,7 +628,7 @@ class Page extends Component {
           >
             <Form
               layout="vertical"
-              ref={this.formRef}
+              ref={this.formRef1}
               name="control-hooks"
               onSubmit={this.handleSubmit}
               onFinish={onFinish}
@@ -629,7 +639,6 @@ class Page extends Component {
             >
               <Form.Item
                 name="product_type_id"
-                initialValue={this.state.ids.type.id}
                 label="商品名称"
                 rules={[
                   {
@@ -638,7 +647,7 @@ class Page extends Component {
                 ]}
               >
                 <Select
-                  initialValue={this.state.ids.product_type_id}
+                  initialValue="product_type_id"
                   onChange={this.onSelect}
                   disabled
                 >
@@ -651,24 +660,21 @@ class Page extends Component {
                   })}
                 </Select>
               </Form.Item>
-              <Form.Item
-                name="specs"
-                style={{ display: this.state.keyg == 5 ? 'none' : '' }}
-                initialValue={this.state.ids.specs}
-                label="规格型号"
-              >
-                <Input allowClear />
-              </Form.Item>
+              {this.state.keyg == 5 ? null : (
+                <Form.Item name="specs" label="规格型号">
+                  <Input allowClear />
+                </Form.Item>
+              )}
+
               <Form.Item
                 name="price"
                 label={
-                  this.state.ids.type.id == 1
+                  this.state.keyg == 1
                     ? '单价/台'
-                    : this.state.ids.type.id == 5
+                    : this.state.keyg == 5
                     ? '单价/年/台'
                     : '单价/T'
                 }
-                initialValue={this.state.ids.price}
                 rules={[
                   {
                     required: true,
@@ -684,7 +690,6 @@ class Page extends Component {
                   // style={{ display: this.state.keyg == 1 ? 'none' : this.state.keyg == 5 ? 'none' : this.state.keyg == 0 ? 'none' : 'block' }}
                   name="lowest_num"
                   label="最低起购/T"
-                  initialValue={this.state.ids.lowest_num}
                 >
                   <Input allowClear />
                 </Form.Item>
@@ -693,7 +698,6 @@ class Page extends Component {
               <Form.Item
                 name="introduction"
                 label="简介"
-                initialValue={this.state.ids.introduction}
                 rules={[
                   {
                     required: true,
@@ -789,17 +793,13 @@ class Page extends Component {
               <Form.Item
                 name="status"
                 label="状态"
-                initialValue={this.state.ids.status}
                 rules={[
                   {
                     required: true,
                   },
                 ]}
               >
-                <Radio.Group
-                  onChange={this.onChange}
-                  value={this.state.ids.status}
-                >
+                <Radio.Group onChange={this.onChange} value="status">
                   <Radio value={1}>上架</Radio>
                   <Radio value={2}>下架</Radio>
                 </Radio.Group>
