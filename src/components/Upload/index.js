@@ -69,12 +69,14 @@ class UploadItem extends Component {
           data={{ token: token }}
           fileList={fileList.length ? fileList : null}
           maxCount={limit}
-          defaultFileList={[
-            {
-              name: value,
-              url: value,
-            },
-          ]}
+          defaultFileList={
+            value && [
+              {
+                name: value,
+                url: value,
+              },
+            ]
+          }
           onChange={info => {
             const ispic =
               info.file.type === 'image/jpeg' ||
@@ -90,7 +92,8 @@ class UploadItem extends Component {
           onPreview={this.handlePreview}
           beforeUpload={this.beforeUpload}
         >
-          {fileList.length >= (limit == null ? 1 : limit) || showDefault
+          {fileList.length >= (limit == null ? 1 : limit) ||
+          (value && showDefault)
             ? null
             : uploadButton}
         </Upload>
