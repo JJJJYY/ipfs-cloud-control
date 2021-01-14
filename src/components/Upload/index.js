@@ -4,7 +4,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 
 class UploadItem extends Component {
-  state = { fileList: [], previewImage: null };
+  state = { fileList: [], previewImage: null, showDefault: true };
 
   componentDidMount() {
     const { onRef, dispatch, tokenTime } = this.props;
@@ -50,14 +50,15 @@ class UploadItem extends Component {
   };
 
   render() {
-    const { fileList, previewImage } = this.state;
-    const { limit, token, onChange } = this.props;
+    const { fileList, previewImage, showDefault } = this.state;
+    const { limit, token, onChange, value } = this.props;
     const uploadButton = (
       <div>
         <UploadOutlined />
         <div>选择上传</div>
       </div>
     );
+
     return (
       <div>
         <Upload
@@ -66,21 +67,32 @@ class UploadItem extends Component {
           action="https://up-z2.qiniup.com/"
           listType="picture-card"
           data={{ token: token }}
-          fileList={fileList}
+          fileList={fileList.length ? fileList : null}
+          maxCount={limit}
+          defaultFileList={[
+            {
+              name: value,
+              url: value,
+            },
+          ]}
           onChange={info => {
             const ispic =
               info.file.type === 'image/jpeg' ||
               info.file.type === 'image/jpg' ||
               info.file.type === 'image/png';
             if (ispic) {
-              this.setState({ fileList: info.fileList });
+              this.setState({ fileList: info.fileList, showDefault });
               onChange && onChange(this.urls());
+            } else {
+              this.setState({ showDefault: false });
             }
           }}
           onPreview={this.handlePreview}
           beforeUpload={this.beforeUpload}
         >
-          {fileList.length >= (limit == null ? 1 : limit) ? null : uploadButton}
+          {fileList.length >= (limit == null ? 1 : limit) || showDefault
+            ? null
+            : uploadButton}
         </Upload>
         <Modal
           visible={previewImage !== null}
