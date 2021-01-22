@@ -91,16 +91,16 @@ const EditableTable = ({
       });
       return;
     } else if (index == -3) {
-      Modal.confirm({
-        title: '上架?',
-        content: '确定上架吗',
-        okText: '提交',
-        okType: 'danger',
-        cancelText: '取消',
-        onOk: () => {
-          if (onPutaway) onPutaway(record.id);
-        },
-      });
+      // Modal.confirm({
+      //   title: '上架?',
+      //   content: '确定上架吗',
+      //   okText: '提交',
+      //   okType: 'danger',
+      //   cancelText: '取消',
+      //   onOk: () => {
+      //     if (onPutaway) onPutaway(record.id);
+      //   },
+      // });
       return;
     }
     if (onActions) onActions(record, index);

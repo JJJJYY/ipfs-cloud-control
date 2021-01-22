@@ -6,21 +6,18 @@ import {
   Form,
   Input,
   Popconfirm,
-  message,
-  DatePicker,
   InputNumber,
+  message,
   Tag,
   Button,
-  Collapse,
   Space,
   Radio,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
-import Editor from '@/components/Editor';
-import moment from 'moment';
+
 import Upload from '@/components/Upload';
 import styles from './index.less';
 import './index.css';
@@ -43,6 +40,7 @@ class Page extends Component {
     rdd: null,
     lus: [],
     loadings: false,
+    isModalVisible: false,
     text: '确认上架吗?',
     texta: '确认下架吗?',
     info: [
@@ -150,6 +148,7 @@ class Page extends Component {
       },
     },
   ];
+
   confirm = e => {
     let aid = e.id;
     let statea = 1;
@@ -193,7 +192,7 @@ class Page extends Component {
       })
       .then(result => {
         if (result != 'error') {
-          message.info('上架成功');
+          message.info('下架成功');
           this.loadData();
         }
       });
@@ -220,7 +219,7 @@ class Page extends Component {
       })
       .then(data => {
         this.setState({
-          editdata: data,
+          editdata: data || [],
         });
       });
   };
@@ -232,6 +231,7 @@ class Page extends Component {
       {
         rdd: id.id,
         visible1: true,
+        isModalVisible: true,
       },
       () => {
         this.props
@@ -242,21 +242,25 @@ class Page extends Component {
             },
           })
           .then(result => {
-            this.setState({
-              ids: result,
-              keyg: result.type.id,
-              lus: result.info,
-            });
-            this.formRef1.current.setFieldsValue({
-              ids: result,
-              product_type_id: result.type.id,
-              specs: result.specs,
-              lowest_num: result.lowest_num,
-              introduction: result.introduction,
-              info: result.info,
-              status: result.status,
-              price: result.price,
-            });
+            if (result != 'error') {
+              this.setState({
+                ids: result,
+                keyg: result.type.id,
+                lus: result.info,
+              });
+              this.formRef1.current.setFieldsValue({
+                ids: result,
+                product_type_id: result.type.id,
+                specs: result.specs,
+                lowest_num: result.lowest_num,
+                introduction: result.introduction,
+                info: result.info,
+                status: result.status,
+                price: result.price,
+                stock: result.stock,
+                rank: result.rank,
+              });
+            }
           });
       },
     );
@@ -278,12 +282,15 @@ class Page extends Component {
         name: data.name,
         price: data.price,
         status: data.status,
+        stock: data.stock,
+        rank: data.rank,
       });
   };
 
   handleClose = () => {
     this.setState({
       visible: false,
+      isModalVisible: false,
       keys: 0,
       info: [
         {
@@ -311,7 +318,7 @@ class Page extends Component {
   };
 
   render() {
-    const { visible, loadings } = this.state;
+    const { visible, isModalVisible, loadings } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const { Option } = Select;
     const layout = {
@@ -491,6 +498,21 @@ class Page extends Component {
               </Form.Item>
             )}
             <Form.Item
+              name="stock"
+              label={this.state.keys == 1 ? '库存/台' : '库存/T'}
+              rules={[
+                {
+                  required: true,
+                },
+                {
+                  pattern: /^\d+$|^\d+[.]?\d+$/,
+                  message: '只能输入数字',
+                },
+              ]}
+            >
+              <Input maxLength={9} allowClear />
+            </Form.Item>
+            <Form.Item
               name="introduction"
               label="简介"
               rules={[
@@ -582,6 +604,21 @@ class Page extends Component {
               </Form.Item>
             </div>
             <Form.Item
+              name="rank"
+              label="排序"
+              rules={[
+                {
+                  required: true,
+                },
+                {
+                  pattern: /^\d+$|^\d+[.]?\d+$/,
+                  message: '只能输入数字',
+                },
+              ]}
+            >
+              <Input maxLength={9} allowClear />
+            </Form.Item>
+            <Form.Item
               name="status"
               label="状态"
               rules={[
@@ -646,11 +683,7 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Select
-                  initialValue="product_type_id"
-                  onChange={this.onSelect}
-                  disabled
-                >
+                <Select onChange={this.onSelect} disabled>
                   {this.state.editdata.map(val => {
                     return (
                       <Option key={val.id} value={val.id}>
@@ -694,7 +727,21 @@ class Page extends Component {
                   <Input allowClear />
                 </Form.Item>
               )}
-
+              <Form.Item
+                name="stock"
+                label={this.state.keyg == 1 ? '库存/台' : '库存/T'}
+                rules={[
+                  {
+                    required: true,
+                  },
+                  {
+                    pattern: /^\d+$|^\d+[.]?\d+$/,
+                    message: '只能输入数字',
+                  },
+                ]}
+              >
+                <Input maxLength={9} allowClear />
+              </Form.Item>
               <Form.Item
                 name="introduction"
                 label="简介"
@@ -790,6 +837,21 @@ class Page extends Component {
                   </Form.List>
                 </Form.Item>
               </div>
+              <Form.Item
+                name="rank"
+                label="排序"
+                rules={[
+                  {
+                    required: true,
+                  },
+                  {
+                    pattern: /^\d+$|^\d+[.]?\d+$/,
+                    message: '只能输入数字',
+                  },
+                ]}
+              >
+                <Input maxLength={9} allowClear />
+              </Form.Item>
               <Form.Item
                 name="status"
                 label="状态"

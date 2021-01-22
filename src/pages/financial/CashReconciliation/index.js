@@ -18,7 +18,7 @@ class Page extends Component {
 
   columns = [
     {
-      title: '创建时间',
+      title: '日期  ',
       dataIndex: 'create_time',
     },
     {

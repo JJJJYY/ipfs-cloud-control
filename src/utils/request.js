@@ -57,6 +57,9 @@ export default function request(url, option) {
         message.info(response.msg);
         history.push('/login');
       }
+      if (response.code == 401) {
+        message.error(response.msg);
+      }
       return fetchData(response);
     })
     .catch(e => {

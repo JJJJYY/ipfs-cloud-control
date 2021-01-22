@@ -66,7 +66,10 @@ export async function sysRoleModuleEdit(params) {
 // ----------------------- SysRoleOperate -----------------------
 
 export async function sysRoleOperateEdit(params) {
-  return request.post('Portal.SysRoleOperate.EditOperate', params);
+  return request.post(
+    'staff/sys/role-operate/editOperate?sys_role_id&operates',
+    params,
+  );
 }
 
 // ----------------------- SysModule -----------------------

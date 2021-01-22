@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Drawer, Button, Tree, Switch, Tag, Checkbox } from 'antd';
+import { Drawer, Button, Tree, Switch, Tag, Checkbox, message } from 'antd';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
@@ -59,7 +59,7 @@ class Page extends Component {
       width: 60,
       fixed: 'right',
       actions() {
-        return ['授权页面'];
+        return ['授权页面', '授权操作'];
       },
     },
   ];
@@ -203,6 +203,7 @@ class Page extends Component {
         payload: { sys_role_id: sys_role_id, modules: checkedKeys.checked },
       })
       .then(data => {
+        message.success('修改成功');
         if (data != 'error') {
           this.handleCloseDrawer();
         }
@@ -217,6 +218,7 @@ class Page extends Component {
         payload: { sys_role_id: sys_role_id, operates: operatesCheck },
       })
       .then(data => {
+        message.success('修改成功');
         if (data != 'error') {
           this.handleCloseDrawer();
         }
