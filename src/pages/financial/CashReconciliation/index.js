@@ -19,19 +19,19 @@ class Page extends Component {
   columns = [
     {
       title: '日期  ',
-      dataIndex: 'create_time',
+      dataIndex: 'day',
     },
     {
       title: '收入/元',
-      dataIndex: 'pid',
+      dataIndex: 'amount',
     },
-    {
-      title: '支出/元',
-      dataIndex: 'account',
-    },
+    // {
+    //   title: '支出/元',
+    //   dataIndex: 'account',
+    // },
     {
       title: '结算金额',
-      dataIndex: 'upayment_quantityp_user',
+      dataIndex: 'total_amount',
     },
   ];
 
@@ -66,7 +66,7 @@ class Page extends Component {
   render() {
     const { page, count, search } = this.state;
     const { data, listLoading, updateLoading } = this.props;
-
+    console.log(data.data);
     return (
       <div>
         <SearchGroup
@@ -84,7 +84,7 @@ class Page extends Component {
           items={[
             {
               label: '日期',
-              name: 'time',
+              name: 'timeStart',
               custom: <DatePicker.RangePicker />,
             },
           ]}
@@ -92,7 +92,7 @@ class Page extends Component {
 
         <EditableTable
           columns={this.columns}
-          dataSource={data ? data.list : []}
+          dataSource={data.data || []}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}

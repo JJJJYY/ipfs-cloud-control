@@ -87,15 +87,15 @@ export async function sysModuleTree(params) {
 
 // ----------------------- SysOperate -----------------------
 export async function sysOperateAdd(params) {
-  return request.post('Portal.SysOperate.Add', params);
+  return request.post('staff/sys/operate/add', params);
 }
 
 export async function sysOperateList(params) {
-  return request.post('Portal.SysOperate.List', params);
+  return request.post('staff/sys/operate/list', params);
 }
 
 export async function sysOperateUpdate(params) {
-  return request.post('Portal.SysOperate.Update', params);
+  return request.post('staff/sys/operate/update', params);
 }
 
 // ----------------------- 七牛 -----------------------
@@ -184,7 +184,7 @@ export async function incomeExport(params) {
 
 // ----------------------- Weight -----------------------
 export async function weightList(params) {
-  return request.post('Portal.Weight.List', params);
+  return request.post('staff/order/month', params);
 }
 
 export async function weightTopList(params) {
