@@ -163,7 +163,7 @@ class Page extends Component {
     {
       title: '数量',
       dataIndex: 'quantity',
-      render: (text, e) => (
+      render: (text, e, index) => (
         <div>
           {' '}
           数量:{' '}
@@ -172,7 +172,7 @@ class Page extends Component {
             min={1}
             step={1}
             defaultValue={text}
-            onChange={this.onGenderChange}
+            onChange={value => this.onGenderChange(value, e, index)}
             precision=""
           />{' '}
           {e.unit}
@@ -182,13 +182,14 @@ class Page extends Component {
     {
       title: '折扣',
       dataIndex: 'discount',
-      render: text => (
+      render: (text, e, index) => (
         <div>
           折扣:{' '}
           <InputNumber
             style={{ width: '70px' }}
             min={1}
             step={1}
+            onChange={value => this.onGenderChanges(value, e, index)}
             defaultValue={text}
             precision=""
           />
@@ -199,18 +200,35 @@ class Page extends Component {
       title: '小计',
       dataIndex: 'total_amount',
       render: (text, e, index) => (
-        <div style={{ color: 'orange' }}>¥{text}</div>
+        <div style={{ color: 'orange' }}>
+          {' '}
+          {console.log(text, 'text')}¥{text}
+        </div>
       ),
     },
   ];
   componentDidMount() {
     this.loadData();
   }
-  onGenderChange = e => {
+  onGenderChange = (value, e, index) => {
+    console.log(e, index, 'eeeeee,数量');
     const { info } = this.state;
-    info[0].quantity = e;
-    info[0].total_amount = info[0].price * info[0].quantity * info[0].discount;
-    console.log(info[0].total_amount);
+
+    info[index].quantity = value;
+    info[index].total_amount =
+      info[index].price * info[index].quantity * info[index].discount;
+    console.log(this.state.info, 'wqeqewq');
+    this.setState({ info });
+  };
+  onGenderChanges = (value, e, index) => {
+    console.log(e, index, 'eeeeee,折扣');
+    const { info } = this.state;
+
+    info[index].discount = value;
+    info[index].total_amount =
+      info[index].price * info[index].quantity * info[index].discount;
+    console.log(this.state.info, 'wqeqewq');
+    this.setState({ info });
   };
   loadData = () => {
     const { page, count, search } = this.state;
@@ -711,6 +729,7 @@ class Page extends Component {
               </Row>
               <Divider>产品名称</Divider>
               <div style={{ width: '100%' }}>
+                {console.log(this.state.info, 'his.state.info')}
                 <Table
                   columns={this.columnsCompile}
                   dataSource={this.state.info}

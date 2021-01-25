@@ -1,6 +1,6 @@
 import { Button, Col, Input, Row, Form } from 'antd';
 import React, { useState } from 'react';
-import omit from 'omit.js';
+// import omit from 'omit.js';
 import ItemMap from './map';
 import LoginContext from './LoginContext';
 import styles from './index.less';
