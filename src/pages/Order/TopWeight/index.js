@@ -79,6 +79,28 @@ class Page extends Component {
       dataIndex: 'follow_user',
     },
     {
+      title: '状态',
+      dataIndex: 'status',
+      render(text) {
+        return (
+          <div>
+            {
+              [
+                <Tag color="blue">已完成</Tag>,
+                <Tag color="green">已下单</Tag>,
+                <Tag color="black">已取消</Tag>,
+              ][text]
+            }
+          </div>
+        );
+      },
+    },
+    {
+      title: '总计',
+      dataIndex: 'total_amount',
+    },
+
+    {
       title: '操作',
       operation: true,
       showEdit: false,
@@ -331,29 +353,27 @@ class Page extends Component {
       const columns = [
         {
           title: '产品',
-          dataIndex: 'info',
-          render: text => {
-            return <div>{console.log(text)}</div>;
-          },
+          dataIndex: 'product_name',
         },
         {
           title: '单价',
-          dataIndex: 'info',
-          render: text => <div>{text.price}</div>,
+          dataIndex: 'price',
         },
         {
           title: '数量',
-          dataIndex: 'info',
-          render: text => <div>{text.quantity}</div>,
+          dataIndex: 'quantity',
         },
         {
           title: '折扣',
-          dataIndex: 'info',
-          render: text => <div>{text.discount}</div>,
+          dataIndex: 'discount',
         },
         {
           title: '技术服务费',
           dataIndex: 'service_fee',
+        },
+        {
+          title: '小计',
+          dataIndex: 'total_amount',
         },
       ];
       return (
@@ -361,7 +381,7 @@ class Page extends Component {
           {' '}
           <Table
             columns={columns}
-            dataSource={data.data}
+            dataSource={record.info}
             pagination={false}
             rowKey="id"
           />{' '}
