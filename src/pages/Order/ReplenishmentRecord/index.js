@@ -56,12 +56,12 @@ class Page extends Component {
       dataIndex: 'user',
       render: text => <div>{text.user_name}</div>,
     },
-    {
-      title: '商品名称',
-      dataIndex: 'group',
-      render: text => <div>{text.product_group_name}</div>,
-      id: 'id',
-    },
+    // {
+    //   title: '商品名称',
+    //   dataIndex: 'group',
+    //   render: text => <div>{text.product_group_name}</div>,
+    //   id: 'id',
+    // },
     {
       title: '数量（集群）',
       dataIndex: 'num',

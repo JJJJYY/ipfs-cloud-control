@@ -3,17 +3,22 @@ import {
   Drawer,
   Tag,
   Select,
+  Dropdown,
+  Space,
+  Badge,
   Table,
   Divider,
   Col,
   Row,
   Input,
+  message,
   Button,
   Form,
   InputNumber,
   DatePicker,
 } from 'antd';
 import { connect } from 'umi';
+import { DownOutlined } from '@ant-design/icons';
 import EditableTable from '@/components/EditableTable';
 import SearchGroup from '@/components/SearchGroup';
 import styles from './index.less';
@@ -37,6 +42,7 @@ class Page extends Component {
     status: '',
     info: null,
     search: null,
+    sum: 0,
     product_name: '',
     order_code: '',
     timeStart: '',
@@ -54,6 +60,10 @@ class Page extends Component {
       dataIndex: 'order_code',
     },
     {
+      title: '更新时间',
+      dataIndex: 'updated_at',
+    },
+    {
       title: 'UID',
       dataIndex: 'user',
       render: text => <div>{text.id} </div>,
@@ -63,51 +73,11 @@ class Page extends Component {
       dataIndex: 'user',
       render: text => <div>{text.user_name}</div>,
     },
-    {
-      title: '商品名称',
-      dataIndex: 'group',
-      render: text => <div>{text.product_group_name}</div>,
-    },
-    {
-      title: '数量',
-      dataIndex: 'num',
-      editable: true,
-      required: true,
-    },
-    {
-      title: '技术服务费',
-      dataIndex: 'service_fee',
-      editable: true,
-      required: true,
-    },
-    {
-      title: '折扣',
-      dataIndex: 'discount',
-      editable: true,
-      required: true,
-    },
-    {
-      title: '订单金额',
-      dataIndex: 'total_amount',
-      editable: false,
-      required: false,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      editable: true,
-      required: true,
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'created_at',
-    },
-    {
-      title: '备注',
-      dataIndex: 'remark',
-      render: text => <div>{text == null ? '-' : text}</div>,
-    },
 
+    {
+      title: '跟进人员',
+      dataIndex: 'follow_user',
+    },
     {
       title: '操作',
       operation: true,
@@ -175,7 +145,6 @@ class Page extends Component {
             onChange={value => this.onGenderChange(value, e, index)}
             precision=""
           />{' '}
-          {e.unit}
         </div>
       ),
     },
@@ -199,36 +168,41 @@ class Page extends Component {
     {
       title: '小计',
       dataIndex: 'total_amount',
-      render: (text, e, index) => (
-        <div style={{ color: 'orange' }}>
-          {' '}
-          {console.log(text, 'text')}¥{text}
-        </div>
-      ),
+      render: (text, e, index) => {
+        let a = text * 1;
+        return <div style={{ color: 'orange' }}> ¥{a.toFixed(2)}</div>;
+      },
     },
   ];
   componentDidMount() {
     this.loadData();
   }
   onGenderChange = (value, e, index) => {
-    console.log(e, index, 'eeeeee,数量');
-    const { info } = this.state;
+    const { info, ids, num } = this.state;
 
     info[index].quantity = value;
     info[index].total_amount =
       info[index].price * info[index].quantity * info[index].discount;
-    console.log(this.state.info, 'wqeqewq');
-    this.setState({ info });
+    this.setState({ info }, () => {
+      let sum = 0;
+      this.state.info.map(item => {
+        sum += item.total_amount * 1;
+      });
+      this.setState({ sum });
+    });
   };
   onGenderChanges = (value, e, index) => {
-    console.log(e, index, 'eeeeee,折扣');
-    const { info } = this.state;
-
+    const { info, ids, num } = this.state;
     info[index].discount = value;
     info[index].total_amount =
       info[index].price * info[index].quantity * info[index].discount;
-    console.log(this.state.info, 'wqeqewq');
-    this.setState({ info });
+    this.setState({ info }, () => {
+      let sum = 0;
+      this.state.info.map(item => {
+        sum += item.total_amount * 1;
+      });
+      this.setState({ sum });
+    });
   };
   loadData = () => {
     const { page, count, search } = this.state;
@@ -243,17 +217,18 @@ class Page extends Component {
     });
   };
 
-  handleSave = (row, id) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'weight/update',
-      payload: { id: id, ...row },
-    }).then(data => {
-      if (data != 'error') {
-        this.loadData();
-      }
-    });
-  };
+  // handleSave = (row, id) => {
+  //   console.log(row)
+  //   const { dispatch } = this.props;
+  //   dispatch({
+  //     type: 'weight/update',
+  //     payload: { id: id, ...row },
+  //   }).then(data => {
+  //     if (data != 'error') {
+  //       this.loadData();
+  //     }
+  //   });
+  // };
 
   handleActions = (id, index) => {
     if (index == 0) {
@@ -301,6 +276,7 @@ class Page extends Component {
           this.setState(
             {
               ids: result || [],
+              sum: result.total_amount * 1,
               info: result.info || [],
               visibleInviteDrawer: true,
             },
@@ -312,6 +288,7 @@ class Page extends Component {
             pay_img: result.pay_img,
             status: result.status,
             remark: result.remark,
+            service_fee: result.service_fee,
           });
         }
       });
@@ -322,11 +299,74 @@ class Page extends Component {
       visibleInviteDrawer: true,
     });
   };
+
   render() {
     const { data, listLoading, updateLoading } = this.props;
     const { placement, visible1, visibleInviteDrawer } = this.state;
-    const onFinish = (values, id) => {
-      console.log(values, this.state.ids.id);
+    const onFinish = values => {
+      this.props
+        .dispatch({
+          type: 'weight/update',
+          payload: {
+            id: this.state.ids.id,
+            info: this.state.info,
+            follow_user: values.follow_user,
+            contract_no: values.contract_no,
+            pay_img: values.pay_img,
+            status: values.status,
+            remark: values.remark,
+            service_fee: values.service_fee,
+          },
+        })
+        .then(res => {
+          this.setState({
+            visibleInviteDrawer: false,
+          });
+          message.success('修改成功');
+        });
+    };
+
+    const expandedRowRender = record => {
+      console.log(data.data);
+      const columns = [
+        {
+          title: '产品',
+          dataIndex: 'info',
+          render: text => {
+            return <div>{console.log(text)}</div>;
+          },
+        },
+        {
+          title: '单价',
+          dataIndex: 'info',
+          render: text => <div>{text.price}</div>,
+        },
+        {
+          title: '数量',
+          dataIndex: 'info',
+          render: text => <div>{text.quantity}</div>,
+        },
+        {
+          title: '折扣',
+          dataIndex: 'info',
+          render: text => <div>{text.discount}</div>,
+        },
+        {
+          title: '技术服务费',
+          dataIndex: 'service_fee',
+        },
+      ];
+      return (
+        <div>
+          {' '}
+          <Table
+            columns={columns}
+            dataSource={data.data}
+            pagination={false}
+            rowKey="id"
+          />{' '}
+        </div>
+      );
     };
     return (
       <div>
@@ -359,9 +399,11 @@ class Page extends Component {
           ]}
         />
         {/* 订单列表 */}
-        <EditableTable
+        <Table
           columns={this.columns}
           dataSource={data.data}
+          expandedRowRender={expandedRowRender}
+          className="components-table-demo-nested"
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
@@ -600,7 +642,7 @@ class Page extends Component {
                     <Input allowClear />
                   </Form.Item>
                 </div>
-                <div style={{ marginLeft: '100px' }}>
+                <div style={{ marginLeft: '150px' }}>
                   <Form.Item
                     name="contract_no"
                     label="合同编号"
@@ -609,7 +651,7 @@ class Page extends Component {
                     <Input allowClear />
                   </Form.Item>
                 </div>
-                <div style={{ marginLeft: '100px' }}>
+                <div style={{ marginLeft: '150px' }}>
                   <Form.Item
                     name="pay_img"
                     label="付款证明"
@@ -749,7 +791,15 @@ class Page extends Component {
                   技术服务费
                 </div>
                 <div style={{ width: '102px', padding: '16px' }}>
-                  {this.state.ids.service_fee}
+                  <Form.Item name="service_fee">
+                    <InputNumber
+                      min={0.1}
+                      step={0.1}
+                      precision="2"
+                      allowClear
+                      style={{ width: '70px' }}
+                    />
+                  </Form.Item>
                 </div>
               </div>
               <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
@@ -769,7 +819,7 @@ class Page extends Component {
                       textIndent: '10px',
                     }}
                   >
-                    ¥{this.state.ids.total_amount}
+                    ¥{this.state.sum.toFixed(2)}
                   </div>
                 </div>
               </div>

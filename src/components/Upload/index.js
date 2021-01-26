@@ -52,6 +52,7 @@ class UploadItem extends Component {
   render() {
     const { fileList, previewImage, showDefault } = this.state;
     const { limit, token, onChange, value } = this.props;
+    console.log(value);
     const uploadButton = (
       <div>
         <UploadOutlined />
