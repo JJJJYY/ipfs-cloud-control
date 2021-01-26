@@ -47,6 +47,7 @@ const EditableTable = ({
   onActions,
   dataSource,
   columns,
+  expandedRowRender,
   total,
   current,
   loading,
@@ -225,6 +226,7 @@ const EditableTable = ({
         }}
         columns={ecolumns}
         dataSource={dataSource}
+        expandedRowRender={expandedRowRender}
         loading={loading}
         pagination={page}
         onChange={onChange}

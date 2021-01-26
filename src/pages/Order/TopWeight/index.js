@@ -37,6 +37,7 @@ class Page extends Component {
     page: 1,
     count: 10,
     ids: null,
+    idi: null,
     id: '',
     user: '',
     status: '',
@@ -253,8 +254,8 @@ class Page extends Component {
   // };
 
   handleActions = (id, index) => {
+    let idi = id.id;
     if (index == 0) {
-      let idi = id.id;
       this.props
         .dispatch({
           type: 'weight/Id',
@@ -286,34 +287,36 @@ class Page extends Component {
   };
 
   loadDetail = id => {
-    let idi = id.id;
-    this.props
-      .dispatch({
-        type: 'weight/Id',
-        payload: { id: idi },
-      })
-      .then(result => {
-        console.log(result);
-        if (result != 'error') {
-          this.setState(
-            {
-              ids: result || [],
-              sum: result.total_amount * 1,
-              info: result.info || [],
-              visibleInviteDrawer: true,
-            },
-            () => {},
-          );
-          this.formRef.current.setFieldsValue({
-            follow_user: result.follow_user,
-            contract_no: result.contract_no,
-            pay_img: result.pay_img,
-            status: result.status,
-            remark: result.remark,
-            service_fee: result.service_fee,
+    this.setState(
+      {
+        idi: id.id,
+      },
+      () => {
+        this.props
+          .dispatch({
+            type: 'weight/Id',
+            payload: { id: id.id },
+          })
+          .then(result => {
+            if (result != 'error') {
+              this.setState({
+                ids: result || [],
+                sum: result.total_amount * 1,
+                info: result.info || [],
+                visibleInviteDrawer: true,
+              });
+              this.formRef.current.setFieldsValue({
+                follow_user: result.follow_user,
+                contract_no: result.contract_no,
+                pay_img: result.pay_img,
+                status: result.status,
+                remark: result.remark,
+                service_fee: result.service_fee,
+              });
+            }
           });
-        }
-      });
+      },
+    );
   };
   compile = () => {
     this.setState({
@@ -368,10 +371,6 @@ class Page extends Component {
           dataIndex: 'discount',
         },
         {
-          title: '技术服务费',
-          dataIndex: 'service_fee',
-        },
-        {
           title: '小计',
           dataIndex: 'total_amount',
         },
@@ -419,7 +418,7 @@ class Page extends Component {
           ]}
         />
         {/* 订单列表 */}
-        <Table
+        <EditableTable
           columns={this.columns}
           dataSource={data.data}
           expandedRowRender={expandedRowRender}

@@ -52,7 +52,7 @@ class UploadItem extends Component {
   render() {
     const { fileList, previewImage, showDefault } = this.state;
     const { limit, token, onChange, value } = this.props;
-    console.log(value);
+
     const uploadButton = (
       <div>
         <UploadOutlined />
@@ -62,6 +62,7 @@ class UploadItem extends Component {
 
     return (
       <div>
+        {console.log(value)}
         <Upload
           name="file"
           // accept='.png,.jpeg,.jpg'
