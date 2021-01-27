@@ -217,7 +217,7 @@ export async function replenishmentRecordUpdate(params) {
 }
 
 export async function replenishmentRecordBatchAudit(params) {
-  return request.post('staff/product/groupList', params);
+  return request.post('staff/product/list', params);
 }
 
 export async function replenishmentRecordAudit(params) {

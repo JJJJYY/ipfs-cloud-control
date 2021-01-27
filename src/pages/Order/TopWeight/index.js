@@ -255,6 +255,7 @@ class Page extends Component {
 
   handleActions = (id, index) => {
     let idi = id.id;
+
     if (index == 0) {
       this.props
         .dispatch({
@@ -489,20 +490,6 @@ class Page extends Component {
             <Row>
               <Col span={12}>
                 <DescriptionItem
-                  title="订单状态"
-                  content={
-                    this.state.ids.status == 0
-                      ? '已取消'
-                      : this.state.ids.status == 1
-                      ? '已下单'
-                      : this.state.ids.status == 2
-                      ? '已完成'
-                      : ''
-                  }
-                />
-              </Col>
-              <Col span={12}>
-                <DescriptionItem
                   title="订单号"
                   content={this.state.ids.order_code}
                 />
@@ -582,27 +569,6 @@ class Page extends Component {
               <div style={{ width: '187px', padding: '16px' }}>专项折扣</div>
               <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.discount}
-              </div>
-            </div>
-            <div style={{ width: '100%', height: '50px', marginTop: '50px' }}>
-              <div style={{ float: 'right', width: '160px', display: 'flex' }}>
-                <div
-                  style={{ lineHeight: '32px', flex: 1, textAlign: 'center' }}
-                >
-                  数量
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Input
-                    style={{ width: '50px', textAlign: 'center' }}
-                    readOnly
-                    value={this.state.ids.num}
-                  />
-                </div>
-                <div
-                  style={{ lineHeight: '32px', flex: 1, textAlign: 'center' }}
-                >
-                  集群
-                </div>
               </div>
             </div>
             <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>

@@ -6,11 +6,17 @@ import {
   Input,
   Radio,
   Tag,
+  Space,
   Modal,
   Select,
+  Drawer,
   Upload as AntUpload,
   message,
   DatePicker,
+  Divider,
+  Row,
+  Col,
+  Table,
 } from 'antd';
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
@@ -18,15 +24,23 @@ import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
 import EditModal from '@/components/EditModal';
 import SearchGroup from '@/components/SearchGroup';
+import Upload from '@/components/Upload';
 import styles from './index.less';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { Dragger } = AntUpload;
-
+const DescriptionItem = ({ title, content }) => (
+  <div className={styles.itemProfileT}>
+    {title}：<span className={styles.itemProfileT2}>{content}</span>
+  </div>
+);
 class Page extends Component {
   state = {
     visible: false,
+    visible1: false,
+    visible2: false,
     visibleDrawer: false,
+    visibleInviteDrawer: false,
     page: 1,
     count: 10,
     user: '',
@@ -43,6 +57,10 @@ class Page extends Component {
     discount: 0,
     number: 0,
     jobNumber: '',
+    placement: 'right',
+    place: 'left',
+    list: [],
+    dataAdd: null,
   };
   formRef = React.createRef();
 
@@ -56,51 +74,14 @@ class Page extends Component {
       dataIndex: 'user',
       render: text => <div>{text.user_name}</div>,
     },
-    // {
-    //   title: '商品名称',
-    //   dataIndex: 'group',
-    //   render: text => <div>{text.product_group_name}</div>,
-    //   id: 'id',
-    // },
     {
-      title: '数量（集群）',
-      dataIndex: 'num',
-      editable: true,
-      required: true,
-
-      render: text => <div>{parseFloat(text)}</div>,
-      custom() {
-        return <InputNumber min={0} />;
-      },
+      title: '创建人',
+      dataIndex: 'admin_user',
     },
     {
-      title: '技术服务费',
-      dataIndex: 'service_fee',
+      title: '创建时间',
 
-      editable: true,
-      required: true,
-      render: text => <div>{parseFloat(text)}</div>,
-      custom() {
-        return <InputNumber min={0.0} step={0.1} />;
-      },
-    },
-    {
-      title: '折扣',
-      dataIndex: 'discount',
-
-      editable: true,
-      required: true,
-      render: text => <div>{parseFloat(text)}</div>,
-      custom() {
-        return <InputNumber min={0.1} max={1} step={0.1} />;
-      },
-    },
-    {
-      title: '订单金额',
-
-      dataIndex: 'total_amount',
-      editable: false,
-      required: false,
+      dataIndex: 'created_at',
     },
     {
       title: '状态',
@@ -121,26 +102,10 @@ class Page extends Component {
           </div>
         );
       },
-      custom() {
-        return (
-          <Select placeholder="请选择">
-            <Option value={0}>待审核</Option>
-            <Option value={1}>已通过</Option>
-            <Option value={2}>已拒绝</Option>
-          </Select>
-        );
-      },
     },
     {
-      title: '创建人',
-
-      dataIndex: 'admin_user',
-      render: text => <div>{text.username}</div>,
-    },
-    {
-      title: '创建时间',
-
-      dataIndex: 'created_at',
+      title: '合计',
+      dataIndex: 'total_amount',
     },
     {
       title: '审核人',
@@ -154,18 +119,11 @@ class Page extends Component {
       render: text => <div>{text == null ? '-' : text}</div>,
     },
     {
-      title: '备注',
-
-      dataIndex: 'remark',
-      render: text => <div>{text == null ? '-' : text == '' ? '-' : text}</div>,
-    },
-    {
       title: '操作',
-
-      operation: true,
-      showEdit: true,
       width: 60,
       fixed: 'right',
+      operation: true,
+      showEdit: false,
       statusShow(e) {
         // 隐藏
         let show = e.audit_status == 2;
@@ -174,107 +132,149 @@ class Page extends Component {
       actions(record) {
         return record.audit_status == 0
           ? ['审核']
-          : [''] || record.audit_status == 2
+          : record.audit_status == 1
+          ? ['', '编辑', '详情']
+          : record.audit_status == 2
           ? ['']
           : [''];
       },
     },
   ];
-
-  modelColumns = (active, that) => [
+  columnsReward = [
     {
-      title: '用户账号',
-      key: 'username',
-      required: true,
-      custom() {
-        return (
-          <Input
-            allowClear
-            style={{ width: '100%' }}
-            placeholder="请输入用户手机/邮箱账号"
-          />
-        );
-      },
+      title: '产品名称',
+      dataIndex: 'product_name',
     },
     {
-      title: '商品名称',
-      key: 'product_group_id',
-      custom() {
-        return (
-          <Select>
-            {active.length > 0
-              ? active.map(row => (
-                  <Option value={row.id} key={row.id}>
-                    {row.product_group_name}
-                  </Option>
-                ))
-              : null}
-          </Select>
-        );
-      },
+      title: '型号',
+      dataIndex: 'specs',
     },
     {
-      title: '数量(集群)',
-      key: 'num',
-      required: true,
-
-      custom() {
-        return (
+      title: '单价',
+      dataIndex: 'make_price',
+    },
+    {
+      title: '数量',
+      dataIndex: 'make_quantity',
+    },
+    {
+      title: '小计',
+      dataIndex: 'total_amount',
+      render: text => <div style={{ color: 'orange' }}>¥{text}</div>,
+    },
+  ];
+  columnsCompile = [
+    {
+      title: '产品名称',
+      dataIndex: 'product_name',
+    },
+    {
+      title: '型号',
+      dataIndex: 'specs',
+    },
+    {
+      title: '单价',
+      dataIndex: 'price',
+    },
+    {
+      title: '数量',
+      dataIndex: 'quantity',
+      render: (text, e, index) => (
+        <div>
+          {' '}
+          数量:{' '}
           <InputNumber
-            style={{ width: '100%' }}
-            placeholder="请输入正数"
-            onChange={that.onGenderChange}
+            style={{ width: '70px' }}
             min={1}
             step={1}
+            defaultValue={text}
+            onChange={value => this.onGenderChange(value, e, index)}
             precision=""
-          />
-        );
-      },
+          />{' '}
+        </div>
+      ),
     },
     {
       title: '折扣',
-      key: 'discount',
-      required: true,
-      custom() {
-        return (
+      dataIndex: 'discount',
+      render: (text, e, index) => (
+        <div>
+          折扣:{' '}
           <InputNumber
-            style={{ width: '100%' }}
-            min={0.1}
-            step={0.1}
-            onChange={that.onGenderChanges}
-            precision="2"
-            placeholder="最多可输入小数位后两位,仅可输入正数"
+            style={{ width: '70px' }}
+            min={1}
+            step={1}
+            onChange={value => this.onGenderChanges(value, e, index)}
+            defaultValue={text}
+            precision=""
           />
-        );
-      },
+        </div>
+      ),
     },
     {
-      title: '技术服务费',
-      key: 'service_fee',
-      required: true,
-      custom() {
-        return (
+      title: '小计',
+      dataIndex: 'total_amount',
+      render: (text, e, index) => {
+        let a = text * 1;
+        return <div style={{ color: 'orange' }}> ¥{a.toFixed(2)}</div>;
+      },
+    },
+  ];
+  columnsAdd = [
+    {
+      title: '产品名称',
+      dataIndex: 'product_type_name',
+    },
+    {
+      title: '型号',
+      dataIndex: 'specs',
+    },
+    {
+      title: '单价',
+      dataIndex: 'price',
+    },
+    {
+      title: '数量',
+      dataIndex: 'quantity',
+      render: (text, e, index) => (
+        <div>
+          {' '}
+          数量:{' '}
           <InputNumber
-            style={{ width: '100%' }}
-            precision="2"
-            placeholder="最多可输入小数位后两位,仅可输入正数"
-            min={0.1}
-            step={0.1}
+            style={{ width: '70px' }}
+            min={1}
+            step={1}
+            defaultValue={text}
+            onChange={value => this.onGenderChange(value, e, index)}
+            precision=""
+          />{' '}
+        </div>
+      ),
+    },
+    {
+      title: '折扣',
+      dataIndex: 'discount',
+      render: (text, e, index) => (
+        <div>
+          折扣:{' '}
+          <InputNumber
+            style={{ width: '70px' }}
+            min={1}
+            step={1}
+            onChange={value => this.onGenderChanges(value, e, index)}
+            defaultValue={text}
+            precision=""
           />
-        );
-      },
+        </div>
+      ),
     },
     {
-      title: '订单金额',
-      key: 'amount',
-
-      custom() {
-        return <Input readOnly style={{ width: '100%' }} />;
+      title: '小计',
+      dataIndex: 'total_amount',
+      render: (text, e, index) => {
+        let a = text * 1;
+        return <div style={{ color: 'orange' }}> ¥{a.toFixed(2)}</div>;
       },
-    },
-    {
-      title: '备注',
-      key: 'remark',
     },
   ];
 
@@ -282,41 +282,33 @@ class Page extends Component {
     this.loadData();
     this.asdda();
   }
-  onGenderChange = value => {
-    this.setState(
-      {
-        number: value,
-      },
-      () => {
-        if (this.state.number * this.state.discount * this.state.price) {
-          this.refs.confirmRef.formRef.current.setFieldsValue({
-            amount: this.state.number * this.state.discount * this.state.price,
-          });
-        } else {
-          this.refs.confirmRef.formRef.current.setFieldsValue({
-            amount: 0,
-          });
-        }
-      },
-    );
+
+  onGenderChange = (value, e, index) => {
+    const { info, ids, num } = this.state;
+
+    info[index].quantity = value;
+    info[index].total_amount =
+      info[index].price * info[index].quantity * info[index].discount;
+    this.setState({ info }, () => {
+      let sum = 0;
+      this.state.info.map(item => {
+        sum += item.total_amount * 1;
+      });
+      this.setState({ sum });
+    });
   };
-  onGenderChanges = value => {
-    this.setState(
-      {
-        discount: value,
-      },
-      () => {
-        if (this.state.number * this.state.discount * this.state.price) {
-          this.refs.confirmRef.formRef.current.setFieldsValue({
-            amount: this.state.number * this.state.discount * this.state.price,
-          });
-        } else {
-          this.refs.confirmRef.formRef.current.setFieldsValue({
-            amount: 0,
-          });
-        }
-      },
-    );
+  onGenderChanges = (value, e, index) => {
+    const { info, ids, num } = this.state;
+    info[index].discount = value;
+    info[index].total_amount =
+      info[index].price * info[index].quantity * info[index].discount;
+    this.setState({ info }, () => {
+      let sum = 0;
+      this.state.info.map(item => {
+        sum += item.total_amount * 1;
+      });
+      this.setState({ sum });
+    });
   };
   loadData = () => {
     const { page, count, search } = this.state;
@@ -346,7 +338,7 @@ class Page extends Component {
       });
   };
   handleClose = () => {
-    this.setState({ visible: false });
+    this.setState({ visible2: false });
   };
 
   handleSave = (row, id) => {
@@ -368,7 +360,15 @@ class Page extends Component {
       remark: aee,
     });
   };
+  onClose = () => {
+    this.setState({
+      visible1: false,
+      visibleInviteDrawer: false,
+      visible: false,
+    });
+  };
   handleActions = (row, index) => {
+    let idi = row.id;
     if (index == 0) {
       Modal.confirm({
         title: '审核',
@@ -399,7 +399,6 @@ class Page extends Component {
                 }}
               >
                 <div>账号：{row.user.user_name}</div>
-                <div>商品名称: {row.group.product_group_name} </div>
                 <div>订单金额: {row.total_amount} </div>
               </div>
             </div>
@@ -460,21 +459,73 @@ class Page extends Component {
           });
         },
       });
+    } else if (index == 2) {
+      this.props
+        .dispatch({
+          type: 'weight/Id',
+          payload: { id: idi },
+        })
+        .then(result => {
+          console.log(result);
+          if (result != 'error') {
+            this.setState({
+              ids: result || [],
+              visible1: true,
+            });
+          }
+        });
+    } else if (index == 1) {
+      this.props
+        .dispatch({
+          type: 'weight/Id',
+          payload: { id: idi },
+        })
+        .then(result => {
+          if (result != 'error') {
+            this.setState({
+              ids: result || [],
+              sum: result.total_amount * 1,
+              info: result.info || [],
+              visibleInviteDrawer: true,
+            });
+            this.formRef.current.setFieldsValue({
+              follow_user: result.follow_user,
+              contract_no: result.contract_no,
+              pay_img: result.pay_img,
+              status: result.status,
+              remark: result.remark,
+              service_fee: result.service_fee,
+            });
+          }
+        });
     }
   };
 
   handleSubmit = values => {
-    this.props
-      .dispatch({
-        type: 'replenishmentRecord/add',
-        payload: values,
-      })
-      .then(data => {
-        if (data != 'error') {
-          this.loadData();
-          this.handleClose();
-        }
-      });
+    console.log(this.state.list, 1111, values);
+    this.setState(
+      {
+        dataAdd: this.state.list,
+      },
+      () => {
+        console.log(this.state.dataAdd);
+      },
+    );
+    // this.setState({
+    //   list:key
+    // })
+
+    // this.props
+    //   .dispatch({
+    //     type: 'replenishmentRecord/add',
+    //     payload: values,
+    //   })
+    //   .then(data => {
+    //     if (data != 'error') {
+    //       this.loadData();
+    //       this.handleClose();
+    //     }
+    //   });
   };
 
   onSelectChange = value => {
@@ -539,9 +590,45 @@ class Page extends Component {
       visible: true,
     });
   };
+  compile = () => {
+    this.setState({
+      visible1: false,
+      visibleInviteDrawer: true,
+    });
+  };
+  relevance = () => {
+    this.setState({
+      visible2: true,
+    });
+  };
+  onSelect = e => {
+    console.log(e);
+  };
+
+  handleChange = (value, id) => {
+    console.log(id);
+    this.setState({
+      list: id,
+    });
+  };
   render() {
-    const { visible, page, count, search, selectedRowKeys } = this.state;
+    const {
+      visible,
+      page,
+      placement,
+      list,
+      dataAdd,
+      dataActive,
+      visible1,
+      visible2,
+      place,
+      visibleInviteDrawer,
+      count,
+      search,
+      selectedRowKeys,
+    } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
+    console.log(data);
     const rowSelection =
       search && search.status == 0
         ? {
@@ -549,6 +636,67 @@ class Page extends Component {
             onSelect: this.onSelectChange,
           }
         : null;
+    const expandedRowRender = record => {
+      const columns = [
+        {
+          title: '产品',
+          dataIndex: 'product_name',
+        },
+        {
+          title: '单价',
+          dataIndex: 'price',
+        },
+        {
+          title: '数量',
+          dataIndex: 'quantity',
+        },
+        {
+          title: '折扣',
+          dataIndex: 'discount',
+        },
+        {
+          title: '小计',
+          dataIndex: 'total_amount',
+        },
+      ];
+      return (
+        <div>
+          {' '}
+          <Table
+            columns={columns}
+            dataSource={record.info}
+            pagination={false}
+            rowKey="id"
+          />{' '}
+        </div>
+      );
+    };
+    const onFinish = values => {
+      this.props
+        .dispatch({
+          type: 'weight/update',
+          payload: {
+            id: this.state.ids.id,
+            info: this.state.info,
+            follow_user: values.follow_user,
+            contract_no: values.contract_no,
+            pay_img: values.pay_img,
+            status: values.status,
+            remark: values.remark,
+            service_fee: values.service_fee,
+          },
+        })
+        .then(res => {
+          this.setState({
+            visibleInviteDrawer: false,
+          });
+          message.success('修改成功');
+        });
+    };
+    const onFinishs = values => {
+      console.log(values);
+    };
+    const { Option } = Select;
 
     return (
       <div>
@@ -683,8 +831,8 @@ class Page extends Component {
             </Button>
           )}
         </div>
-        <EditModal
-          visible={visible}
+        {/* <EditModal
+          visible={visible2}
           width={630}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
@@ -694,14 +842,210 @@ class Page extends Component {
           ref="confirmRef"
           columns={this.modelColumns(active, this)}
           maskClosable={false}
-        />
-
+        /> */}
+        <Modal
+          visible={visible2}
+          title="关联商品"
+          onOk={this.handleSubmit}
+          onCancel={this.handleClose}
+          maskClosable={false}
+          confirmLoading={true}
+          height={500}
+          footer={[
+            <Button key="back" onClick={this.handleClose}>
+              取消
+            </Button>,
+            <Button key="submit" type="primary" onClick={this.handleSubmit}>
+              确认
+            </Button>,
+          ]}
+        >
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="请选择商品"
+            onChange={this.handleChange}
+            optionLabelProp="label"
+          >
+            {dataActive
+              ? dataActive.map(item => (
+                  <Select.Option
+                    id={item.id}
+                    value={item.id + item.product_type_name}
+                    key={item.id}
+                    price={item.price}
+                    product_type_name={item.product_type_name}
+                    specs={item.specs}
+                  >
+                    {'产品ID' + item.id + ' ' + ' ' + item.product_type_name}
+                  </Select.Option>
+                ))
+              : null}
+          </Select>
+        </Modal>
+        <Drawer
+          title="添加"
+          width={1000}
+          placement={place}
+          onClose={this.onClose}
+          visible={visible}
+          destroyOnClose
+        >
+          <Divider>添加补单</Divider>
+          <Form
+            layout="vertical"
+            ref={this.formRef}
+            name="control-hooks"
+            onSubmit={this.handleSubmit}
+            onFinish={onFinishs}
+            autoComplete="off"
+            initialValues={{
+              info: this.state.lus,
+            }}
+          >
+            <div style={{}}>
+              <div style={{ display: 'flex', height: '80px' }}>
+                <div>
+                  <Form.Item
+                    name="username"
+                    label="账号"
+                    rules={[{ required: true, message: '请输入绑定账号' }]}
+                  >
+                    <Input allowClear placeholder="请输入绑定账号" />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '150px' }}>
+                  <Form.Item
+                    name="remark"
+                    label="备注"
+                    rules={[{ required: true, message: '请输入备注' }]}
+                  >
+                    <Input
+                      allowClear
+                      style={{ width: '300px' }}
+                      placeholder="请输入备注"
+                    />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '100px' }}>
+                  <Form.Item
+                    name="pay_img"
+                    label="付款证明"
+                    rules={[{ required: true, message: '请上传付款截图' }]}
+                  >
+                    <Upload limit={1}></Upload>
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '50px' }}>
+                  <Form.Item>
+                    <Button
+                      style={{ padding: '4px 10px' }}
+                      type="primary"
+                      onClick={this.relevance}
+                    >
+                      关联
+                    </Button>
+                  </Form.Item>
+                </div>
+              </div>
+              <div style={{ display: 'flex', height: '80px' }}>
+                <div>
+                  <Form.Item
+                    name="follow_user"
+                    label="跟进人"
+                    rules={[{ required: true, message: '请输入真实姓名' }]}
+                  >
+                    <Input allowClear placeholder="请输入真实姓名" />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '125px' }}>
+                  <Form.Item
+                    name="contract_no"
+                    label="合同编号"
+                    rules={[{ required: true, message: '请输入合同编号' }]}
+                  >
+                    <Input allowClear placeholder="请输入合同编号" />
+                  </Form.Item>
+                </div>
+              </div>
+            </div>
+            <Divider>产品名称</Divider>
+            <div style={{ width: '100%' }}>
+              {console.log(dataAdd)}
+              <Table
+                columns={this.columnsAdd}
+                dataSource={dataActive}
+                pagination={false}
+                rowKey="id"
+              />
+              {console.log(dataActive)}
+            </div>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                borderBottom: '1px solid #f0f0f0',
+                height: '54.6px',
+              }}
+            >
+              <div style={{ width: '171px', padding: '16px' }}>技术服务费</div>
+              <div style={{ width: '102px', padding: '16px' }}>
+                <Form.Item name="service_fee">
+                  <InputNumber
+                    min={0.1}
+                    step={0.1}
+                    precision="2"
+                    allowClear
+                    style={{ width: '70px' }}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
+              <div style={{ float: 'right', display: 'flex', width: '240px' }}>
+                <div
+                  style={{ flex: 1, textAlign: 'right', lineHeight: '28px' }}
+                >
+                  总配置费用:
+                </div>
+                <div
+                  style={{
+                    fontSize: '18px',
+                    color: 'orange',
+                    flex: 1,
+                    textIndent: '10px',
+                  }}
+                >
+                  ¥{this.state.sum}
+                </div>
+              </div>
+            </div>
+            <Form.Item>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  onClick={this.readactCancel}
+                  style={{ padding: '4px 10px', marginRight: '20px' }}
+                >
+                  取消
+                </Button>
+                <Button
+                  style={{ padding: '4px 10px' }}
+                  type="primary"
+                  htmlType="submit"
+                >
+                  确认
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        </Drawer>
         <EditableTable
           columns={this.columns}
           dataSource={data.data}
           total={data ? data.total : 0}
           current={data ? data.current : 0}
           loading={listLoading || updateLoading}
+          expandedRowRender={expandedRowRender}
           rowKey="id"
           onChange={pagination => {
             this.state.page = pagination.current;
@@ -712,6 +1056,396 @@ class Page extends Component {
           onActions={this.handleActions}
           rowSelection={rowSelection}
         />
+        {this.state.ids ? (
+          <Drawer
+            title="详情"
+            width={840}
+            placement={placement}
+            onClose={this.onClose}
+            visible={visible1}
+          >
+            <Divider>用户信息</Divider>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="账户"
+                  content={this.state.ids.user && this.state.ids.user.user_name}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="UID"
+                  content={this.state.ids.user && this.state.ids.user.id}
+                />
+              </Col>
+            </Row>
+            <Divider>收货信息</Divider>
+
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="姓名"
+                  content={
+                    this.state.ids.express &&
+                    this.state.ids.express.express_name
+                  }
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="手机"
+                  content={
+                    this.state.ids.express &&
+                    this.state.ids.express.express_mobile
+                  }
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem title="备注" content={this.state.ids.remark} />
+              </Col>
+            </Row>
+
+            <Divider>订单记录</Divider>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="创建时间"
+                  content={this.state.ids.created_at}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="完成时间"
+                  content={
+                    this.state.ids.status == 2 ? '-' : this.state.ids.updated_at
+                  }
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="订单号"
+                  content={this.state.ids.order_code}
+                />
+              </Col>
+
+              <Col span={12}>
+                <DescriptionItem
+                  title="产品名称"
+                  content={
+                    this.state.ids.group &&
+                    this.state.ids.group.product_group_name
+                  }
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="订单状态"
+                  content={
+                    this.state.ids.status == 0
+                      ? '已取消'
+                      : this.state.ids.status == 1
+                      ? '已下单'
+                      : this.state.ids.status == 2
+                      ? '已完成'
+                      : ''
+                  }
+                />
+              </Col>
+            </Row>
+            <Divider>产品名称</Divider>
+            <div style={{ width: '100%' }}>
+              <Table
+                columns={this.columnsReward}
+                dataSource={this.state.ids.info}
+                pagination={false}
+                rowKey="id"
+              />
+            </div>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                borderBottom: '1px solid #f0f0f0',
+                height: '54.6px',
+              }}
+            >
+              <div style={{ width: '187px', padding: '16px' }}>技术服务费</div>
+              <div style={{ width: '102px', padding: '16px' }}>
+                {this.state.ids.service_fee}
+              </div>
+            </div>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                borderBottom: '1px solid #f0f0f0',
+                height: '54.6px',
+              }}
+            >
+              <div style={{ width: '187px', padding: '16px' }}>专项折扣</div>
+              <div style={{ width: '102px', padding: '16px' }}>
+                {this.state.ids.discount}
+              </div>
+            </div>
+
+            <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
+              <div style={{ float: 'right', display: 'flex', width: '240px' }}>
+                <div
+                  style={{ flex: 1, textAlign: 'right', lineHeight: '28px' }}
+                >
+                  总配置费用:
+                </div>
+                <div
+                  style={{
+                    fontSize: '18px',
+                    color: 'orange',
+                    flex: 1,
+                    textIndent: '10px',
+                  }}
+                >
+                  ¥{this.state.ids.total_amount}
+                </div>
+              </div>
+            </div>
+            <div style={{ float: 'right' }}>
+              <Button onClick={this.compile}>编辑</Button>
+            </div>
+          </Drawer>
+        ) : null}
+        {this.state.ids ? (
+          <Drawer
+            title="编辑"
+            width={1000}
+            placement={placement}
+            onClose={this.onClose}
+            visible={visibleInviteDrawer}
+            destroyOnClose
+          >
+            <Divider>跟进信息</Divider>
+            <Form
+              layout="vertical"
+              ref={this.formRef}
+              name="control-hooks"
+              onSubmit={this.handleSubmit}
+              onFinish={onFinish}
+              autoComplete="off"
+              initialValues={{
+                info: this.state.lus,
+              }}
+            >
+              <div style={{ display: 'flex', height: '122px' }}>
+                <div>
+                  <Form.Item
+                    name="follow_user"
+                    label="跟进人"
+                    rules={[{ required: true, message: '跟进人' }]}
+                  >
+                    <Input allowClear />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '150px' }}>
+                  <Form.Item
+                    name="contract_no"
+                    label="合同编号"
+                    rules={[{ required: true, message: '合同编号' }]}
+                  >
+                    <Input allowClear />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '150px' }}>
+                  <Form.Item
+                    name="pay_img"
+                    label="付款证明"
+                    rules={[{ required: true, message: '请上传付款截图' }]}
+                  >
+                    <Upload limit={1}></Upload>
+                  </Form.Item>
+                </div>
+              </div>
+
+              <Divider>用户信息</Divider>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="账户"
+                    content={
+                      this.state.ids.user && this.state.ids.user.user_name
+                    }
+                  />
+                </Col>
+
+                <Col span={12}>
+                  <DescriptionItem
+                    title="UID"
+                    content={this.state.ids.user && this.state.ids.user.id}
+                  />
+                </Col>
+              </Row>
+              <Divider>收货信息</Divider>
+
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="姓名"
+                    content={
+                      this.state.ids.express &&
+                      this.state.ids.express.express_name
+                    }
+                  />
+                </Col>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="手机"
+                    content={
+                      this.state.ids.express &&
+                      this.state.ids.express.express_mobile
+                    }
+                  />
+                </Col>
+                <Col span={12}>
+                  <div style={{ display: 'flex' }}>
+                    <div>
+                      <DescriptionItem title="备注" />
+                    </div>
+                    <div>
+                      <Form.Item name="remark">
+                        <Input allowClear style={{ width: '260px' }} />
+                      </Form.Item>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+
+              <Divider>订单记录</Divider>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="订单号"
+                    content={this.state.ids.order_code}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="创建时间"
+                    content={this.state.ids.created_at}
+                  />
+                </Col>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="产品名称"
+                    content={
+                      this.state.ids.group &&
+                      this.state.ids.group.product_group_name
+                    }
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="完成时间"
+                    content={
+                      this.state.ids.status == 2
+                        ? '-'
+                        : this.state.ids.updated_at
+                    }
+                  />
+                </Col>
+                <Col span={12}>
+                  <div style={{ display: 'flex' }}>
+                    <div>
+                      <DescriptionItem title="订单状态" />
+                    </div>
+                    <div>
+                      <Form.Item name="status">
+                        <Select placeholder="">
+                          <Option value={0}>已取消</Option>
+                          <Option value={1}>已下单</Option>
+                          <Option value={2}>已完成</Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <Divider>产品名称</Divider>
+              <div style={{ width: '100%' }}>
+                {console.log(this.state.info, 'his.state.info')}
+                <Table
+                  columns={this.columnsCompile}
+                  dataSource={this.state.info}
+                  pagination={false}
+                  rowKey="id"
+                />
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  borderBottom: '1px solid #f0f0f0',
+                  height: '54.6px',
+                }}
+              >
+                <div style={{ width: '171px', padding: '16px' }}>
+                  技术服务费
+                </div>
+                <div style={{ width: '102px', padding: '16px' }}>
+                  <Form.Item name="service_fee">
+                    <InputNumber
+                      min={0.1}
+                      step={0.1}
+                      precision="2"
+                      allowClear
+                      style={{ width: '70px' }}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+              <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
+                <div
+                  style={{ float: 'right', display: 'flex', width: '240px' }}
+                >
+                  <div
+                    style={{ flex: 1, textAlign: 'right', lineHeight: '28px' }}
+                  >
+                    总配置费用:
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '18px',
+                      color: 'orange',
+                      flex: 1,
+                      textIndent: '10px',
+                    }}
+                  >
+                    ¥{this.state.sum.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+              <Form.Item>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    onClick={this.readactCancel}
+                    style={{ padding: '4px 10px', marginRight: '20px' }}
+                  >
+                    取消
+                  </Button>
+                  <Button
+                    style={{ padding: '4px 10px' }}
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    保存
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
+          </Drawer>
+        ) : null}
       </div>
     );
   }
