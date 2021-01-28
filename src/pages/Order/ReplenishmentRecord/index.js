@@ -876,6 +876,8 @@ class Page extends Component {
                     price={item.price}
                     product_type_name={item.product_type_name}
                     specs={item.specs}
+                    quantity={item.quantity}
+                    discount={item.discount}
                   >
                     {'产品ID' + item.id + ' ' + ' ' + item.product_type_name}
                   </Select.Option>
@@ -974,7 +976,7 @@ class Page extends Component {
               {console.log(dataAdd)}
               <Table
                 columns={this.columnsAdd}
-                dataSource={dataActive}
+                dataSource={dataAdd}
                 pagination={false}
                 rowKey="id"
               />

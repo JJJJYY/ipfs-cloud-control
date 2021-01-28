@@ -179,11 +179,12 @@ class Page extends Component {
           折扣:{' '}
           <InputNumber
             style={{ width: '70px' }}
-            min={1}
-            step={1}
+            min={0.1}
+            step={0.1}
+            max={1}
+            precision="2"
             onChange={value => this.onGenderChanges(value, e, index)}
             defaultValue={text}
-            precision=""
           />
         </div>
       ),
@@ -624,7 +625,7 @@ class Page extends Component {
                     label="跟进人"
                     rules={[{ required: true, message: '跟进人' }]}
                   >
-                    <Input allowClear />
+                    <Input style={{ height: '25px' }} allowClear />
                   </Form.Item>
                 </div>
                 <div style={{ marginLeft: '150px' }}>
@@ -633,7 +634,7 @@ class Page extends Component {
                     label="合同编号"
                     rules={[{ required: true, message: '合同编号' }]}
                   >
-                    <Input allowClear />
+                    <Input style={{ height: '25px' }} allowClear />
                   </Form.Item>
                 </div>
                 <div style={{ marginLeft: '150px' }}>
@@ -693,7 +694,10 @@ class Page extends Component {
                     </div>
                     <div>
                       <Form.Item name="remark">
-                        <Input allowClear style={{ width: '260px' }} />
+                        <Input
+                          allowClear
+                          style={{ width: '260px', height: '25px' }}
+                        />
                       </Form.Item>
                     </div>
                   </div>
@@ -780,6 +784,7 @@ class Page extends Component {
                     <InputNumber
                       min={0.1}
                       step={0.1}
+                      max={1}
                       precision="2"
                       allowClear
                       style={{ width: '70px' }}
