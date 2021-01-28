@@ -105,7 +105,7 @@ export async function qiniu() {
 
 // ----------------------- Overview -----------------------
 export async function overviewHome(params) {
-  return request.post('Portal.Overview.Home', params);
+  return request.post('staff/product/topList', params);
 }
 
 // ----------------------- AuthUser -----------------------
@@ -280,9 +280,9 @@ export async function goodsChange(params) {
 export async function groupList(params) {
   return request.post('staff/product/info', params);
 }
-// export async function goodsGetActive() {
-//   return request.post('Portal.Goods.GetActive');
-// }
+export async function goodsGetActive() {
+  return request.post('staff/order/statistics');
+}
 
 // ----------------------- Announcement -----------------------
 export async function announcementList(params) {

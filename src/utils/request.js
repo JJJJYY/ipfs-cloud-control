@@ -63,6 +63,7 @@ export default function request(url, option) {
       return fetchData(response);
     })
     .catch(e => {
+      console.log(e);
       const status = e.name;
       if (status === 401) {
         // @HACK

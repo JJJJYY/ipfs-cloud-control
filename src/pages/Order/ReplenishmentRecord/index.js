@@ -958,7 +958,7 @@ class Page extends Component {
                     <Input allowClear placeholder="请输入真实姓名" />
                   </Form.Item>
                 </div>
-                <div style={{ marginLeft: '125px' }}>
+                <div style={{ marginLeft: '150px' }}>
                   <Form.Item
                     name="contract_no"
                     label="合同编号"

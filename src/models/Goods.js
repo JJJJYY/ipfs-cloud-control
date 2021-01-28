@@ -36,10 +36,9 @@ export default {
       return yield call(api.groupList, payload);
     },
 
-    // *queryActive({ payload }, { call, put }) {
-    //   const data = yield call(api.goodsGetActive, payload);
-    //   yield put({ type: 'active', payload: { data: data } });
-    // },
+    *queryActive({ payload }, { call }) {
+      return yield call(api.goodsGetActive, payload);
+    },
   },
 
   reducers: {
