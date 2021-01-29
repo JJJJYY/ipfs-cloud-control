@@ -45,6 +45,7 @@ class Page extends Component {
     count: 10,
     user: '',
     status: '',
+    ide: null,
     search: null,
     product_name: '',
     order_code: '',
@@ -63,7 +64,7 @@ class Page extends Component {
     dataAdd: null,
   };
   formRef = React.createRef();
-
+  formRef1 = React.createRef();
   columns = [
     {
       title: '订单号',
@@ -151,11 +152,11 @@ class Page extends Component {
     },
     {
       title: '单价',
-      dataIndex: 'make_price',
+      dataIndex: 'price',
     },
     {
       title: '数量',
-      dataIndex: 'make_quantity',
+      dataIndex: 'quantity',
     },
     {
       title: '小计',
@@ -202,11 +203,11 @@ class Page extends Component {
           折扣:{' '}
           <InputNumber
             style={{ width: '70px' }}
-            min={1}
-            step={1}
             onChange={value => this.onGenderChanges(value, e, index)}
             defaultValue={text}
-            precision=""
+            min={0.1}
+            step={0.1}
+            precision="2"
           />
         </div>
       ),
@@ -254,19 +255,19 @@ class Page extends Component {
     {
       title: '折扣',
       dataIndex: 'discount',
-      render: (text, e, index) => (
-        <div>
-          折扣:{' '}
-          <InputNumber
-            style={{ width: '70px' }}
-            min={1}
-            step={1}
-            onChange={value => this.onGenderChanges(value, e, index)}
-            defaultValue={text}
-            precision=""
-          />
-        </div>
-      ),
+      // render: (text, e, index) => (
+      //   <div>
+      //     折扣:{' '}
+      //     <InputNumber
+      //       style={{ width: '70px' }}
+      //       min={1}
+      //       step={1}
+      //       onChange={value => this.onGenderChanges(value, e, index)}
+      //       defaultValue={text}
+      //       precision=""
+      //     />
+      //   </div>
+      // ),
     },
     {
       title: '小计',
@@ -298,13 +299,40 @@ class Page extends Component {
     });
   };
   onGenderChanges = (value, e, index) => {
-    const { info, ids, num } = this.state;
+    const { info } = this.state;
     info[index].discount = value;
     info[index].total_amount =
       info[index].price * info[index].quantity * info[index].discount;
     this.setState({ info }, () => {
       let sum = 0;
       this.state.info.map(item => {
+        sum += item.total_amount * 1;
+      });
+      this.setState({ sum });
+    });
+  };
+  onGenderChangeq = (value, index) => {
+    const { dataAdd } = this.state;
+    dataAdd[index].quantity = value;
+    dataAdd[index].total_amount =
+      dataAdd[index].price * dataAdd[index].quantity * dataAdd[index].discount;
+    this.setState({ dataAdd }, () => {
+      let sum = 0;
+      this.state.dataAdd.map(item => {
+        sum += item.total_amount * 1;
+      });
+      this.setState({ sum });
+    });
+  };
+  onGenderChangew = (value, index) => {
+    console.log(value);
+    const { dataAdd } = this.state;
+    dataAdd[index].discount = value;
+    dataAdd[index].total_amount =
+      dataAdd[index].price * dataAdd[index].quantity * dataAdd[index].discount;
+    this.setState({ dataAdd }, () => {
+      let sum = 0;
+      this.state.dataAdd.map(item => {
         sum += item.total_amount * 1;
       });
       this.setState({ sum });
@@ -368,7 +396,9 @@ class Page extends Component {
     });
   };
   handleActions = (row, index) => {
-    let idi = row.id;
+    this.setState({
+      ide: row.id,
+    });
     if (index == 0) {
       Modal.confirm({
         title: '审核',
@@ -463,7 +493,7 @@ class Page extends Component {
       this.props
         .dispatch({
           type: 'weight/Id',
-          payload: { id: idi },
+          payload: { id: row.id },
         })
         .then(result => {
           console.log(result);
@@ -478,7 +508,7 @@ class Page extends Component {
       this.props
         .dispatch({
           type: 'weight/Id',
-          payload: { id: idi },
+          payload: { id: row.id },
         })
         .then(result => {
           if (result != 'error') {
@@ -488,29 +518,26 @@ class Page extends Component {
               info: result.info || [],
               visibleInviteDrawer: true,
             });
-            this.formRef.current.setFieldsValue({
-              follow_user: result.follow_user,
-              contract_no: result.contract_no,
-              pay_img: result.pay_img,
-              status: result.status,
-              remark: result.remark,
-              service_fee: result.service_fee,
-            });
+            this.formRef.current &&
+              this.formRef.current.setFieldsValue({
+                follow_user: result.follow_user,
+                contract_no: result.contract_no,
+                pay_img: result.pay_img,
+                status: result.status,
+                remark: result.remark,
+                service_fee: result.service_fee,
+              });
           }
         });
     }
   };
 
   handleSubmit = values => {
-    console.log(this.state.list, 1111, values);
-    this.setState(
-      {
-        dataAdd: this.state.list,
-      },
-      () => {
-        console.log(this.state.dataAdd);
-      },
-    );
+    this.setState({
+      dataAdd: this.state.list,
+      visible2: false,
+    });
+    message.success('选择完成');
     // this.setState({
     //   list:key
     // })
@@ -527,7 +554,12 @@ class Page extends Component {
     //     }
     //   });
   };
-
+  readactCancel = () => {
+    this.setState({
+      visible: false,
+      visibleInviteDrawer: false,
+    });
+  };
   onSelectChange = value => {
     var set = new Set(this.state.selectedRowKeys);
     if (set.has(value.id)) {
@@ -591,10 +623,39 @@ class Page extends Component {
     });
   };
   compile = () => {
-    this.setState({
-      visible1: false,
-      visibleInviteDrawer: true,
-    });
+    const { ide } = this.state;
+    this.setState(
+      {
+        visible1: false,
+        visibleInviteDrawer: true,
+      },
+      () => {
+        this.props
+          .dispatch({
+            type: 'weight/Id',
+            payload: { id: ide },
+          })
+          .then(result => {
+            if (result != 'error') {
+              this.setState({
+                ids: result || [],
+                sum: result.total_amount * 1,
+                info: result.info || [],
+                visibleInviteDrawer: true,
+              });
+              this.formRef.current &&
+                this.formRef.current.setFieldsValue({
+                  follow_user: result.follow_user,
+                  contract_no: result.contract_no,
+                  pay_img: result.pay_img,
+                  status: result.status,
+                  remark: result.remark,
+                  service_fee: result.service_fee,
+                });
+            }
+          });
+      },
+    );
   };
   relevance = () => {
     this.setState({
@@ -878,6 +939,7 @@ class Page extends Component {
                     specs={item.specs}
                     quantity={item.quantity}
                     discount={item.discount}
+                    total_amount={item.total_amount}
                   >
                     {'产品ID' + item.id + ' ' + ' ' + item.product_type_name}
                   </Select.Option>
@@ -887,7 +949,7 @@ class Page extends Component {
         </Modal>
         <Drawer
           title="添加"
-          width={1000}
+          width={1200}
           placement={place}
           onClose={this.onClose}
           visible={visible}
@@ -896,7 +958,7 @@ class Page extends Component {
           <Divider>添加补单</Divider>
           <Form
             layout="vertical"
-            ref={this.formRef}
+            ref={this.formRef1}
             name="control-hooks"
             onSubmit={this.handleSubmit}
             onFinish={onFinishs}
@@ -974,12 +1036,76 @@ class Page extends Component {
             <Divider>产品名称</Divider>
             <div style={{ width: '100%' }}>
               {console.log(dataAdd)}
-              <Table
+              <div>
+                <div className={styles.menu}>
+                  <div className={styles.item}>产品名称</div>
+                  <div className={styles.item}>型号</div>
+                  <div className={styles.item}>单价</div>
+                  <div className={styles.item}>数量</div>
+                  <div className={styles.item}>折扣</div>
+                  <div className={styles.item}>小计</div>
+                </div>
+                {dataAdd
+                  ? dataAdd.map((item, index) => {
+                      let total_amount = item.total_amount * 1;
+                      return (
+                        <div>
+                          <div className={styles.item_val}>
+                            <div className={styles.item}>
+                              {item.product_type_name}
+                            </div>
+                            <div className={styles.item}>{item.specs}</div>
+                            <div className={styles.item}>{item.price}</div>
+                            <div className={styles.item}>
+                              <div style={{ display: 'flex' }}>
+                                <div style={{ lineHeight: '30px' }}>数量:</div>
+                                <div style={{ marginLeft: '5px' }}>
+                                  <InputNumber
+                                    style={{ width: '70px' }}
+                                    min={1}
+                                    step={1}
+                                    defaultValue={item.quantity}
+                                    onChange={value =>
+                                      this.onGenderChangeq(value, index)
+                                    }
+                                    precision=""
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className={styles.item}>
+                              <div style={{ display: 'flex' }}>
+                                <div style={{ lineHeight: '30px' }}>折扣:</div>
+                                <div style={{ marginLeft: '5px' }}>
+                                  <InputNumber
+                                    style={{ width: '70px' }}
+                                    min={0.1}
+                                    step={0.1}
+                                    max={1}
+                                    precision="2"
+                                    defaultValue={item.discount}
+                                    onChange={value =>
+                                      this.onGenderChangew(value, index)
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className={styles.item_total_amount}>
+                              {total_amount.toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  : null}
+              </div>
+              {/* <Table
                 columns={this.columnsAdd}
                 dataSource={dataAdd}
                 pagination={false}
                 rowKey="id"
-              />
+              /> */}
               {console.log(dataActive)}
             </div>
             <div
@@ -994,9 +1120,11 @@ class Page extends Component {
               <div style={{ width: '102px', padding: '16px' }}>
                 <Form.Item name="service_fee">
                   <InputNumber
-                    min={0.1}
+                    min={0.2}
                     step={0.1}
+                    max={1}
                     precision="2"
+                    defaultValue="0.2"
                     allowClear
                     style={{ width: '70px' }}
                   />
@@ -1018,7 +1146,7 @@ class Page extends Component {
                     textIndent: '10px',
                   }}
                 >
-                  ¥{this.state.sum}
+                  ¥{this.state.sum && this.state.sum.toFixed(2)}
                 </div>
               </div>
             </div>
@@ -1244,7 +1372,7 @@ class Page extends Component {
                     label="跟进人"
                     rules={[{ required: true, message: '跟进人' }]}
                   >
-                    <Input allowClear />
+                    <Input style={{ height: '25px' }} allowClear />
                   </Form.Item>
                 </div>
                 <div style={{ marginLeft: '150px' }}>
@@ -1253,7 +1381,7 @@ class Page extends Component {
                     label="合同编号"
                     rules={[{ required: true, message: '合同编号' }]}
                   >
-                    <Input allowClear />
+                    <Input style={{ height: '25px' }} allowClear />
                   </Form.Item>
                 </div>
                 <div style={{ marginLeft: '150px' }}>
@@ -1308,12 +1436,15 @@ class Page extends Component {
                 </Col>
                 <Col span={12}>
                   <div style={{ display: 'flex' }}>
-                    <div>
+                    <div style={{ marginTop: '5px' }}>
                       <DescriptionItem title="备注" />
                     </div>
                     <div>
                       <Form.Item name="remark">
-                        <Input allowClear style={{ width: '260px' }} />
+                        <Input
+                          allowClear
+                          style={{ width: '260px', height: '25px' }}
+                        />
                       </Form.Item>
                     </div>
                   </div>
@@ -1359,7 +1490,7 @@ class Page extends Component {
                 </Col>
                 <Col span={12}>
                   <div style={{ display: 'flex' }}>
-                    <div>
+                    <div style={{ marginTop: '5px' }}>
                       <DescriptionItem title="订单状态" />
                     </div>
                     <div>
@@ -1424,7 +1555,7 @@ class Page extends Component {
                       textIndent: '10px',
                     }}
                   >
-                    ¥{this.state.sum.toFixed(2)}
+                    ¥{this.state.sum && this.state.sum.toFixed(2)}
                   </div>
                 </div>
               </div>

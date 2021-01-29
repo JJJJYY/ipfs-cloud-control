@@ -90,113 +90,20 @@ class Page extends Component {
       },
     },
     {
-      title: '上架/下架',
-      dataIndex: 'status',
-      render: (text, a) => (
-        <div>
-          {' '}
-          <Popconfirm
-            placement="top"
-            title={this.state.text}
-            onConfirm={() => {
-              this.confirm(a);
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button
-              style={{
-                backgroundColor: 'green',
-                color: '#fff',
-                border: 'none',
-                display: text == 1 ? 'none' : 'block',
-              }}
-            >
-              上架
-            </Button>{' '}
-          </Popconfirm>
-          <Popconfirm
-            placement="top"
-            title={this.state.texta}
-            onConfirm={() => {
-              this.putaway(a);
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button
-              style={{
-                display: text == 2 ? 'none' : 'block',
-                backgroundColor: '#1890FF',
-                color: '#fff',
-                border: 'none',
-              }}
-            >
-              下架
-            </Button>
-          </Popconfirm>
-        </div>
-      ),
-    },
-    {
       title: '操作',
       operation: true,
       width: 60,
       fixed: 'right',
-      actions() {
-        return ['编辑'];
+      actions(record) {
+        return record.status == 2
+          ? ['编辑', '上架']
+          : record.status == 1
+          ? ['编辑', '下架']
+          : [''];
       },
     },
   ];
 
-  confirm = e => {
-    let aid = e.id;
-    let statea = 1;
-    this.props.dispatch({
-      type: 'goods/Id',
-      payload: {
-        id: aid,
-      },
-    });
-    this.props
-      .dispatch({
-        type: 'goods/Change',
-        payload: {
-          id: aid,
-          status: statea,
-        },
-      })
-      .then(result => {
-        if (result != 'error') {
-          message.info('上架成功');
-          this.loadData();
-        }
-      });
-  };
-  putaway = e => {
-    let aid = e.id;
-    let statea = 2;
-    this.props.dispatch({
-      type: 'goods/Id',
-      payload: {
-        id: aid,
-      },
-    });
-    this.props
-      .dispatch({
-        type: 'goods/Change',
-        payload: {
-          id: aid,
-          status: statea,
-        },
-      })
-      .then(result => {
-        if (result != 'error') {
-          message.info('下架成功');
-          this.loadData();
-        }
-      });
-  };
   componentDidMount() {
     this.loadData();
     this.loadProduct();
@@ -224,46 +131,99 @@ class Page extends Component {
       });
   };
 
-  handleAction = id => {
+  handleAction = (id, index) => {
     //编辑
-
-    this.setState(
-      {
-        rdd: id.id,
-        visible1: true,
-        isModalVisible: true,
-      },
-      () => {
-        this.props
-          .dispatch({
-            type: 'goods/List',
-            payload: {
-              id: id.id,
-            },
-          })
-          .then(result => {
-            if (result != 'error') {
-              this.setState({
-                ids: result,
-                keyg: result.type.id,
-                lus: result.info,
+    if (index == 0) {
+      this.setState(
+        {
+          rdd: id.id,
+          visible1: true,
+          isModalVisible: true,
+        },
+        () => {
+          this.props
+            .dispatch({
+              type: 'goods/List',
+              payload: {
+                id: id.id,
+              },
+            })
+            .then(result => {
+              if (result != 'error') {
+                this.setState({
+                  ids: result,
+                  keyg: result.type.id,
+                  lus: result.info,
+                });
+                this.formRef1.current.setFieldsValue({
+                  ids: result,
+                  product_type_id: result.type.id,
+                  specs: result.specs,
+                  lowest_num: result.lowest_num,
+                  introduction: result.introduction,
+                  info: result.info,
+                  status: result.status,
+                  price: result.price,
+                  stock: result.stock,
+                  rank: result.rank,
+                });
+              }
+            });
+        },
+      );
+    } else if (index == 1) {
+      if (id.status == 1) {
+        let statea = 2;
+        Modal.confirm({
+          title: '下架',
+          content: '确认下架吗?',
+          okText: '提交',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk: () => {
+            this.props
+              .dispatch({
+                type: 'goods/Change',
+                payload: {
+                  id: id.id,
+                  status: statea,
+                },
+              })
+              .then(result => {
+                if (result != 'error') {
+                  message.info('下架成功');
+                  this.loadData();
+                }
               });
-              this.formRef1.current.setFieldsValue({
-                ids: result,
-                product_type_id: result.type.id,
-                specs: result.specs,
-                lowest_num: result.lowest_num,
-                introduction: result.introduction,
-                info: result.info,
-                status: result.status,
-                price: result.price,
-                stock: result.stock,
-                rank: result.rank,
+          },
+        });
+      } else if (id.status == 2) {
+        let statea = 1;
+        Modal.confirm({
+          title: '上架',
+          content: '确定上架吗?',
+          okText: '提交',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk: () => {
+            this.props
+              .dispatch({
+                type: 'goods/Change',
+                payload: {
+                  id: id.id,
+                  status: statea,
+                },
+              })
+              .then(result => {
+                if (result != 'error') {
+                  message.info('上架成功');
+                  this.loadData();
+                }
               });
-            }
-          });
-      },
-    );
+          },
+        });
+      }
+    }
   };
 
   handleActions = () => {

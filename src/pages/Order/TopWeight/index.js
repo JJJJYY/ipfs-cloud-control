@@ -10,6 +10,7 @@ import {
   Divider,
   Col,
   Row,
+  ide,
   Input,
   message,
   Button,
@@ -128,11 +129,11 @@ class Page extends Component {
     },
     {
       title: '单价',
-      dataIndex: 'make_price',
+      dataIndex: 'price',
     },
     {
       title: '数量',
-      dataIndex: 'make_quantity',
+      dataIndex: 'quantity',
     },
     {
       title: '小计',
@@ -255,13 +256,15 @@ class Page extends Component {
   // };
 
   handleActions = (id, index) => {
-    let idi = id.id;
+    this.setState({
+      ide: id.id,
+    });
 
     if (index == 0) {
       this.props
         .dispatch({
           type: 'weight/Id',
-          payload: { id: idi },
+          payload: { id: id.id },
         })
         .then(result => {
           console.log(result);
@@ -275,6 +278,40 @@ class Page extends Component {
     } else if (index == 1) {
       this.loadDetail(id);
     }
+  };
+  compile = () => {
+    const { ide } = this.state;
+    this.setState(
+      {
+        visible1: false,
+        visibleInviteDrawer: true,
+      },
+      () => {
+        this.props
+          .dispatch({
+            type: 'weight/Id',
+            payload: { id: ide },
+          })
+          .then(result => {
+            if (result != 'error') {
+              this.setState({
+                ids: result || [],
+                sum: result.total_amount * 1,
+                info: result.info || [],
+                visibleInviteDrawer: true,
+              });
+              this.formRef.current.setFieldsValue({
+                follow_user: result.follow_user,
+                contract_no: result.contract_no,
+                pay_img: result.pay_img,
+                status: result.status,
+                remark: result.remark,
+                service_fee: result.service_fee,
+              });
+            }
+          });
+      },
+    );
   };
   onClose = () => {
     this.setState({
@@ -319,12 +356,6 @@ class Page extends Component {
           });
       },
     );
-  };
-  compile = () => {
-    this.setState({
-      visible1: false,
-      visibleInviteDrawer: true,
-    });
   };
 
   render() {
@@ -554,7 +585,7 @@ class Page extends Component {
                 height: '54.6px',
               }}
             >
-              <div style={{ width: '187px', padding: '16px' }}>技术服务费</div>
+              <div style={{ width: '211px', padding: '16px' }}>技术服务费</div>
               <div style={{ width: '102px', padding: '16px' }}>
                 {this.state.ids.service_fee}
               </div>
