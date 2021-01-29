@@ -62,6 +62,7 @@ class Page extends Component {
     place: 'left',
     list: [],
     dataAdd: null,
+    loadings: false,
   };
   formRef = React.createRef();
   formRef1 = React.createRef();
@@ -132,7 +133,7 @@ class Page extends Component {
       },
       actions(record) {
         return record.audit_status == 0
-          ? ['审核']
+          ? ['审核', '编辑', '详情']
           : record.audit_status == 1
           ? ['', '编辑', '详情']
           : record.audit_status == 2
@@ -221,63 +222,6 @@ class Page extends Component {
       },
     },
   ];
-  columnsAdd = [
-    {
-      title: '产品名称',
-      dataIndex: 'product_type_name',
-    },
-    {
-      title: '型号',
-      dataIndex: 'specs',
-    },
-    {
-      title: '单价',
-      dataIndex: 'price',
-    },
-    {
-      title: '数量',
-      dataIndex: 'quantity',
-      render: (text, e, index) => (
-        <div>
-          {' '}
-          数量:{' '}
-          <InputNumber
-            style={{ width: '70px' }}
-            min={1}
-            step={1}
-            defaultValue={text}
-            onChange={value => this.onGenderChange(value, e, index)}
-            precision=""
-          />{' '}
-        </div>
-      ),
-    },
-    {
-      title: '折扣',
-      dataIndex: 'discount',
-      // render: (text, e, index) => (
-      //   <div>
-      //     折扣:{' '}
-      //     <InputNumber
-      //       style={{ width: '70px' }}
-      //       min={1}
-      //       step={1}
-      //       onChange={value => this.onGenderChanges(value, e, index)}
-      //       defaultValue={text}
-      //       precision=""
-      //     />
-      //   </div>
-      // ),
-    },
-    {
-      title: '小计',
-      dataIndex: 'total_amount',
-      render: (text, e, index) => {
-        let a = text * 1;
-        return <div style={{ color: 'orange' }}> ¥{a.toFixed(2)}</div>;
-      },
-    },
-  ];
 
   componentDidMount() {
     this.loadData();
@@ -285,7 +229,7 @@ class Page extends Component {
   }
 
   onGenderChange = (value, e, index) => {
-    const { info, ids, num } = this.state;
+    const { info } = this.state;
 
     info[index].quantity = value;
     info[index].total_amount =
@@ -538,21 +482,6 @@ class Page extends Component {
       visible2: false,
     });
     message.success('选择完成');
-    // this.setState({
-    //   list:key
-    // })
-
-    // this.props
-    //   .dispatch({
-    //     type: 'replenishmentRecord/add',
-    //     payload: values,
-    //   })
-    //   .then(data => {
-    //     if (data != 'error') {
-    //       this.loadData();
-    //       this.handleClose();
-    //     }
-    //   });
   };
   readactCancel = () => {
     this.setState({
@@ -677,7 +606,6 @@ class Page extends Component {
       visible,
       page,
       placement,
-      list,
       dataAdd,
       dataActive,
       visible1,
@@ -687,6 +615,7 @@ class Page extends Component {
       count,
       search,
       selectedRowKeys,
+      loadings,
     } = this.state;
     const { data, active, listLoading, addLoading, updateLoading } = this.props;
     console.log(data);
@@ -722,17 +651,17 @@ class Page extends Component {
       ];
       return (
         <div>
-          {' '}
           <Table
             columns={columns}
             dataSource={record.info}
             pagination={false}
             rowKey="id"
-          />{' '}
+          />
         </div>
       );
     };
     const onFinish = values => {
+      let pay_img = 'qweqweqweqwe';
       this.props
         .dispatch({
           type: 'weight/update',
@@ -741,21 +670,49 @@ class Page extends Component {
             info: this.state.info,
             follow_user: values.follow_user,
             contract_no: values.contract_no,
-            pay_img: values.pay_img,
+            pay_img: pay_img,
             status: values.status,
             remark: values.remark,
             service_fee: values.service_fee,
           },
         })
         .then(res => {
-          this.setState({
-            visibleInviteDrawer: false,
-          });
-          message.success('修改成功');
+          if (res != 'erro') {
+            this.setState({
+              visibleInviteDrawer: false,
+            });
+            message.success('修改成功');
+          }
         });
     };
     const onFinishs = values => {
-      console.log(values);
+      const { dataAdd } = this.state;
+      this.setState({
+        loadings: true,
+      });
+      this.props
+        .dispatch({
+          type: 'replenishmentRecord/add',
+          payload: {
+            username: values.username,
+            follow_user: values.follow_user,
+            contract_no: values.contract_no,
+            pay_img: values.pay_img,
+            remark: values.remark,
+            service_fee: values.service_fee,
+            info: dataAdd,
+          },
+        })
+        .then(data => {
+          if (data != 'error') {
+            this.setState({
+              visible: false,
+              loadings: false,
+            });
+            message.success('添加成功');
+            this.loadData();
+          }
+        });
     };
     const { Option } = Select;
 
@@ -991,7 +948,7 @@ class Page extends Component {
                     />
                   </Form.Item>
                 </div>
-                <div style={{ marginLeft: '100px' }}>
+                {/* <div style={{ marginLeft: '100px' }}>
                   <Form.Item
                     name="pay_img"
                     label="付款证明"
@@ -999,7 +956,7 @@ class Page extends Component {
                   >
                     <Upload limit={1}></Upload>
                   </Form.Item>
-                </div>
+                </div> */}
                 <div style={{ marginLeft: '50px' }}>
                   <Form.Item>
                     <Button
@@ -1124,7 +1081,6 @@ class Page extends Component {
                     step={0.1}
                     max={1}
                     precision="2"
-                    defaultValue="0.2"
                     allowClear
                     style={{ width: '70px' }}
                   />
@@ -1162,8 +1118,9 @@ class Page extends Component {
                   style={{ padding: '4px 10px' }}
                   type="primary"
                   htmlType="submit"
+                  loading={loadings}
                 >
-                  确认
+                  {this.state.loadings ? '提交中' : '提交'}
                 </Button>
               </div>
             </Form.Item>

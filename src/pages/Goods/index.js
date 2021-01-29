@@ -348,7 +348,9 @@ class Page extends Component {
         },
       );
     };
-
+    const onChangeunit = e => {
+      console.log(e.target.value);
+    };
     return (
       <div className="goods">
         <OperationGroup onAdd={this.handleActions} />
@@ -417,6 +419,41 @@ class Page extends Component {
             >
               <Input allowClear />
             </Form.Item>
+            {/* {this.state.keys == 5 ? null : (<Form.Item
+              name="unit"
+              label='每T/元'
+              rules={[
+                {
+                  required: true,
+                },
+                {
+                  pattern: /^\d+$|^\d+[.]?\d+$/,
+                  message: '只能输入数字',
+                },
+              ]}
+            > */}
+            <Input onChange={onChangeunit} maxLength={9} allowClear />
+            {/* </Form.Item>)} */}
+
+            {this.state.keys == 1 ||
+            this.state.keys == 5 ||
+            this.state.keys == 0 ? null : (
+              <Form.Item
+                name="lowest_num"
+                label="最低起购/T"
+                rules={[
+                  {
+                    required: true,
+                  },
+                  {
+                    pattern: /^\d+$|^\d+[.]?\d+$/,
+                    message: '只能输入数字',
+                  },
+                ]}
+              >
+                <Input maxLength={9} allowClear />
+              </Form.Item>
+            )}
             <Form.Item
               name="price"
               label={
@@ -438,28 +475,15 @@ class Page extends Component {
             >
               <Input maxLength={9} allowClear />
             </Form.Item>
-            {this.state.keys == 1 ||
-            this.state.keys == 5 ||
-            this.state.keys == 0 ? null : (
-              <Form.Item
-                name="lowest_num"
-                label="最低起购/T"
-                rules={[
-                  {
-                    required: true,
-                  },
-                  {
-                    pattern: /^\d+$|^\d+[.]?\d+$/,
-                    message: '只能输入数字',
-                  },
-                ]}
-              >
-                <Input maxLength={9} allowClear />
-              </Form.Item>
-            )}
             <Form.Item
               name="stock"
-              label={this.state.keys == 1 ? '库存/台' : '库存/T'}
+              label={
+                this.state.keys == 1
+                  ? '库存/台'
+                  : this.state.keys == 5
+                  ? '库存/T'
+                  : '库存(每份576T)'
+              }
               rules={[
                 {
                   required: true,
@@ -472,6 +496,7 @@ class Page extends Component {
             >
               <Input maxLength={9} allowClear />
             </Form.Item>
+
             <Form.Item
               name="introduction"
               label="简介"

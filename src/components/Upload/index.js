@@ -72,7 +72,7 @@ class UploadItem extends Component {
             fileList={fileList.length ? fileList : null}
             maxCount={limit}
             defaultFileList={[
-              {
+              value && {
                 name: value,
                 url: value,
               },
