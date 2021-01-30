@@ -52,7 +52,6 @@ class UploadItem extends Component {
   render() {
     const { fileList, previewImage, showDefault } = this.state;
     const { limit, token, onChange, value } = this.props;
-
     const uploadButton = (
       <div>
         <UploadOutlined />
@@ -71,12 +70,14 @@ class UploadItem extends Component {
             data={{ token: token }}
             fileList={fileList.length ? fileList : null}
             maxCount={limit}
-            defaultFileList={[
-              value && {
-                name: value,
-                url: value,
-              },
-            ]}
+            defaultFileList={
+              value && [
+                {
+                  name: value,
+                  url: value,
+                },
+              ]
+            }
             onChange={info => {
               const ispic =
                 info.file.type === 'image/jpeg' ||
@@ -97,7 +98,10 @@ class UploadItem extends Component {
               ? null
               : uploadButton}
           </Upload>
-        ) : null}
+        ) : (
+          uploadButton
+        )}
+
         <Modal
           visible={previewImage !== null}
           footer={null}

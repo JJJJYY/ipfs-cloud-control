@@ -50,6 +50,8 @@ class Page extends Component {
         info: '',
       },
     ],
+    total_price: null,
+    stock: null,
   };
 
   formRef = React.createRef();
@@ -349,7 +351,38 @@ class Page extends Component {
       );
     };
     const onChangeunit = e => {
-      console.log(e.target.value);
+      const { total_price, stock } = this.state;
+      this.setState(
+        {
+          total_price: e.target.value,
+        },
+        () => {
+          if (total_price * stock) {
+            this.formRef1.current.setFieldsValue({
+              total_price: total_price,
+              stock: stock,
+              price: total_price * stock,
+            });
+          }
+        },
+      );
+    };
+    const onChangeLowestnum = e => {
+      const { total_price, stock } = this.state;
+      this.setState(
+        {
+          stock: e.target.value,
+        },
+        () => {
+          if (total_price * stock) {
+            this.formRef1.current.setFieldsValue({
+              total_price: total_price,
+              stock: stock,
+              price: total_price * stock,
+            });
+          }
+        },
+      );
     };
     return (
       <div className="goods">
@@ -404,12 +437,13 @@ class Page extends Component {
               ]}
             >
               <Select onChange={this.onSelect} allowClear>
-                {this.state.editdata &&
-                  this.state.editdata.map(item => {
-                    return (
-                      <Option key={item.id}>{item.product_type_name}</Option>
-                    );
-                  })}
+                {this.state.editdata
+                  ? this.state.editdata.map(item => {
+                      return (
+                        <Option key={item.id}>{item.product_type_name}</Option>
+                      );
+                    })
+                  : null}
               </Select>
             </Form.Item>
             <Form.Item
@@ -419,21 +453,23 @@ class Page extends Component {
             >
               <Input allowClear />
             </Form.Item>
-            {/* {this.state.keys == 5 ? null : (<Form.Item
-              name="unit"
-              label='每T/元'
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  pattern: /^\d+$|^\d+[.]?\d+$/,
-                  message: '只能输入数字',
-                },
-              ]}
-            > */}
-            <Input onChange={onChangeunit} maxLength={9} allowClear />
-            {/* </Form.Item>)} */}
+            {this.state.keys == 5 ? null : (
+              <Form.Item
+                name="total_price"
+                label="每T/元"
+                rules={[
+                  {
+                    required: true,
+                  },
+                  {
+                    pattern: /^\d+$|^\d+[.]?\d+$/,
+                    message: '只能输入数字',
+                  },
+                ]}
+              >
+                <Input onChange={onChangeunit} maxLength={9} allowClear />
+              </Form.Item>
+            )}
 
             {this.state.keys == 1 ||
             this.state.keys == 5 ||
@@ -463,17 +499,8 @@ class Page extends Component {
                   ? '单价/年/台'
                   : '单价/T'
               }
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  pattern: /^\d+$|^\d+[.]?\d+$/,
-                  message: '只能输入数字',
-                },
-              ]}
             >
-              <Input maxLength={9} allowClear />
+              <Input maxLength={9} readOnly allowClear />
             </Form.Item>
             <Form.Item
               name="stock"
@@ -494,7 +521,7 @@ class Page extends Component {
                 },
               ]}
             >
-              <Input maxLength={9} allowClear />
+              <Input onChange={onChangeLowestnum} maxLength={9} allowClear />
             </Form.Item>
 
             <Form.Item
