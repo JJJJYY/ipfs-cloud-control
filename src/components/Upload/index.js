@@ -61,47 +61,43 @@ class UploadItem extends Component {
 
     return (
       <div>
-        {value ? (
-          <Upload
-            name="file"
-            // accept='.png,.jpeg,.jpg'
-            action="https://up-z2.qiniup.com/"
-            listType="picture-card"
-            data={{ token: token }}
-            fileList={fileList.length ? fileList : null}
-            maxCount={limit}
-            defaultFileList={
-              value && [
-                {
-                  name: value,
-                  url: value,
-                },
-              ]
+        <Upload
+          name="file"
+          // accept='.png,.jpeg,.jpg'
+          action="https://up-z2.qiniup.com/"
+          listType="picture-card"
+          data={{ token: token }}
+          fileList={fileList.length ? fileList : null}
+          maxCount={limit}
+          key={value}
+          defaultFileList={
+            value && [
+              {
+                name: value,
+                url: value,
+              },
+            ]
+          }
+          onChange={info => {
+            const ispic =
+              info.file.type === 'image/jpeg' ||
+              info.file.type === 'image/jpg' ||
+              info.file.type === 'image/png';
+            if (ispic) {
+              this.setState({ fileList: info.fileList, showDefault });
+              onChange && onChange(this.urls());
+            } else {
+              this.setState({ showDefault: false });
             }
-            onChange={info => {
-              const ispic =
-                info.file.type === 'image/jpeg' ||
-                info.file.type === 'image/jpg' ||
-                info.file.type === 'image/png';
-              if (ispic) {
-                this.setState({ fileList: info.fileList, showDefault });
-                onChange && onChange(this.urls());
-              } else {
-                this.setState({ showDefault: false });
-              }
-            }}
-            onPreview={this.handlePreview}
-            beforeUpload={this.beforeUpload}
-          >
-            {fileList.length >= (limit == null ? 1 : limit) ||
-            (value && showDefault)
-              ? null
-              : uploadButton}
-          </Upload>
-        ) : (
-          uploadButton
-        )}
-
+          }}
+          onPreview={this.handlePreview}
+          beforeUpload={this.beforeUpload}
+        >
+          {fileList.length >= (limit == null ? 1 : limit) ||
+          (value && showDefault)
+            ? null
+            : uploadButton}
+        </Upload>
         <Modal
           visible={previewImage !== null}
           footer={null}

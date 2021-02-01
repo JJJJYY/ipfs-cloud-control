@@ -52,7 +52,9 @@ class Page extends Component {
     make_quantity: 0,
     visible1: false,
     visibleInviteDrawer: false,
+    loadings: false,
     placement: 'right',
+    pay_img: null,
   };
   formRef = React.createRef();
 
@@ -242,19 +244,6 @@ class Page extends Component {
     });
   };
 
-  // handleSave = (row, id) => {
-  //   console.log(row)
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: 'weight/update',
-  //     payload: { id: id, ...row },
-  //   }).then(data => {
-  //     if (data != 'error') {
-  //       this.loadData();
-  //     }
-  //   });
-  // };
-
   handleActions = (id, index) => {
     this.setState({
       ide: id.id,
@@ -360,8 +349,11 @@ class Page extends Component {
 
   render() {
     const { data, listLoading, updateLoading } = this.props;
-    const { placement, visible1, visibleInviteDrawer } = this.state;
+    const { placement, visible1, visibleInviteDrawer, loadings } = this.state;
     const onFinish = values => {
+      this.setState({
+        loadings: true,
+      });
       this.props
         .dispatch({
           type: 'weight/update',
@@ -377,13 +369,19 @@ class Page extends Component {
           },
         })
         .then(res => {
-          this.setState({
-            visibleInviteDrawer: false,
-          });
-          message.success('修改成功');
+          if (res != 'error') {
+            this.setState({
+              visibleInviteDrawer: false,
+              loadings: false,
+            });
+            message.success('修改成功');
+          } else {
+            this.setState({
+              loadings: false,
+            });
+          }
         });
     };
-
     const expandedRowRender = record => {
       console.log(data.data);
       const columns = [
@@ -420,6 +418,8 @@ class Page extends Component {
         </div>
       );
     };
+
+    console.log(this.formRef.current);
     return (
       <div>
         <SearchGroup
@@ -642,7 +642,6 @@ class Page extends Component {
               layout="vertical"
               ref={this.formRef}
               name="control-hooks"
-              onSubmit={this.handleSubmit}
               onFinish={onFinish}
               autoComplete="off"
               initialValues={{
@@ -856,8 +855,9 @@ class Page extends Component {
                     style={{ padding: '4px 10px' }}
                     type="primary"
                     htmlType="submit"
+                    loading={loadings}
                   >
-                    保存
+                    {this.state.loadings ? '保存中' : '保存'}
                   </Button>
                 </div>
               </Form.Item>

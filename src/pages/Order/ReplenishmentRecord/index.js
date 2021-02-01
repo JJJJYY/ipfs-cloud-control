@@ -6,7 +6,6 @@ import {
   Input,
   Radio,
   Tag,
-  Space,
   Modal,
   Select,
   Drawer,
@@ -22,7 +21,6 @@ import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
-import EditModal from '@/components/EditModal';
 import SearchGroup from '@/components/SearchGroup';
 import Upload from '@/components/Upload';
 import styles from './index.less';
@@ -55,12 +53,9 @@ class Page extends Component {
     discount: '',
     selectedRowKeys: [],
     dataActive: null,
-    discount: 0,
-    number: 0,
-    jobNumber: '',
     placement: 'right',
     place: 'left',
-    list: [],
+    list: null,
     dataAdd: null,
     loadings: false,
   };
@@ -302,7 +297,7 @@ class Page extends Component {
       .then(res => {
         this.setState(
           {
-            dataActive: res,
+            dataActive: res || [],
             price: res[0].amount,
           },
           () => {},
@@ -337,6 +332,9 @@ class Page extends Component {
       visible1: false,
       visibleInviteDrawer: false,
       visible: false,
+      dataAdd: undefined,
+      loadings: false,
+      sum: undefined,
     });
   };
   handleActions = (row, index) => {
@@ -617,8 +615,7 @@ class Page extends Component {
       selectedRowKeys,
       loadings,
     } = this.state;
-    const { data, active, listLoading, addLoading, updateLoading } = this.props;
-    console.log(data);
+    const { data, listLoading, addLoading, updateLoading } = this.props;
     const rowSelection =
       search && search.status == 0
         ? {
@@ -661,7 +658,10 @@ class Page extends Component {
       );
     };
     const onFinish = values => {
-      let pay_img = 'qweqweqweqwe';
+      console.log(values);
+      this.setState({
+        loadings: true,
+      });
       this.props
         .dispatch({
           type: 'weight/update',
@@ -670,7 +670,7 @@ class Page extends Component {
             info: this.state.info,
             follow_user: values.follow_user,
             contract_no: values.contract_no,
-            pay_img: pay_img,
+            pay_img: values.pay_img,
             status: values.status,
             remark: values.remark,
             service_fee: values.service_fee,
@@ -679,9 +679,14 @@ class Page extends Component {
         .then(res => {
           if (res != 'erro') {
             this.setState({
+              loadings: false,
               visibleInviteDrawer: false,
             });
             message.success('修改成功');
+          } else {
+            this.setState({
+              loadings: false,
+            });
           }
         });
     };
@@ -704,6 +709,7 @@ class Page extends Component {
           },
         })
         .then(data => {
+          console.log(data);
           if (data != 'error') {
             this.setState({
               visible: false,
@@ -711,6 +717,10 @@ class Page extends Component {
             });
             message.success('添加成功');
             this.loadData();
+          } else {
+            this.setState({
+              loadings: false,
+            });
           }
         });
     };
@@ -849,18 +859,7 @@ class Page extends Component {
             </Button>
           )}
         </div>
-        {/* <EditModal
-          visible={visible2}
-          width={630}
-          onOk={this.handleSubmit}
-          onCancel={this.handleClose}
-          confirmLoading={addLoading}
-          onGenderChange={this.onGenderChange}
-          rowKey="id"
-          ref="confirmRef"
-          columns={this.modelColumns(active, this)}
-          maskClosable={false}
-        /> */}
+
         <Modal
           visible={visible2}
           title="关联商品"
@@ -869,6 +868,8 @@ class Page extends Component {
           maskClosable={false}
           confirmLoading={true}
           height={500}
+          style={{ marginLeft: '300px' }}
+          destroyOnClose
           footer={[
             <Button key="back" onClick={this.handleClose}>
               取消
@@ -903,6 +904,7 @@ class Page extends Component {
                 ))
               : null}
           </Select>
+          <div style={{ height: '300px' }}></div>
         </Modal>
         <Drawer
           title="添加"
@@ -948,7 +950,7 @@ class Page extends Component {
                     />
                   </Form.Item>
                 </div>
-                {/* <div style={{ marginLeft: '100px' }}>
+                <div style={{ marginLeft: '100px' }}>
                   <Form.Item
                     name="pay_img"
                     label="付款证明"
@@ -956,8 +958,8 @@ class Page extends Component {
                   >
                     <Upload limit={1}></Upload>
                   </Form.Item>
-                </div> */}
-                <div style={{ marginLeft: '50px' }}>
+                </div>
+                <div style={{ marginLeft: '100px' }}>
                   <Form.Item>
                     <Button
                       style={{ padding: '4px 10px' }}
@@ -992,7 +994,6 @@ class Page extends Component {
             </div>
             <Divider>产品名称</Divider>
             <div style={{ width: '100%' }}>
-              {console.log(dataAdd)}
               <div>
                 <div className={styles.menu}>
                   <div className={styles.item}>产品名称</div>
@@ -1063,7 +1064,6 @@ class Page extends Component {
                 pagination={false}
                 rowKey="id"
               /> */}
-              {console.log(dataActive)}
             </div>
             <div
               style={{
@@ -1528,8 +1528,9 @@ class Page extends Component {
                     style={{ padding: '4px 10px' }}
                     type="primary"
                     htmlType="submit"
+                    loading={loadings}
                   >
-                    保存
+                    {this.state.loadings ? '保存中' : '保存'}
                   </Button>
                 </div>
               </Form.Item>

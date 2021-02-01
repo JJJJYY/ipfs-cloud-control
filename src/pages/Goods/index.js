@@ -51,7 +51,7 @@ class Page extends Component {
       },
     ],
     total_price: null,
-    stock: null,
+    lowest_num: null,
   };
 
   formRef = React.createRef();
@@ -312,6 +312,7 @@ class Page extends Component {
               .dispatch({
                 type: 'goods/add',
                 payload: {
+                  price: price,
                   ...row,
                   ...rowId,
                 },
@@ -351,34 +352,34 @@ class Page extends Component {
       );
     };
     const onChangeunit = e => {
-      const { total_price, stock } = this.state;
+      const { total_price, lowest_num } = this.state;
       this.setState(
         {
           total_price: e.target.value,
         },
         () => {
-          if (total_price * stock) {
+          if (total_price * lowest_num) {
             this.formRef1.current.setFieldsValue({
               total_price: total_price,
-              stock: stock,
-              price: total_price * stock,
+              lowest_num: lowest_num,
+              price: total_price * lowest_num,
             });
           }
         },
       );
     };
     const onChangeLowestnum = e => {
-      const { total_price, stock } = this.state;
+      const { total_price, lowest_num } = this.state;
       this.setState(
         {
-          stock: e.target.value,
+          lowest_num: e.target.value,
         },
         () => {
-          if (total_price * stock) {
+          if (total_price * lowest_num) {
             this.formRef1.current.setFieldsValue({
               total_price: total_price,
-              stock: stock,
-              price: total_price * stock,
+              lowest_num: lowest_num,
+              price: total_price * lowest_num,
             });
           }
         },
@@ -487,7 +488,7 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Input maxLength={9} allowClear />
+                <Input onChange={onChangeLowestnum} maxLength={9} allowClear />
               </Form.Item>
             )}
             <Form.Item
@@ -500,7 +501,13 @@ class Page extends Component {
                   : '单价/T'
               }
             >
-              <Input maxLength={9} readOnly allowClear />
+              <InputNumber
+                precision="2"
+                style={{ width: '472px' }}
+                maxLength={9}
+                readOnly
+                allowClear
+              />
             </Form.Item>
             <Form.Item
               name="stock"
@@ -521,7 +528,7 @@ class Page extends Component {
                 },
               ]}
             >
-              <Input onChange={onChangeLowestnum} maxLength={9} allowClear />
+              <Input maxLength={9} allowClear />
             </Form.Item>
 
             <Form.Item
@@ -786,9 +793,9 @@ class Page extends Component {
                                   {...field}
                                   name={[field.name, 'img']}
                                   fieldKey={[field.fieldKey, 'img']}
-                                  rules={[
-                                    { required: true, message: '请上传图片' },
-                                  ]}
+                                  // rules={[
+                                  //   { required: true, message: '请上传图片' },
+                                  // ]}
                                 >
                                   <Upload limit={1}></Upload>
                                 </Form.Item>
