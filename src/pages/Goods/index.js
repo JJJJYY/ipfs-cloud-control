@@ -50,7 +50,7 @@ class Page extends Component {
         info: '',
       },
     ],
-    total_price: null,
+    price: null,
     lowest_num: null,
   };
 
@@ -73,8 +73,11 @@ class Page extends Component {
     },
     {
       title: '单价/元',
-      dataIndex: 'price',
-      render: text => <div>{parseFloat(text)}</div>,
+      dataIndex: 'total_price',
+      render: text => {
+        let a = text * 1;
+        return <div> {a.toFixed(2)}</div>;
+      },
     },
     {
       title: '状态',
@@ -234,19 +237,6 @@ class Page extends Component {
       rdd: null,
       visible: true,
     });
-    // this.loadProduct();
-    this.formRef.current &&
-      this.formRef.current.setFieldsValue({
-        lowest_num: data.lowest_num,
-        specs: data.specs,
-        introduction: data.introduction,
-        product_type_id: data.product_type_id,
-        name: data.name,
-        price: data.price,
-        status: data.status,
-        stock: data.stock,
-        rank: data.rank,
-      });
   };
 
   handleClose = () => {
@@ -312,7 +302,6 @@ class Page extends Component {
               .dispatch({
                 type: 'goods/add',
                 payload: {
-                  price: price,
                   ...row,
                   ...rowId,
                 },
@@ -345,6 +334,10 @@ class Page extends Component {
                       ],
                     });
                   }
+                } else {
+                  this.setState({
+                    loadings: false,
+                  });
                 }
               });
           });
@@ -352,34 +345,38 @@ class Page extends Component {
       );
     };
     const onChangeunit = e => {
-      const { total_price, lowest_num } = this.state;
+      const { price, lowest_num } = this.state;
       this.setState(
         {
-          total_price: e.target.value,
+          price: e.target.value,
         },
         () => {
-          if (total_price * lowest_num) {
+          if (price * lowest_num) {
             this.formRef1.current.setFieldsValue({
-              total_price: total_price,
-              lowest_num: lowest_num,
-              price: total_price * lowest_num,
+              total_price: price * lowest_num,
+            });
+          } else {
+            this.formRef1.current.setFieldsValue({
+              total_price: 0,
             });
           }
         },
       );
     };
     const onChangeLowestnum = e => {
-      const { total_price, lowest_num } = this.state;
+      const { price, lowest_num } = this.state;
       this.setState(
         {
           lowest_num: e.target.value,
         },
         () => {
-          if (total_price * lowest_num) {
+          if (price * lowest_num) {
             this.formRef1.current.setFieldsValue({
-              total_price: total_price,
-              lowest_num: lowest_num,
-              price: total_price * lowest_num,
+              total_price: price * lowest_num,
+            });
+          } else {
+            this.formRef1.current.setFieldsValue({
+              total_price: 0,
             });
           }
         },
@@ -456,7 +453,7 @@ class Page extends Component {
             </Form.Item>
             {this.state.keys == 5 ? null : (
               <Form.Item
-                name="total_price"
+                name="price"
                 label="每T/元"
                 rules={[
                   {
@@ -468,7 +465,12 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Input onChange={onChangeunit} maxLength={9} allowClear />
+                <Input
+                  onChange={onChangeunit}
+                  type="number"
+                  maxLength={9}
+                  allowClear
+                />
               </Form.Item>
             )}
 
@@ -488,11 +490,16 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Input onChange={onChangeLowestnum} maxLength={9} allowClear />
+                <Input
+                  onChange={onChangeLowestnum}
+                  type="number"
+                  maxLength={9}
+                  allowClear
+                />
               </Form.Item>
             )}
             <Form.Item
-              name="price"
+              name="total_price"
               label={
                 this.state.keys == 1
                   ? '单价/台'
@@ -504,7 +511,6 @@ class Page extends Component {
               <InputNumber
                 precision="2"
                 style={{ width: '472px' }}
-                maxLength={9}
                 readOnly
                 allowClear
               />
