@@ -50,8 +50,8 @@ class Page extends Component {
         info: '',
       },
     ],
-    price: null,
-    lowest_num: null,
+    price: 0,
+    lowest_num: 0,
   };
 
   formRef = React.createRef();
@@ -345,15 +345,14 @@ class Page extends Component {
       );
     };
     const onChangeunit = e => {
-      const { price, lowest_num } = this.state;
       this.setState(
         {
           price: e.target.value,
         },
         () => {
-          if (price * lowest_num) {
+          if (this.state.price * this.state.lowest_num) {
             this.formRef1.current.setFieldsValue({
-              total_price: price * lowest_num,
+              total_price: this.state.price * this.state.lowest_num,
             });
           } else {
             this.formRef1.current.setFieldsValue({
@@ -364,15 +363,14 @@ class Page extends Component {
       );
     };
     const onChangeLowestnum = e => {
-      const { price, lowest_num } = this.state;
       this.setState(
         {
           lowest_num: e.target.value,
         },
         () => {
-          if (price * lowest_num) {
+          if (this.state.price * this.state.lowest_num) {
             this.formRef1.current.setFieldsValue({
-              total_price: price * lowest_num,
+              total_price: this.state.price * this.state.lowest_num,
             });
           } else {
             this.formRef1.current.setFieldsValue({
