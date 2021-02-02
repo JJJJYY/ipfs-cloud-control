@@ -451,28 +451,31 @@ class Page extends Component {
             >
               <Input allowClear />
             </Form.Item>
-            {this.state.keys == 5 ? null : (
-              <Form.Item
-                name="price"
-                label="每T/元"
-                rules={[
-                  {
-                    required: true,
-                  },
-                  {
-                    pattern: /^\d+$|^\d+[.]?\d+$/,
-                    message: '只能输入数字',
-                  },
-                ]}
-              >
-                <Input
-                  onChange={onChangeunit}
-                  type="number"
-                  maxLength={9}
-                  allowClear
-                />
-              </Form.Item>
-            )}
+
+            <Form.Item
+              name="price"
+              label={
+                this.state.keys == 1 || this.state.keys == 5
+                  ? '单价/台'
+                  : '每T/元'
+              }
+              // rules={[
+              //   {
+              //     required: true,
+              //   },
+              //   {
+              //     pattern: /^\d+$|^\d+[.]?\d+$/,
+              //     message: '只能输入数字',
+              //   },
+              // ]}
+            >
+              <Input
+                onChange={onChangeunit}
+                type="number"
+                maxLength={9}
+                allowClear
+              />
+            </Form.Item>
 
             {this.state.keys == 1 ||
             this.state.keys == 5 ||
@@ -498,23 +501,18 @@ class Page extends Component {
                 />
               </Form.Item>
             )}
-            <Form.Item
-              name="total_price"
-              label={
-                this.state.keys == 1
-                  ? '单价/台'
-                  : this.state.keys == 5
-                  ? '单价/年/台'
-                  : '单价/T'
-              }
-            >
-              <InputNumber
-                precision="2"
-                style={{ width: '472px' }}
-                readOnly
-                allowClear
-              />
-            </Form.Item>
+            {this.state.keys == 1 ||
+            this.state.keys == 5 ||
+            this.state.keys == 0 ? null : (
+              <Form.Item name="total_price" label={'单价/T'}>
+                <InputNumber
+                  precision="2"
+                  style={{ width: '472px' }}
+                  allowClear
+                />
+              </Form.Item>
+            )}
+
             <Form.Item
               name="stock"
               label={

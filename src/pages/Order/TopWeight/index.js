@@ -3,14 +3,10 @@ import {
   Drawer,
   Tag,
   Select,
-  Dropdown,
-  Space,
-  Badge,
   Table,
   Divider,
   Col,
   Row,
-  ide,
   Input,
   message,
   Button,
@@ -448,6 +444,10 @@ class Page extends Component {
               name: 'timeStart',
               custom: <DatePicker.RangePicker />,
             },
+            {
+              label: '跟进人',
+              name: 'follow_user',
+            },
           ]}
         />
         {/* 订单列表 */}
@@ -519,32 +519,14 @@ class Page extends Component {
             </Row>
 
             <Divider>订单记录</Divider>
+
             <Row>
-              <Col span={12}>
-                <DescriptionItem
-                  title="订单号"
-                  content={this.state.ids.order_code}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={12}>
-                <DescriptionItem
-                  title="产品名称"
-                  content={
-                    this.state.ids.group &&
-                    this.state.ids.group.product_group_name
-                  }
-                />
-              </Col>
               <Col span={12}>
                 <DescriptionItem
                   title="创建时间"
                   content={this.state.ids.created_at}
                 />
               </Col>
-            </Row>
-            <Row>
               <Col span={12}>
                 <DescriptionItem
                   title="完成时间"
@@ -553,6 +535,8 @@ class Page extends Component {
                   }
                 />
               </Col>
+            </Row>
+            <Row>
               <Col span={12}>
                 <DescriptionItem
                   title="订单状态"
@@ -565,6 +549,12 @@ class Page extends Component {
                       ? '已完成'
                       : ''
                   }
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="订单号"
+                  content={this.state.ids.order_code}
                 />
               </Col>
             </Row>

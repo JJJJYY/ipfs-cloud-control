@@ -2,23 +2,17 @@ import React, { Component } from 'react';
 import {
   Drawer,
   Form,
-  Input,
   Switch,
   Tag,
   Modal,
   Select,
   Table,
   Divider,
-  Alert,
-  message,
   Col,
   Row,
-  InputNumber,
 } from 'antd';
 import { connect } from 'umi';
-import { PoweroffOutlined } from '@ant-design/icons';
 import EditableTable from '@/components/EditableTable';
-import OperationGroup from '@/components/OperationGroup';
 import SearchGroup from '@/components/SearchGroup';
 import styles from './index.less';
 
@@ -102,11 +96,6 @@ class Page extends Component {
     {
       title: '订单号',
       dataIndex: 'order_code',
-    },
-    {
-      title: '商品名称',
-      dataIndex: 'group',
-      render: text => <div>{text.product_group_name} </div>,
     },
     {
       title: '创建时间',

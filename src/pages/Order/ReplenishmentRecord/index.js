@@ -1219,15 +1219,6 @@ class Page extends Component {
 
               <Col span={12}>
                 <DescriptionItem
-                  title="产品名称"
-                  content={
-                    this.state.ids.group &&
-                    this.state.ids.group.product_group_name
-                  }
-                />
-              </Col>
-              <Col span={12}>
-                <DescriptionItem
                   title="订单状态"
                   content={
                     this.state.ids.status == 0
