@@ -131,7 +131,7 @@ class Page extends Component {
     },
     {
       title: '单价',
-      dataIndex: 'price',
+      dataIndex: 'total_price',
     },
     {
       title: '数量',
@@ -154,7 +154,7 @@ class Page extends Component {
     },
     {
       title: '单价',
-      dataIndex: 'price',
+      dataIndex: 'total_price',
     },
     {
       title: '数量',
