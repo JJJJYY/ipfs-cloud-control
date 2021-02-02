@@ -12,6 +12,7 @@ import {
   Button,
   Space,
   Radio,
+  Spin,
 } from 'antd';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
@@ -40,6 +41,7 @@ class Page extends Component {
     rdd: null,
     lus: [],
     loadings: false,
+    loading: false,
     isModalVisible: false,
     text: '确认上架吗?',
     texta: '确认下架吗?',
@@ -144,6 +146,7 @@ class Page extends Component {
           rdd: id.id,
           visible1: true,
           isModalVisible: true,
+          loading: true,
         },
         () => {
           this.props
@@ -159,6 +162,7 @@ class Page extends Component {
                   ids: result,
                   keyg: result.type.id,
                   lus: result.info,
+                  loading: false,
                 });
                 this.formRef1.current.setFieldsValue({
                   ids: result,
@@ -383,376 +387,148 @@ class Page extends Component {
       );
     };
     return (
-      <div className="goods">
-        <OperationGroup onAdd={this.handleActions} />
-        <EditableTable
-          columns={this.columns}
-          dataSource={data.data}
-          total={data.total}
-          loading={listLoading || updateLoading}
-          onChange={pagination => {
-            this.state.page = pagination.current;
-            this.state.count = pagination.pageSize;
-            this.loadData();
-          }}
-          onPutaway={this.putaway}
-          onActions={this.handleAction}
-          rowKey="id"
-        />
-        <Modal
-          title="添加"
-          okText="提交"
-          cancelText="取消"
-          visible={visible}
-          onCancel={this.handleClose}
-          footer={false}
-          confirmLoading={addLoading || updateLoading}
-          destroyOnClose
-          maskClosable={false}
-        >
-          <Form
-            layout="vertical"
-            ref={this.formRef1}
-            onFinish={onFinish}
-            autoComplete="off"
-            initialValues={{
-              info: [
-                {
-                  img: '',
-                  title: '',
-                  info: '',
-                },
-              ],
+      <Spin size="default" spinning={this.state.loading} delay={500}>
+        <div className="goods">
+          <OperationGroup onAdd={this.handleActions} />
+          <EditableTable
+            columns={this.columns}
+            dataSource={data.data}
+            total={data.total}
+            loading={listLoading || updateLoading}
+            onChange={pagination => {
+              this.state.page = pagination.current;
+              this.state.count = pagination.pageSize;
+              this.loadData();
             }}
-          >
-            <Form.Item
-              label="商品名称"
-              name="product_type_id"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Select onChange={this.onSelect} allowClear>
-                {this.state.editdata
-                  ? this.state.editdata.map(item => {
-                      return (
-                        <Option key={item.id}>{item.product_type_name}</Option>
-                      );
-                    })
-                  : null}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              style={{ display: this.state.keys == 5 ? 'none' : 'block' }}
-              name="specs"
-              label="规格型号"
-            >
-              <Input allowClear />
-            </Form.Item>
-
-            <Form.Item
-              name="price"
-              label={
-                this.state.keys == 1 || this.state.keys == 5
-                  ? '单价/台'
-                  : '每T/元'
-              }
-              // rules={[
-              //   {
-              //     required: true,
-              //   },
-              //   {
-              //     pattern: /^\d+$|^\d+[.]?\d+$/,
-              //     message: '只能输入数字',
-              //   },
-              // ]}
-            >
-              <Input
-                onChange={onChangeunit}
-                type="number"
-                maxLength={9}
-                allowClear
-              />
-            </Form.Item>
-
-            {this.state.keys == 1 ||
-            this.state.keys == 5 ||
-            this.state.keys == 0 ? null : (
-              <Form.Item
-                name="lowest_num"
-                label="最低起购/T"
-                rules={[
-                  {
-                    required: true,
-                  },
-                  {
-                    pattern: /^\d+$|^\d+[.]?\d+$/,
-                    message: '只能输入数字',
-                  },
-                ]}
-              >
-                <Input
-                  onChange={onChangeLowestnum}
-                  type="number"
-                  maxLength={9}
-                  allowClear
-                />
-              </Form.Item>
-            )}
-            {this.state.keys == 1 ||
-            this.state.keys == 5 ||
-            this.state.keys == 0 ? null : (
-              <Form.Item name="total_price" label={'单价/T'}>
-                <InputNumber
-                  precision="2"
-                  style={{ width: '472px' }}
-                  allowClear
-                />
-              </Form.Item>
-            )}
-
-            <Form.Item
-              name="stock"
-              label={
-                this.state.keys == 1
-                  ? '库存/台'
-                  : this.state.keys == 5
-                  ? '库存/T'
-                  : '库存(每份576T)'
-              }
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  pattern: /^\d+$|^\d+[.]?\d+$/,
-                  message: '只能输入数字',
-                },
-              ]}
-            >
-              <Input maxLength={9} allowClear />
-            </Form.Item>
-
-            <Form.Item
-              name="introduction"
-              label="简介"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input allowClear maxLength={200} className={styles.form_input} />
-            </Form.Item>
-            <div>
-              <Form.Item name="dynamic_form_nest_item" label="详情">
-                <Form.List name="info">
-                  {(fields, { add, remove }) => (
-                    <>
-                      {fields.map((field, index) => (
-                        <Space
-                          key={field.key}
-                          style={{ display: 'flex', marginBottom: 8 }}
-                          align="baseline"
-                        >
-                          <div className={styles.form_List}>
-                            <div className={styles.form_List1}>
-                              <Form.Item
-                                name={[field.name, 'img']}
-                                fieldKey={[field.fieldKey, 'img']}
-                                rules={[
-                                  { required: true, message: '请上传图片' },
-                                ]}
-                              >
-                                <Upload limit={1}></Upload>
-                              </Form.Item>
-                            </div>
-                            <div className={styles.form_List2}>
-                              <Form.Item
-                                {...field}
-                                style={{ width: '340px' }}
-                                name={[field.name, 'title']}
-                                fieldKey={[field.fieldKey, 'title']}
-                                key={index + 1}
-                                rules={[
-                                  { required: true, message: '请输入标题' },
-                                ]}
-                              >
-                                <Input
-                                  maxLength={20}
-                                  allowClear
-                                  style={{ width: '340px' }}
-                                  placeholder="请输入标题"
-                                />
-                              </Form.Item>
-                              <Form.Item
-                                {...field}
-                                style={{ marginTop: '15px' }}
-                                name={[field.name, 'info']}
-                                fieldKey={[field.fieldKey, 'info']}
-                                key={index}
-                                rules={[
-                                  { required: true, message: '请输入内容' },
-                                ]}
-                              >
-                                <Input
-                                  maxLength={100}
-                                  allowClear
-                                  placeholder="请输入内容"
-                                />
-                              </Form.Item>
-                            </div>
-                          </div>
-                          <MinusCircleOutlined
-                            onClick={() => {
-                              if (fields.length > 1) {
-                                remove(field.name);
-                              } else {
-                                message.info('最少输入一个详情');
-                              }
-                            }}
-                          />
-                        </Space>
-                      ))}
-                      <Form.Item>
-                        <Button onClick={() => add()} block>
-                          添加
-                        </Button>
-                      </Form.Item>
-                    </>
-                  )}
-                </Form.List>
-              </Form.Item>
-            </div>
-            <Form.Item
-              name="rank"
-              label="排序"
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  pattern: /^\d+$|^\d+[.]?\d+$/,
-                  message: '只能输入数字',
-                },
-              ]}
-            >
-              <Input maxLength={9} allowClear />
-            </Form.Item>
-            <Form.Item
-              name="status"
-              label="状态"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Radio.Group onChange={this.onChange} value={this.value}>
-                <Radio value={1}>上架</Radio>
-                <Radio value={2}>下架</Radio>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                  onClick={this.handleClose}
-                  style={{ padding: '4px 10px', marginRight: '20px' }}
-                >
-                  取消
-                </Button>
-                <Button
-                  style={{ padding: '4px 10px' }}
-                  type="primary"
-                  htmlType="submit"
-                  loading={loadings}
-                >
-                  {this.state.loadings ? '提交中' : '提交'}
-                </Button>
-              </div>
-            </Form.Item>
-          </Form>
-        </Modal>
-        {this.state.ids && (
+            onPutaway={this.putaway}
+            onActions={this.handleAction}
+            rowKey="id"
+          />
           <Modal
-            title="编辑"
-            visible={this.state.visible1}
-            // onOk={this.handleSubmits}
+            title="添加"
+            okText="提交"
+            cancelText="取消"
+            visible={visible}
+            onCancel={this.handleClose}
             footer={false}
-            onCancel={this.readactCancel}
+            confirmLoading={addLoading || updateLoading}
             destroyOnClose
             maskClosable={false}
           >
             <Form
               layout="vertical"
               ref={this.formRef1}
-              name="control-hooks"
-              onSubmit={this.handleSubmit}
               onFinish={onFinish}
               autoComplete="off"
               initialValues={{
-                info: this.state.lus,
+                info: [
+                  {
+                    img: '',
+                    title: '',
+                    info: '',
+                  },
+                ],
               }}
             >
               <Form.Item
-                name="product_type_id"
                 label="商品名称"
+                name="product_type_id"
                 rules={[
                   {
                     required: true,
                   },
                 ]}
               >
-                <Select onChange={this.onSelect} disabled>
-                  {this.state.editdata.map(val => {
-                    return (
-                      <Option key={val.id} value={val.id}>
-                        {val.product_type_name}
-                      </Option>
-                    );
-                  })}
+                <Select onChange={this.onSelect} allowClear>
+                  {this.state.editdata
+                    ? this.state.editdata.map(item => {
+                        return (
+                          <Option key={item.id}>
+                            {item.product_type_name}
+                          </Option>
+                        );
+                      })
+                    : null}
                 </Select>
               </Form.Item>
-              {this.state.keyg == 5 ? null : (
-                <Form.Item name="specs" label="规格型号">
-                  <Input allowClear />
-                </Form.Item>
-              )}
+              <Form.Item
+                style={{ display: this.state.keys == 5 ? 'none' : 'block' }}
+                name="specs"
+                label="规格型号"
+              >
+                <Input allowClear />
+              </Form.Item>
 
               <Form.Item
                 name="price"
                 label={
-                  this.state.keyg == 1
+                  this.state.keys == 1 || this.state.keys == 5
                     ? '单价/台'
-                    : this.state.keyg == 5
-                    ? '单价/年/台'
-                    : '单价/T'
+                    : '每T/元'
                 }
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //   },
+                //   {
+                //     pattern: /^\d+$|^\d+[.]?\d+$/,
+                //     message: '只能输入数字',
+                //   },
+                // ]}
               >
-                <Input maxLength={10} allowClear />
+                <Input
+                  onChange={onChangeunit}
+                  type="number"
+                  maxLength={9}
+                  allowClear
+                />
               </Form.Item>
-              {this.state.keyg == 1 ||
-              this.state.keyg == 5 ||
-              this.state.keyg == 0 ? null : (
+
+              {this.state.keys == 1 ||
+              this.state.keys == 5 ||
+              this.state.keys == 0 ? null : (
                 <Form.Item
-                  // style={{ display: this.state.keyg == 1 ? 'none' : this.state.keyg == 5 ? 'none' : this.state.keyg == 0 ? 'none' : 'block' }}
                   name="lowest_num"
                   label="最低起购/T"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                    {
+                      pattern: /^\d+$|^\d+[.]?\d+$/,
+                      message: '只能输入数字',
+                    },
+                  ]}
                 >
-                  <Input allowClear />
+                  <Input
+                    onChange={onChangeLowestnum}
+                    type="number"
+                    maxLength={9}
+                    allowClear
+                  />
                 </Form.Item>
               )}
+              {this.state.keys == 1 ||
+              this.state.keys == 5 ||
+              this.state.keys == 0 ? null : (
+                <Form.Item name="total_price" label={'单价/T'}>
+                  <InputNumber
+                    precision="2"
+                    style={{ width: '472px' }}
+                    allowClear
+                  />
+                </Form.Item>
+              )}
+
               <Form.Item
                 name="stock"
-                label={this.state.keyg == 1 ? '库存/台' : '库存/T'}
+                label={
+                  this.state.keys == 1
+                    ? '库存/台'
+                    : this.state.keys == 5
+                    ? '库存/T'
+                    : '库存(每份576T)'
+                }
                 rules={[
                   {
                     required: true,
@@ -765,6 +541,7 @@ class Page extends Component {
               >
                 <Input maxLength={9} allowClear />
               </Form.Item>
+
               <Form.Item
                 name="introduction"
                 label="简介"
@@ -775,13 +552,13 @@ class Page extends Component {
                 ]}
               >
                 <Input
-                  maxLength={200}
                   allowClear
+                  maxLength={200}
                   className={styles.form_input}
                 />
               </Form.Item>
               <div>
-                <Form.Item label="详情" name="dynamic_form_nest_item">
+                <Form.Item name="dynamic_form_nest_item" label="详情">
                   <Form.List name="info">
                     {(fields, { add, remove }) => (
                       <>
@@ -794,12 +571,11 @@ class Page extends Component {
                             <div className={styles.form_List}>
                               <div className={styles.form_List1}>
                                 <Form.Item
-                                  {...field}
                                   name={[field.name, 'img']}
                                   fieldKey={[field.fieldKey, 'img']}
-                                  // rules={[
-                                  //   { required: true, message: '请上传图片' },
-                                  // ]}
+                                  rules={[
+                                    { required: true, message: '请上传图片' },
+                                  ]}
                                 >
                                   <Upload limit={1}></Upload>
                                 </Form.Item>
@@ -810,13 +586,16 @@ class Page extends Component {
                                   style={{ width: '340px' }}
                                   name={[field.name, 'title']}
                                   fieldKey={[field.fieldKey, 'title']}
-                                  key={index}
-                                  rules={[{ required: false }]}
+                                  key={index + 1}
+                                  rules={[
+                                    { required: true, message: '请输入标题' },
+                                  ]}
                                 >
                                   <Input
                                     maxLength={20}
+                                    allowClear
                                     style={{ width: '340px' }}
-                                    placeholder="标题"
+                                    placeholder="请输入标题"
                                   />
                                 </Form.Item>
                                 <Form.Item
@@ -824,16 +603,14 @@ class Page extends Component {
                                   style={{ marginTop: '15px' }}
                                   name={[field.name, 'info']}
                                   fieldKey={[field.fieldKey, 'info']}
-                                  key={index + 1}
+                                  key={index}
                                   rules={[
-                                    {
-                                      required: true,
-                                      message: '请输入内容',
-                                    },
+                                    { required: true, message: '请输入内容' },
                                   ]}
                                 >
                                   <Input
                                     maxLength={100}
+                                    allowClear
                                     placeholder="请输入内容"
                                   />
                                 </Form.Item>
@@ -884,15 +661,16 @@ class Page extends Component {
                   },
                 ]}
               >
-                <Radio.Group onChange={this.onChange} value="status">
+                <Radio.Group onChange={this.onChange} value={this.value}>
                   <Radio value={1}>上架</Radio>
                   <Radio value={2}>下架</Radio>
                 </Radio.Group>
               </Form.Item>
+
               <Form.Item>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
-                    onClick={this.readactCancel}
+                    onClick={this.handleClose}
                     style={{ padding: '4px 10px', marginRight: '20px' }}
                   >
                     取消
@@ -909,8 +687,242 @@ class Page extends Component {
               </Form.Item>
             </Form>
           </Modal>
-        )}
-      </div>
+          {this.state.ids && (
+            <Modal
+              title="编辑"
+              visible={this.state.visible1}
+              // onOk={this.handleSubmits}
+              footer={false}
+              onCancel={this.readactCancel}
+              destroyOnClose
+              maskClosable={false}
+            >
+              <Form
+                layout="vertical"
+                ref={this.formRef1}
+                name="control-hooks"
+                onSubmit={this.handleSubmit}
+                onFinish={onFinish}
+                autoComplete="off"
+                initialValues={{
+                  info: this.state.lus,
+                }}
+              >
+                <Form.Item
+                  name="product_type_id"
+                  label="商品名称"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Select onChange={this.onSelect} disabled>
+                    {this.state.editdata.map(val => {
+                      return (
+                        <Option key={val.id} value={val.id}>
+                          {val.product_type_name}
+                        </Option>
+                      );
+                    })}
+                  </Select>
+                </Form.Item>
+                {this.state.keyg == 5 ? null : (
+                  <Form.Item name="specs" label="规格型号">
+                    <Input allowClear />
+                  </Form.Item>
+                )}
+
+                <Form.Item
+                  name="price"
+                  label={
+                    this.state.keyg == 1
+                      ? '单价/台'
+                      : this.state.keyg == 5
+                      ? '单价/年/台'
+                      : '单价/T'
+                  }
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input maxLength={10} allowClear />
+                </Form.Item>
+                {this.state.keyg == 1 ||
+                this.state.keyg == 5 ||
+                this.state.keyg == 0 ? null : (
+                  <Form.Item
+                    // style={{ display: this.state.keyg == 1 ? 'none' : this.state.keyg == 5 ? 'none' : this.state.keyg == 0 ? 'none' : 'block' }}
+                    name="lowest_num"
+                    label="最低起购/T"
+                  >
+                    <Input allowClear />
+                  </Form.Item>
+                )}
+                <Form.Item
+                  name="stock"
+                  label={this.state.keyg == 1 ? '库存/台' : '库存/T'}
+                  rules={[
+                    {
+                      required: true,
+                    },
+                    {
+                      pattern: /^\d+$|^\d+[.]?\d+$/,
+                      message: '只能输入数字',
+                    },
+                  ]}
+                >
+                  <Input maxLength={9} allowClear />
+                </Form.Item>
+                <Form.Item
+                  name="introduction"
+                  label="简介"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input
+                    maxLength={200}
+                    allowClear
+                    className={styles.form_input}
+                  />
+                </Form.Item>
+                <div>
+                  <Form.Item label="详情" name="dynamic_form_nest_item">
+                    <Form.List name="info">
+                      {(fields, { add, remove }) => (
+                        <>
+                          {fields.map((field, index) => (
+                            <Space
+                              key={field.key}
+                              style={{ display: 'flex', marginBottom: 8 }}
+                              align="baseline"
+                            >
+                              <div className={styles.form_List}>
+                                <div className={styles.form_List1}>
+                                  <Form.Item
+                                    {...field}
+                                    name={[field.name, 'img']}
+                                    fieldKey={[field.fieldKey, 'img']}
+                                    // rules={[
+                                    //   { required: true, message: '请上传图片' },
+                                    // ]}
+                                  >
+                                    <Upload limit={1}></Upload>
+                                  </Form.Item>
+                                </div>
+                                <div className={styles.form_List2}>
+                                  <Form.Item
+                                    {...field}
+                                    style={{ width: '340px' }}
+                                    name={[field.name, 'title']}
+                                    fieldKey={[field.fieldKey, 'title']}
+                                    key={index}
+                                    rules={[{ required: false }]}
+                                  >
+                                    <Input
+                                      maxLength={20}
+                                      style={{ width: '340px' }}
+                                      placeholder="标题"
+                                    />
+                                  </Form.Item>
+                                  <Form.Item
+                                    {...field}
+                                    style={{ marginTop: '15px' }}
+                                    name={[field.name, 'info']}
+                                    fieldKey={[field.fieldKey, 'info']}
+                                    key={index + 1}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: '请输入内容',
+                                      },
+                                    ]}
+                                  >
+                                    <Input
+                                      maxLength={100}
+                                      placeholder="请输入内容"
+                                    />
+                                  </Form.Item>
+                                </div>
+                              </div>
+                              <MinusCircleOutlined
+                                onClick={() => {
+                                  if (fields.length > 1) {
+                                    remove(field.name);
+                                  } else {
+                                    message.info('最少输入一个详情');
+                                  }
+                                }}
+                              />
+                            </Space>
+                          ))}
+                          <Form.Item>
+                            <Button onClick={() => add()} block>
+                              添加
+                            </Button>
+                          </Form.Item>
+                        </>
+                      )}
+                    </Form.List>
+                  </Form.Item>
+                </div>
+                <Form.Item
+                  name="rank"
+                  label="排序"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                    {
+                      pattern: /^\d+$|^\d+[.]?\d+$/,
+                      message: '只能输入数字',
+                    },
+                  ]}
+                >
+                  <Input maxLength={9} allowClear />
+                </Form.Item>
+                <Form.Item
+                  name="status"
+                  label="状态"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Radio.Group onChange={this.onChange} value="status">
+                    <Radio value={1}>上架</Radio>
+                    <Radio value={2}>下架</Radio>
+                  </Radio.Group>
+                </Form.Item>
+                <Form.Item>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                      onClick={this.readactCancel}
+                      style={{ padding: '4px 10px', marginRight: '20px' }}
+                    >
+                      取消
+                    </Button>
+                    <Button
+                      style={{ padding: '4px 10px' }}
+                      type="primary"
+                      htmlType="submit"
+                      loading={loadings}
+                    >
+                      {this.state.loadings ? '提交中' : '提交'}
+                    </Button>
+                  </div>
+                </Form.Item>
+              </Form>
+            </Modal>
+          )}
+        </div>
+      </Spin>
     );
   }
 }

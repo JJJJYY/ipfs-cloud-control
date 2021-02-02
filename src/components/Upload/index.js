@@ -69,6 +69,7 @@ class UploadItem extends Component {
           data={{ token: token }}
           fileList={fileList.length ? fileList : null}
           maxCount={limit}
+          disabled={false}
           key={value}
           defaultFileList={
             value && [
