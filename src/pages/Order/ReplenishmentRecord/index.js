@@ -58,9 +58,11 @@ class Page extends Component {
     list: null,
     dataAdd: null,
     loadings: false,
+    infos: null,
   };
   formRef = React.createRef();
   formRef1 = React.createRef();
+  formRef2 = React.createRef();
   columns = [
     {
       title: '订单号',
@@ -106,14 +108,18 @@ class Page extends Component {
     },
     {
       title: '审核人',
-
       dataIndex: 'audit_account',
+      render: (text, record) => {
+        return <div>{record.audit_status == 0 ? '-' : text}</div>;
+      },
     },
     {
       title: '审核时间',
 
       dataIndex: 'audit_time',
-      render: text => <div>{text == null ? '-' : text}</div>,
+      render: (text, record) => {
+        return <div>{record.audit_status == 0 ? '-' : text}</div>;
+      },
     },
     {
       title: '操作',
@@ -153,11 +159,46 @@ class Page extends Component {
     {
       title: '数量',
       dataIndex: 'quantity',
+      render: (text, e, index) => (
+        <div>
+          {' '}
+          数量:{' '}
+          <InputNumber
+            style={{ width: '70px' }}
+            min={1}
+            step={1}
+            readOnly
+            defaultValue={text}
+            precision=""
+          />{' '}
+        </div>
+      ),
+    },
+    {
+      title: '折扣',
+      dataIndex: 'discount',
+      render: (text, e, index) => (
+        <div>
+          折扣:{' '}
+          <InputNumber
+            style={{ width: '70px' }}
+            min={0.1}
+            step={0.1}
+            max={1}
+            readOnly
+            precision="2"
+            defaultValue={text}
+          />
+        </div>
+      ),
     },
     {
       title: '小计',
       dataIndex: 'total_amount',
-      render: text => <div style={{ color: 'orange' }}>¥{text}</div>,
+      render: (text, e, index) => {
+        let a = text * 1;
+        return <div style={{ color: 'orange' }}> ¥{a.toFixed(2)}</div>;
+      },
     },
   ];
   columnsCompile = [
@@ -228,7 +269,7 @@ class Page extends Component {
 
     info[index].quantity = value;
     info[index].total_amount =
-      info[index].price * info[index].quantity * info[index].discount;
+      info[index].total_price * info[index].quantity * info[index].discount;
     this.setState({ info }, () => {
       let sum = 0;
       this.state.info.map(item => {
@@ -241,7 +282,7 @@ class Page extends Component {
     const { info } = this.state;
     info[index].discount = value;
     info[index].total_amount =
-      info[index].price * info[index].quantity * info[index].discount;
+      info[index].total_price * info[index].quantity * info[index].discount;
     this.setState({ info }, () => {
       let sum = 0;
       this.state.info.map(item => {
@@ -254,7 +295,9 @@ class Page extends Component {
     const { dataAdd } = this.state;
     dataAdd[index].quantity = value;
     dataAdd[index].total_amount =
-      dataAdd[index].price * dataAdd[index].quantity * dataAdd[index].discount;
+      dataAdd[index].total_price *
+      dataAdd[index].quantity *
+      dataAdd[index].discount;
     this.setState({ dataAdd }, () => {
       let sum = 0;
       this.state.dataAdd.map(item => {
@@ -264,11 +307,12 @@ class Page extends Component {
     });
   };
   onGenderChangew = (value, index) => {
-    console.log(value);
     const { dataAdd } = this.state;
     dataAdd[index].discount = value;
     dataAdd[index].total_amount =
-      dataAdd[index].price * dataAdd[index].quantity * dataAdd[index].discount;
+      dataAdd[index].total_price *
+      dataAdd[index].quantity *
+      dataAdd[index].discount;
     this.setState({ dataAdd }, () => {
       let sum = 0;
       this.state.dataAdd.map(item => {
@@ -370,7 +414,9 @@ class Page extends Component {
                   marginBottom: '24px',
                 }}
               >
-                <div>账号：{row.user.user_name}</div>
+                <div style={{ paddingLeft: '27px' }}>
+                  账号: {row.user.user_name}
+                </div>
                 <div>订单金额: {row.total_amount} </div>
               </div>
             </div>
@@ -442,7 +488,16 @@ class Page extends Component {
           if (result != 'error') {
             this.setState({
               ids: result || [],
+              infos: result.info || [],
               visible1: true,
+            });
+            this.formRef2.current.setFieldsValue({
+              follow_user: result.follow_user,
+              contract_no: result.contract_no,
+              pay_img: result.pay_img,
+              remark: result.remark,
+              service_fee: result.service_fee,
+              status: result.status,
             });
           }
         });
@@ -475,10 +530,22 @@ class Page extends Component {
   };
 
   handleSubmit = values => {
-    this.setState({
-      dataAdd: this.state.list,
-      visible2: false,
-    });
+    this.setState(
+      {
+        dataAdd: this.state.list,
+        visible2: false,
+      },
+      () => {
+        let aum = 0;
+        this.state.dataAdd.map(item => {
+          aum += item.total_amount * 1;
+        });
+        this.setState({
+          sum: aum,
+        });
+      },
+    );
+
     message.success('选择完成');
   };
   readactCancel = () => {
@@ -683,6 +750,7 @@ class Page extends Component {
               visibleInviteDrawer: false,
             });
             message.success('修改成功');
+            this.loadData();
           } else {
             this.setState({
               loadings: false,
@@ -892,14 +960,21 @@ class Page extends Component {
                     id={item.id}
                     value={item.id + item.product_type_name}
                     key={item.id}
-                    price={item.price}
+                    total_price={item.total_price}
                     product_type_name={item.product_type_name}
                     specs={item.specs}
                     quantity={item.quantity}
                     discount={item.discount}
                     total_amount={item.total_amount}
                   >
-                    {'产品ID' + item.id + ' ' + ' ' + item.product_type_name}
+                    <div style={{ display: 'flex' }}>
+                      <div style={{ display: 'flex', flex: '1' }}>
+                        <div style={{ marginLeft: '10px' }}>产品ID:</div>
+                        <div style={{ marginLeft: '10px' }}>{item.id}</div>
+                      </div>{' '}
+                      <div style={{ flex: '1' }}>{item.product_type_name}</div>{' '}
+                      <div style={{ flex: '1' }}>¥{item.total_amount}</div>{' '}
+                    </div>
                   </Select.Option>
                 ))
               : null}
@@ -995,6 +1070,7 @@ class Page extends Component {
             <Divider>产品名称</Divider>
             <div style={{ width: '100%' }}>
               <div>
+                {console.log(dataAdd)}
                 <div className={styles.menu}>
                   <div className={styles.item}>产品名称</div>
                   <div className={styles.item}>型号</div>
@@ -1013,7 +1089,9 @@ class Page extends Component {
                               {item.product_type_name}
                             </div>
                             <div className={styles.item}>{item.specs}</div>
-                            <div className={styles.item}>{item.price}</div>
+                            <div className={styles.item}>
+                              {item.total_price}
+                            </div>
                             <div className={styles.item}>
                               <div style={{ display: 'flex' }}>
                                 <div style={{ lineHeight: '30px' }}>数量:</div>
@@ -1146,147 +1224,209 @@ class Page extends Component {
         {this.state.ids ? (
           <Drawer
             title="详情"
-            width={840}
+            width={1000}
             placement={placement}
             onClose={this.onClose}
             visible={visible1}
           >
-            <Divider>用户信息</Divider>
-            <Row>
-              <Col span={12}>
-                <DescriptionItem
-                  title="账户"
-                  content={this.state.ids.user && this.state.ids.user.user_name}
-                />
-              </Col>
-              <Col span={12}>
-                <DescriptionItem
-                  title="UID"
-                  content={this.state.ids.user && this.state.ids.user.id}
-                />
-              </Col>
-            </Row>
-            <Divider>收货信息</Divider>
-
-            <Row>
-              <Col span={12}>
-                <DescriptionItem
-                  title="姓名"
-                  content={
-                    this.state.ids.express &&
-                    this.state.ids.express.express_name
-                  }
-                />
-              </Col>
-              <Col span={12}>
-                <DescriptionItem
-                  title="手机"
-                  content={
-                    this.state.ids.express &&
-                    this.state.ids.express.express_mobile
-                  }
-                />
-              </Col>
-              <Col span={12}>
-                <DescriptionItem title="备注" content={this.state.ids.remark} />
-              </Col>
-            </Row>
-
-            <Divider>订单记录</Divider>
-            <Row>
-              <Col span={12}>
-                <DescriptionItem
-                  title="创建时间"
-                  content={this.state.ids.created_at}
-                />
-              </Col>
-              <Col span={12}>
-                <DescriptionItem
-                  title="完成时间"
-                  content={
-                    this.state.ids.status == 2 ? '-' : this.state.ids.updated_at
-                  }
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={12}>
-                <DescriptionItem
-                  title="订单号"
-                  content={this.state.ids.order_code}
-                />
-              </Col>
-
-              <Col span={12}>
-                <DescriptionItem
-                  title="订单状态"
-                  content={
-                    this.state.ids.status == 0
-                      ? '已取消'
-                      : this.state.ids.status == 1
-                      ? '已下单'
-                      : this.state.ids.status == 2
-                      ? '已完成'
-                      : ''
-                  }
-                />
-              </Col>
-            </Row>
-            <Divider>产品名称</Divider>
-            <div style={{ width: '100%' }}>
-              <Table
-                columns={this.columnsReward}
-                dataSource={this.state.ids.info}
-                pagination={false}
-                rowKey="id"
-              />
-            </div>
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                borderBottom: '1px solid #f0f0f0',
-                height: '54.6px',
+            <Divider>跟进信息</Divider>
+            <Form
+              layout="vertical"
+              ref={this.formRef2}
+              name="control-hooks"
+              autoComplete="off"
+              initialValues={{
+                info: this.state.lus,
               }}
             >
-              <div style={{ width: '187px', padding: '16px' }}>技术服务费</div>
-              <div style={{ width: '102px', padding: '16px' }}>
-                {this.state.ids.service_fee}
+              <div style={{ display: 'flex', height: '122px' }}>
+                <div>
+                  <Form.Item
+                    name="follow_user"
+                    label="跟进人"
+                    rules={[{ required: true, message: '跟进人' }]}
+                  >
+                    <Input readOnly style={{ height: '25px' }} allowClear />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '150px' }}>
+                  <Form.Item
+                    name="contract_no"
+                    label="合同编号"
+                    rules={[{ required: true, message: '合同编号' }]}
+                  >
+                    <Input readOnly style={{ height: '25px' }} allowClear />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '150px' }}>
+                  <Form.Item
+                    name="pay_img"
+                    label="付款证明"
+                    rules={[{ required: true, message: '请上传付款截图' }]}
+                  >
+                    <Upload limit={1}></Upload>
+                  </Form.Item>
+                </div>
               </div>
-            </div>
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                borderBottom: '1px solid #f0f0f0',
-                height: '54.6px',
-              }}
-            >
-              <div style={{ width: '187px', padding: '16px' }}>专项折扣</div>
-              <div style={{ width: '102px', padding: '16px' }}>
-                {this.state.ids.discount}
-              </div>
-            </div>
 
-            <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
-              <div style={{ float: 'right', display: 'flex', width: '240px' }}>
-                <div
-                  style={{ flex: 1, textAlign: 'right', lineHeight: '28px' }}
-                >
-                  总配置费用:
+              <Divider>用户信息</Divider>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="账户"
+                    content={
+                      this.state.ids.user && this.state.ids.user.user_name
+                    }
+                  />
+                </Col>
+
+                <Col span={12}>
+                  <DescriptionItem
+                    title="UID"
+                    content={this.state.ids.user && this.state.ids.user.id}
+                  />
+                </Col>
+              </Row>
+              <Divider>收货信息</Divider>
+
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="姓名"
+                    content={
+                      this.state.ids.express &&
+                      this.state.ids.express.express_name
+                    }
+                  />
+                </Col>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="手机"
+                    content={
+                      this.state.ids.express &&
+                      this.state.ids.express.express_mobile
+                    }
+                  />
+                </Col>
+                <Col span={12}>
+                  <div style={{ display: 'flex' }}>
+                    <div>
+                      <DescriptionItem title="备注" />
+                    </div>
+                    <div>
+                      <Form.Item name="remark">
+                        <Input
+                          allowClear
+                          readOnly
+                          style={{ width: '260px', height: '25px' }}
+                        />
+                      </Form.Item>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+
+              <Divider>订单记录</Divider>
+              <Row></Row>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="创建时间"
+                    content={this.state.ids.created_at}
+                  />
+                </Col>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="完成时间"
+                    content={
+                      this.state.ids.pay_status == 1 ||
+                      this.state.ids.pay_status == 2
+                        ? this.state.ids.pay_time
+                        : '-'
+                    }
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12}>
+                  <DescriptionItem
+                    title="订单号"
+                    content={this.state.ids.order_code}
+                  />
+                </Col>
+                <Col span={12}>
+                  <div style={{ display: 'flex' }}>
+                    <div>
+                      <DescriptionItem title="订单状态" />
+                    </div>
+                    <div>
+                      <Form.Item name="status">
+                        <Select disabled placeholder="">
+                          <Option value={0}>已取消</Option>
+                          <Option value={1}>已下单</Option>
+                          <Option value={2}>已完成</Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <Divider>产品名称</Divider>
+              <div style={{ width: '100%' }}>
+                <Table
+                  columns={this.columnsReward}
+                  dataSource={this.state.infos}
+                  pagination={false}
+                  rowKey="id"
+                />
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  borderBottom: '1px solid #f0f0f0',
+                  height: '54.6px',
+                }}
+              >
+                <div style={{ width: '171px', padding: '16px' }}>
+                  技术服务费
                 </div>
-                <div
-                  style={{
-                    fontSize: '18px',
-                    color: 'orange',
-                    flex: 1,
-                    textIndent: '10px',
-                  }}
-                >
-                  ¥{this.state.ids.total_amount}
+                <div style={{ width: '102px', padding: '16px' }}>
+                  <Form.Item name="service_fee">
+                    <InputNumber
+                      min={0.1}
+                      step={0.1}
+                      max={1}
+                      precision="2"
+                      allowClear
+                      readOnly
+                      style={{ width: '70px' }}
+                    />
+                  </Form.Item>
                 </div>
               </div>
-            </div>
+              <div style={{ width: '100%', height: '50px', marginTop: '30px' }}>
+                <div
+                  style={{ float: 'right', display: 'flex', width: '240px' }}
+                >
+                  <div
+                    style={{ flex: 1, textAlign: 'right', lineHeight: '28px' }}
+                  >
+                    总配置费用:
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '18px',
+                      color: 'orange',
+                      flex: 1,
+                      textIndent: '10px',
+                    }}
+                  >
+                    ¥{this.state.ids.total_amount}
+                  </div>
+                </div>
+              </div>
+            </Form>
             <div style={{ float: 'right' }}>
               <Button onClick={this.compile}>编辑</Button>
             </div>
@@ -1400,14 +1540,7 @@ class Page extends Component {
               </Row>
 
               <Divider>订单记录</Divider>
-              <Row>
-                <Col span={12}>
-                  <DescriptionItem
-                    title="订单号"
-                    content={this.state.ids.order_code}
-                  />
-                </Col>
-              </Row>
+              <Row></Row>
               <Row>
                 <Col span={12}>
                   <DescriptionItem
@@ -1417,10 +1550,12 @@ class Page extends Component {
                 </Col>
                 <Col span={12}>
                   <DescriptionItem
-                    title="产品名称"
+                    title="完成时间"
                     content={
-                      this.state.ids.group &&
-                      this.state.ids.group.product_group_name
+                      this.state.ids.pay_status == 1 ||
+                      this.state.ids.pay_status == 2
+                        ? this.state.ids.pay_time
+                        : '-'
                     }
                   />
                 </Col>
@@ -1428,12 +1563,8 @@ class Page extends Component {
               <Row>
                 <Col span={12}>
                   <DescriptionItem
-                    title="完成时间"
-                    content={
-                      this.state.ids.status == 2
-                        ? '-'
-                        : this.state.ids.updated_at
-                    }
+                    title="订单号"
+                    content={this.state.ids.order_code}
                   />
                 </Col>
                 <Col span={12}>

@@ -125,7 +125,12 @@ class Page extends Component {
                 <div style={{ flex: '1', color: '#1890ff' }}>补单审核</div>{' '}
                 <div
                   onClick={this.ReplenishmentRecord}
-                  style={{ flex: '1', color: '#1890ff', textAlign: 'right' }}
+                  style={{
+                    flex: '1',
+                    color: '#1890ff',
+                    textAlign: 'right',
+                    cursor: 'pointer',
+                  }}
                 >
                   {data && data.auditCount}
                   <RightOutlined />

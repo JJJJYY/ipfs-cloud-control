@@ -162,7 +162,7 @@ class Page extends Component {
           rowKey="id"
         />
         <Modal
-          title="添加"
+          title="编辑"
           okText="提交"
           cancelText="取消"
           width={800}

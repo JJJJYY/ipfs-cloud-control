@@ -105,7 +105,7 @@ export async function qiniu() {
 
 // ----------------------- Overview -----------------------
 export async function overviewHome(params) {
-  return request.post('staff/product/topList', params);
+  return request.post('staff/product/typeList', params);
 }
 
 // ----------------------- AuthUser -----------------------

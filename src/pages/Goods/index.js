@@ -314,6 +314,7 @@ class Page extends Component {
                   this.loadData();
                   if (rdd) {
                     message.success('修改成功');
+                    this.loadData();
                     this.setState({
                       visible1: false,
                       ids: undefined,
@@ -321,6 +322,7 @@ class Page extends Component {
                     });
                   } else {
                     message.success('添加成功');
+                    this.loadData();
                     this.setState({
                       loadings: false,
                       visible: false,
