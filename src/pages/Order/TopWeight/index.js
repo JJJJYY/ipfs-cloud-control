@@ -86,9 +86,9 @@ class Page extends Component {
           <div>
             {
               [
-                <Tag color="blue">已完成</Tag>,
-                <Tag color="green">已下单</Tag>,
                 <Tag color="black">已取消</Tag>,
+                <Tag color="green">已下单</Tag>,
+                <Tag color="blue">已完成</Tag>,
               ][text]
             }
           </div>
@@ -379,7 +379,6 @@ class Page extends Component {
         });
     };
     const expandedRowRender = record => {
-      console.log(data.data);
       const columns = [
         {
           title: '产品',
@@ -387,7 +386,7 @@ class Page extends Component {
         },
         {
           title: '单价',
-          dataIndex: 'price',
+          dataIndex: 'total_price',
         },
         {
           title: '数量',
@@ -429,7 +428,17 @@ class Page extends Component {
             { label: '账号', name: 'user' },
             { label: '商品名称', name: 'product_name' },
             {
-              label: '状态',
+              label: '日期',
+              name: 'timeStart',
+              custom: <DatePicker.RangePicker />,
+            },
+
+            {
+              label: '跟进人',
+              name: 'follow_user',
+            },
+            {
+              label: '支付状态',
               name: 'status',
               custom: (
                 <Select allowClear>
@@ -438,15 +447,6 @@ class Page extends Component {
                   <Option value={2}>已完成</Option>
                 </Select>
               ),
-            },
-            {
-              label: '日期',
-              name: 'timeStart',
-              custom: <DatePicker.RangePicker />,
-            },
-            {
-              label: '跟进人',
-              name: 'follow_user',
             },
           ]}
         />

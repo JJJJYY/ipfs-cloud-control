@@ -86,7 +86,7 @@ class Page extends Component {
             <Card
               type="inner"
               className={styles.card}
-              title="库存"
+              title="库存概括"
               loading={loading}
             >
               <div style={{ display: 'flex' }}>
@@ -117,7 +117,7 @@ class Page extends Component {
             <Card
               type="inner"
               className={styles.card}
-              title="补单审核"
+              title="待处理"
               loading={loading}
             >
               <div style={{ display: 'flex' }}>

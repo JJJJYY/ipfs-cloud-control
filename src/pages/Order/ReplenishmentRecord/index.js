@@ -631,7 +631,7 @@ class Page extends Component {
         },
         {
           title: '单价',
-          dataIndex: 'price',
+          dataIndex: 'total_price',
         },
         {
           title: '数量',
@@ -753,7 +753,7 @@ class Page extends Component {
               name: 'product_name',
             },
             {
-              label: '状态',
+              label: '支付状态',
               name: 'audit_status',
               custom: (
                 <Select allowClear>
