@@ -25,6 +25,7 @@ import OperationGroup from '@/components/OperationGroup';
 import SearchGroup from '@/components/SearchGroup';
 import Upload from '@/components/Upload';
 import styles from './index.less';
+import './index.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { Dragger } = AntUpload;
@@ -538,21 +539,16 @@ class Page extends Component {
   };
 
   handleSubmit = values => {
-    this.setState(
-      {
-        dataAdd: this.state.list,
-        visible2: false,
-      },
-      () => {
-        let aum = 0;
-        this.state.dataAdd.map(item => {
-          aum += item.total_amount * 1;
-        });
-        this.setState({
-          sum: aum,
-        });
-      },
-    );
+    console.log(this.state.list, '11111');
+
+    let aum = 0;
+    this.state.list.map(item => {
+      aum += item.total_amount * 1;
+    });
+    this.setState({
+      sum: aum,
+      visible2: false,
+    });
 
     message.success('选择完成');
   };
@@ -671,7 +667,6 @@ class Page extends Component {
   };
 
   handleChange = (value, id) => {
-    console.log(id);
     this.setState({
       list: id,
     });
@@ -769,14 +764,22 @@ class Page extends Component {
         });
     };
     const onFinishs = values => {
-      const { dataAdd } = this.state;
+      console.log(values);
+      let arr = [];
+      this.state.list.map(item => {
+        let o = {};
+        o.discount = item.discount;
+        o.quantity = item.quantity;
+        o.total_price = item.total_price;
+        arr.push(o);
+      });
+      // let arr = [{discount: 1,quantity: 1,total_price: "111.00"}]
       this.setState(
         {
           loadings: true,
         },
         () => {
-          let info = JSON.parse(JSON.stringify(dataAdd));
-          console.log(info);
+          console.log(this.state.list, '222222');
           this.props
             .dispatch({
               type: 'replenishmentRecord/add',
@@ -787,7 +790,7 @@ class Page extends Component {
                 pay_img: values.pay_img,
                 remark: values.remark,
                 service_fee: values.service_fee,
-                info: dataAdd,
+                info: arr,
               },
             })
             .then(data => {
@@ -1097,11 +1100,11 @@ class Page extends Component {
                     <div className={styles.item}>折扣</div>
                     <div className={styles.item}>小计</div>
                   </div>
-                  {dataAdd
-                    ? dataAdd.map((item, index) => {
+                  {this.state.list
+                    ? this.state.list.map((item, index) => {
                         let total_amount = item.total_amount * 1;
                         return (
-                          <div>
+                          <div key={index}>
                             <div className={styles.item_val}>
                               <div className={styles.item}>
                                 {item.product_type_name}
@@ -1290,7 +1293,7 @@ class Page extends Component {
 
                       <div>
                         <Form.Item name="pay_img">
-                          <Upload onChange={this.handleUpload}></Upload>
+                          <Upload myname="xiaohei"></Upload>
                         </Form.Item>
                       </div>
                     </div>

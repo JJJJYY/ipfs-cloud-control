@@ -18,6 +18,7 @@ class UploadItem extends Component {
   }
 
   urls = () => {
+    console.log(this.state.fileList);
     var urls = [];
     this.state.fileList.map(file => {
       if (file.status === 'done' && file.response) {
@@ -51,7 +52,7 @@ class UploadItem extends Component {
 
   render() {
     const { fileList, previewImage, showDefault } = this.state;
-    const { limit, token, onChange, value } = this.props;
+    const { limit, token, onChange, value, myname = '' } = this.props;
     const uploadButton = (
       <div>
         <UploadOutlined />
@@ -63,6 +64,7 @@ class UploadItem extends Component {
       <div>
         <Upload
           name="file"
+          className={myname}
           // accept='.png,.jpeg,.jpg'
           action="https://up-z2.qiniup.com/"
           listType="picture-card"
@@ -80,11 +82,13 @@ class UploadItem extends Component {
             ]
           }
           onChange={info => {
+            console.log(info);
             const ispic =
               info.file.type === 'image/jpeg' ||
               info.file.type === 'image/jpg' ||
               info.file.type === 'image/png';
-            if (ispic) {
+            console.log(ispic);
+            if (ispic || typeof info.file.type === 'undefined') {
               this.setState({ fileList: info.fileList, showDefault });
               onChange && onChange(this.urls());
             } else {
