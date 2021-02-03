@@ -140,38 +140,10 @@ class Page extends Component {
     {
       title: '数量',
       dataIndex: 'quantity',
-      render: (text, e, index) => (
-        <div>
-          {' '}
-          数量:{' '}
-          <InputNumber
-            style={{ width: '70px' }}
-            min={1}
-            step={1}
-            readOnly
-            defaultValue={text}
-            precision=""
-          />{' '}
-        </div>
-      ),
     },
     {
       title: '折扣',
       dataIndex: 'discount',
-      render: (text, e, index) => (
-        <div>
-          折扣:{' '}
-          <InputNumber
-            style={{ width: '70px' }}
-            min={0.1}
-            step={0.1}
-            max={1}
-            readOnly
-            precision="2"
-            defaultValue={text}
-          />
-        </div>
-      ),
     },
     {
       title: '小计',
@@ -694,21 +666,11 @@ class Page extends Component {
                     height: '54.6px',
                   }}
                 >
-                  <div style={{ width: '171px', padding: '16px' }}>
+                  <div style={{ width: '238px', padding: '16px' }}>
                     技术服务费
                   </div>
                   <div style={{ width: '102px', padding: '16px' }}>
-                    <Form.Item name="service_fee">
-                      <InputNumber
-                        min={0.1}
-                        step={0.1}
-                        max={1}
-                        precision="2"
-                        allowClear
-                        readOnly
-                        style={{ width: '70px' }}
-                      />
-                    </Form.Item>
+                    {this.state.ids.service_fee}
                   </div>
                 </div>
                 <div

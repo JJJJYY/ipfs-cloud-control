@@ -39,6 +39,7 @@ class Page extends Component {
     visible: false,
     visible1: false,
     visible2: false,
+    visible3: false,
     visibleDrawer: false,
     visibleInviteDrawer: false,
     page: 1,
@@ -164,38 +165,10 @@ class Page extends Component {
     {
       title: '数量',
       dataIndex: 'quantity',
-      render: (text, e, index) => (
-        <div>
-          {' '}
-          数量:{' '}
-          <InputNumber
-            style={{ width: '70px' }}
-            min={1}
-            step={1}
-            readOnly
-            defaultValue={text}
-            precision=""
-          />{' '}
-        </div>
-      ),
     },
     {
       title: '折扣',
       dataIndex: 'discount',
-      render: (text, e, index) => (
-        <div>
-          折扣:{' '}
-          <InputNumber
-            style={{ width: '70px' }}
-            min={0.1}
-            step={0.1}
-            max={1}
-            readOnly
-            precision="2"
-            defaultValue={text}
-          />
-        </div>
-      ),
     },
     {
       title: '小计',
@@ -429,7 +402,9 @@ class Page extends Component {
                 }}
               >
                 {' '}
-                <div style={{ float: 'left' }}>订单编号:</div>{' '}
+                <div style={{ float: 'left', paddingLeft: '27px' }}>
+                  订单编号:
+                </div>{' '}
                 <div style={{ float: 'left', marginLeft: '5px' }}>
                   {row.order_code}
                 </div>{' '}
@@ -446,7 +421,9 @@ class Page extends Component {
                 <div style={{ paddingLeft: '27px' }}>
                   账号: {row.user.user_name}
                 </div>
-                <div>订单金额: {row.total_amount} </div>
+                <div style={{ paddingLeft: '27px' }}>
+                  订单金额: {row.total_amount}{' '}
+                </div>
               </div>
             </div>
             <Form ref={this.formRef}>
@@ -561,6 +538,7 @@ class Page extends Component {
     this.setState({
       visible: false,
       visibleInviteDrawer: false,
+      dataAdd: undefined,
     });
   };
   onSelectChange = value => {
@@ -691,6 +669,7 @@ class Page extends Component {
       search,
       selectedRowKeys,
       loadings,
+      visible3,
     } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const rowSelection =
@@ -784,7 +763,6 @@ class Page extends Component {
           loadings: true,
         },
         () => {
-          console.log(this.state.list, '222222');
           this.props
             .dispatch({
               type: 'replenishmentRecord/add',
@@ -799,11 +777,12 @@ class Page extends Component {
               },
             })
             .then(data => {
-              console.log(data);
               if (data != 'error') {
                 this.setState({
                   visible: false,
                   loadings: false,
+                  dataAdd: undefined,
+                  sum: 0,
                 });
                 message.success('添加成功');
                 this.loadData();
@@ -952,7 +931,23 @@ class Page extends Component {
               </Button>
             )}
           </div>
-
+          <Modal
+            visible={visible3}
+            title="关联商品"
+            onOk={this.handleSubmit}
+            onCancel={this.handleClose}
+            maskClosable={false}
+            confirmLoading={true}
+            destroyOnClose
+            footer={[
+              <Button key="back" onClick={this.handleClose}>
+                取消
+              </Button>,
+              <Button key="submit" type="primary" onClick={this.handleSubmit}>
+                确认
+              </Button>,
+            ]}
+          ></Modal>
           <Modal
             visible={visible2}
             title="关联商品"
@@ -1040,11 +1035,7 @@ class Page extends Component {
                     </Form.Item>
                   </div>
                   <div style={{ marginLeft: '150px' }}>
-                    <Form.Item
-                      name="remark"
-                      label="备注"
-                      rules={[{ required: true, message: '请输入备注' }]}
-                    >
+                    <Form.Item name="remark" label="备注">
                       <Input
                         allowClear
                         style={{ width: '300px' }}
@@ -1412,21 +1403,11 @@ class Page extends Component {
                     height: '54.6px',
                   }}
                 >
-                  <div style={{ width: '171px', padding: '16px' }}>
+                  <div style={{ width: '220px', padding: '16px' }}>
                     技术服务费
                   </div>
                   <div style={{ width: '102px', padding: '16px' }}>
-                    <Form.Item name="service_fee">
-                      <InputNumber
-                        min={0.1}
-                        step={0.1}
-                        max={1}
-                        precision="2"
-                        allowClear
-                        readOnly
-                        style={{ width: '70px' }}
-                      />
-                    </Form.Item>
+                    {this.state.ids.service_fee}
                   </div>
                 </div>
                 <div
