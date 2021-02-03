@@ -580,7 +580,7 @@ class Page extends Component {
 
                       <div>
                         <Form.Item name="pay_img">
-                          <Upload onChange={this.handleUpload}></Upload>
+                          <Upload myname="xiaohei"></Upload>
                         </Form.Item>
                       </div>
                     </div>

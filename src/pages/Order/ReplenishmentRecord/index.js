@@ -539,16 +539,21 @@ class Page extends Component {
   };
 
   handleSubmit = values => {
-    console.log(this.state.list, '11111');
-
-    let aum = 0;
-    this.state.list.map(item => {
-      aum += item.total_amount * 1;
-    });
-    this.setState({
-      sum: aum,
-      visible2: false,
-    });
+    this.setState(
+      {
+        dataAdd: this.state.list,
+        visible2: false,
+      },
+      () => {
+        let aum = 0;
+        this.state.list.map(item => {
+          aum += item.total_amount * 1;
+        });
+        this.setState({
+          sum: aum,
+        });
+      },
+    );
 
     message.success('选择完成');
   };
@@ -766,14 +771,14 @@ class Page extends Component {
     const onFinishs = values => {
       console.log(values);
       let arr = [];
-      this.state.list.map(item => {
+      this.state.dataAdd.map(item => {
         let o = {};
         o.discount = item.discount;
         o.quantity = item.quantity;
         o.total_price = item.total_price;
+        o.id = item.id;
         arr.push(o);
       });
-      // let arr = [{discount: 1,quantity: 1,total_price: "111.00"}]
       this.setState(
         {
           loadings: true,
@@ -1100,8 +1105,8 @@ class Page extends Component {
                     <div className={styles.item}>折扣</div>
                     <div className={styles.item}>小计</div>
                   </div>
-                  {this.state.list
-                    ? this.state.list.map((item, index) => {
+                  {this.state.dataAdd
+                    ? this.state.dataAdd.map((item, index) => {
                         let total_amount = item.total_amount * 1;
                         return (
                           <div key={index}>
