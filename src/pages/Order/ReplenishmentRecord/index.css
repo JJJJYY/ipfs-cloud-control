@@ -1,3 +1,6 @@
 .xiaohei .ant-upload-list-item-card-actions-btn{
     display: none;
 }
+.ant-modal-content{
+    width: 550px;
+}

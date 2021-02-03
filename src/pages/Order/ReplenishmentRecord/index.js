@@ -390,121 +390,118 @@ class Page extends Component {
           }
         });
     } else if (index == 2) {
-      this.setState({
-        visible3: true,
+      Modal.confirm({
+        title: '审核',
+        content: (
+          <div style={{ width: '450px' }}>
+            <div>
+              <div
+                style={{
+                  width: '450px',
+                  height: '30px',
+                  lineHeight: '30px',
+                  background: '#EAE8E8',
+                  display: 'flex',
+                }}
+              >
+                <div style={{ textIndent: '10px' }}>订单号:</div>
+                <div style={{ marginLeft: '5px' }}>{row.order_code}</div>
+              </div>
+              {/* <div
+                style={{
+                  width: '450px',
+                  height: '100px',
+                  lineHeight: '30px',
+                  border: '1px solid #EFEDED',
+                  marginBottom: '24px',
+                }}
+              >
+                <div>账号：{row.user.user_name}</div>
+                <div>订单金额: {row.total_amount} </div>
+              </div> */}
+              <div
+                style={{
+                  width: '450px',
+                  height: '100px',
+                  lineHeight: '30px',
+                  border: '1px solid #EFEDED',
+                  marginBottom: '24px',
+                }}
+              >
+                <div style={{ display: 'flex', marginTop: '10px' }}>
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ marginLeft: '20px' }}>账号:</div>
+                    <div style={{ marginLeft: '10px' }}>
+                      {row.user.user_name}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ marginLeft: '20px' }}>订单金额:</div>
+                    <div style={{ marginLeft: '10px' }}>
+                      {row.total_amount}元
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    marginLeft: '18px',
+                    marginTop: '10px',
+                    display: 'flex',
+                  }}
+                >
+                  <div> 备注:</div>
+                  <div style={{ marginLeft: '5px' }}>
+                    <Input
+                      allowClear
+                      onChange={event => this.handleMaxBackUp(event)}
+                      style={{ width: '350px', height: '30px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Form ref={this.formRef}>
+              <FormItem
+                label="审核"
+                name="audit_status"
+                rules={[{ required: true, message: `请选择` }]}
+              >
+                <Radio.Group>
+                  <Radio value={1}>通过</Radio>
+                  <Radio value={2}>拒绝</Radio>
+                </Radio.Group>
+              </FormItem>
+            </Form>
+          </div>
+        ),
+        onOk: () => {
+          const { remark } = this.state;
+          return new Promise((resolve, reject) => {
+            this.formRef.current
+              .validateFields()
+              .then(values => {
+                this.props
+                  .dispatch({
+                    type: 'replenishmentRecord/auditUpdate',
+                    payload: {
+                      id: row.id,
+                      ...values,
+                      remark: remark,
+                    },
+                  })
+                  .then(data => {
+                    if (data != 'error') {
+                      resolve();
+                      this.loadData();
+                    } else {
+                      reject();
+                    }
+                  });
+              })
+              .catch(() => reject());
+          });
+        },
       });
-      this.props
-        .dispatch({
-          type: 'weight/Id',
-          payload: { id: row.id },
-        })
-        .then(res => {
-          console.log(res);
-          if (res != 'error') {
-            this.setState({
-              audit: res,
-            });
-            this.formRef3.current.setFieldsValue({
-              remark: res.remark,
-              audit_status: res.audit_status,
-            });
-          }
-        });
-      // Modal.confirm({
-      //   title: '审核',
-      //   content: (
-      //     <div>
-      //       <div>
-      //         <div
-      //           style={{
-      //             width: '300px',
-      //             height: '30px',
-      //             lineHeight: '30px',
-      //             background: '#EAE8E8',
-      //           }}
-      //         >
-      //           {' '}
-      //           <div style={{ float: 'left', paddingLeft: '27px' }}>
-      //             订单编号:
-      //           </div>{' '}
-      //           <div style={{ float: 'left', marginLeft: '5px' }}>
-      //             {row.order_code}
-      //           </div>{' '}
-      //         </div>
-      //         <div
-      //           style={{
-      //             width: '300px',
-      //             height: '100px',
-      //             lineHeight: '30px',
-      //             border: '1px solid #EFEDED',
-      //             marginBottom: '24px',
-      //           }}
-      //         >
-      //           <div style={{ paddingLeft: '27px' }}>
-      //             账号: {row.user.user_name}
-      //           </div>
-      //           <div style={{ paddingLeft: '27px' }}>
-      //             订单金额: {row.total_amount}{' '}
-      //           </div>
-      //         </div>
-      //       </div>
-      //       <Form ref={this.formRef}>
-      //         <FormItem
-      //           label="审核"
-      //           name="audit_status"
-      //           rules={[{ required: true, message: `请选择` }]}
-      //         >
-      //           <Radio.Group>
-      //             <Radio value={1}>通过</Radio>
-      //             <Radio value={2}>拒绝</Radio>
-      //           </Radio.Group>
-      //         </FormItem>
-      //       </Form>
-      //       <div>
-      //         <div
-      //           style={{ float: 'left', height: '60px', lineHeight: '60px' }}
-      //         >
-      //           备注:
-      //         </div>
-      //         <div style={{ float: 'left', marginLeft: '8px' }}>
-      //           <Input
-      //             allowClear
-      //             onChange={event => this.handleMaxBackUp(event)}
-      //             defaultValue=""
-      //             style={{ width: '260px', height: '60px' }}
-      //           />
-      //         </div>
-      //       </div>
-      //     </div>
-      //   ),
-      //   onOk: () => {
-      //     const { remark } = this.state;
-      //     return new Promise((resolve, reject) => {
-      //       this.formRef.current
-      //         .validateFields()
-      //         .then(values => {
-      //           this.props
-      //             .dispatch({
-      //               type: 'replenishmentRecord/auditUpdate',
-      //               payload: {
-      //                 id: row.id,
-      //                 ...values,
-      //                 remark: remark,
-      //               },
-      //             })
-      //             .then(data => {
-      //               if (data != 'error') {
-      //                 resolve();
-      //                 this.loadData();
-      //               } else {
-      //                 reject();
-      //               }
-      //             });
-      //         })
-      //         .catch(() => reject());
-      //     });
-      //   },
-      // });
     } else if (index == 1) {
       this.setState({
         loading: true,
@@ -680,7 +677,11 @@ class Page extends Component {
       list: id,
     });
   };
-
+  handleCancel = () => {
+    this.setState({
+      visible3: false,
+    });
+  };
   render() {
     const {
       visible,
@@ -776,7 +777,6 @@ class Page extends Component {
         });
     };
     const onFinishs = values => {
-      console.log(values);
       let arr = [];
       this.state.dataAdd.map(item => {
         let o = {};
@@ -828,31 +828,40 @@ class Page extends Component {
         loadings: true,
       });
       let username = this.state.audit.user.user_name;
-      this.props
-        .dispatch({
-          type: 'replenishmentRecord/auditUpdate',
-          payload: {
-            id: this.state.audit.id,
-            username: username,
-            remark: val.remark,
-            audit_status: val.audit_status,
-            order_code: this.state.audit.order_code,
-          },
-        })
-        .then(res => {
-          if (res != 'error') {
-            this.setState({
-              loadings: false,
-              visible3: false,
-            });
-            message.success('提交成功');
-            this.loadData();
-          } else {
-            this.setState({
-              loadings: false,
-            });
-          }
-        });
+      return new Promise((resolve, reject) => {
+        this.formRef3.current
+          .validateFields()
+          .then(val => {
+            this.props
+              .dispatch({
+                type: 'replenishmentRecord/auditUpdate',
+                payload: {
+                  id: this.state.audit.id,
+                  username: username,
+                  remark: val.remark,
+                  audit_status: val.audit_status,
+                  order_code: this.state.audit.order_code,
+                },
+              })
+              .then(data => {
+                if (data != 'error') {
+                  this.setState({
+                    loadings: false,
+                    visible3: false,
+                  });
+                  resolve();
+                  message.success('提交成功');
+                  this.loadData();
+                } else {
+                  this.setState({
+                    loadings: false,
+                  });
+                  reject();
+                }
+              });
+          })
+          .catch(() => reject());
+      });
     };
     const { Option } = Select;
 
@@ -990,7 +999,7 @@ class Page extends Component {
               </Button>
             )}
           </div>
-          {console.log(this.state.audit)}
+
           <Modal
             visible={visible3}
             title="审核"
@@ -998,14 +1007,16 @@ class Page extends Component {
             confirmLoading={true}
             destroyOnClose
             width={500}
+            onCancel={this.handleCancel}
             footer={null}
             destroyOnClose
           >
             <Form
-              ref={this.formRef3}
+              layout="horizontal"
+              ref={this.formRef1}
               name="control-hooks"
-              onSubmit={this.handleSubmit}
               onFinish={onFinishAudit}
+              autoComplete="off"
               ref={this.formRef3}
             >
               <div
@@ -1045,28 +1056,30 @@ class Page extends Component {
                     </div>
                   </div>
                 </div>
-                <div style={{ marginLeft: '18px', marginTop: '10px' }}>
-                  <Form.Item label="备注" name="remark">
-                    <Input
-                      allowClear
-                      onChange={event => this.handleMaxBackUp(event)}
-                      style={{ width: '350px', height: '30px' }}
-                    />
-                  </Form.Item>
-                </div>
-                <div style={{ marginLeft: '7px', marginTop: '30px' }}>
-                  <FormItem
-                    label="审核"
-                    name="audit_status"
-                    rules={[{ required: true, message: `请选择` }]}
-                  >
-                    <Radio.Group>
-                      <Radio value={1}>通过</Radio>
-                      <Radio value={2}>拒绝</Radio>
-                    </Radio.Group>
-                  </FormItem>
-                </div>
               </div>
+              <div style={{ marginLeft: '18px', marginTop: '10px' }}>
+                <Form.Item label="备注" name="remark">
+                  <Input
+                    allowClear
+                    onChange={event => this.handleMaxBackUp(event)}
+                    style={{ width: '350px', height: '30px' }}
+                  />
+                </Form.Item>
+              </div>
+
+              <div style={{ marginLeft: '7px', marginTop: '30px' }}>
+                <Form.Item
+                  label="审核"
+                  name="audit_status"
+                  rules={[{ required: true, message: '请选择' }]}
+                >
+                  <Radio.Group>
+                    <Radio value={1}>通过</Radio>
+                    <Radio value={2}>拒绝</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+
               <div style={{ marginTop: '110px' }}>
                 <Form.Item>
                   <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
