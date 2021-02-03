@@ -64,10 +64,12 @@ class Page extends Component {
     infos: null,
     loading: false,
     infor: null,
+    audit: null,
   };
   formRef = React.createRef();
   formRef1 = React.createRef();
   formRef2 = React.createRef();
+  formRef3 = React.createRef();
   columns = [
     {
       title: '订单号',
@@ -388,101 +390,121 @@ class Page extends Component {
           }
         });
     } else if (index == 2) {
-      Modal.confirm({
-        title: '审核',
-        content: (
-          <div>
-            <div>
-              <div
-                style={{
-                  width: '300px',
-                  height: '30px',
-                  lineHeight: '30px',
-                  background: '#EAE8E8',
-                }}
-              >
-                {' '}
-                <div style={{ float: 'left', paddingLeft: '27px' }}>
-                  订单编号:
-                </div>{' '}
-                <div style={{ float: 'left', marginLeft: '5px' }}>
-                  {row.order_code}
-                </div>{' '}
-              </div>
-              <div
-                style={{
-                  width: '300px',
-                  height: '100px',
-                  lineHeight: '30px',
-                  border: '1px solid #EFEDED',
-                  marginBottom: '24px',
-                }}
-              >
-                <div style={{ paddingLeft: '27px' }}>
-                  账号: {row.user.user_name}
-                </div>
-                <div style={{ paddingLeft: '27px' }}>
-                  订单金额: {row.total_amount}{' '}
-                </div>
-              </div>
-            </div>
-            <Form ref={this.formRef}>
-              <FormItem
-                label="审核"
-                name="audit_status"
-                rules={[{ required: true, message: `请选择` }]}
-              >
-                <Radio.Group>
-                  <Radio value={1}>通过</Radio>
-                  <Radio value={2}>拒绝</Radio>
-                </Radio.Group>
-              </FormItem>
-            </Form>
-            <div>
-              <div
-                style={{ float: 'left', height: '60px', lineHeight: '60px' }}
-              >
-                备注:
-              </div>
-              <div style={{ float: 'left', marginLeft: '8px' }}>
-                <Input
-                  allowClear
-                  onChange={event => this.handleMaxBackUp(event)}
-                  defaultValue=""
-                  style={{ width: '260px', height: '60px' }}
-                />
-              </div>
-            </div>
-          </div>
-        ),
-        onOk: () => {
-          const { remark } = this.state;
-          return new Promise((resolve, reject) => {
-            this.formRef.current
-              .validateFields()
-              .then(values => {
-                this.props
-                  .dispatch({
-                    type: 'replenishmentRecord/auditUpdate',
-                    payload: {
-                      id: row.id,
-                      ...values,
-                      remark: remark,
-                    },
-                  })
-                  .then(data => {
-                    if (data != 'error') {
-                      resolve();
-                      this.loadData();
-                    } else {
-                      reject();
-                    }
-                  });
-              })
-              .catch(() => reject());
-          });
-        },
+      this.setState({
+        visible3: true,
       });
+      this.props
+        .dispatch({
+          type: 'weight/Id',
+          payload: { id: row.id },
+        })
+        .then(res => {
+          console.log(res);
+          if (res != 'error') {
+            this.setState({
+              audit: res,
+            });
+            this.formRef3.current.setFieldsValue({
+              remark: res.remark,
+              audit_status: res.audit_status,
+            });
+          }
+        });
+      // Modal.confirm({
+      //   title: '审核',
+      //   content: (
+      //     <div>
+      //       <div>
+      //         <div
+      //           style={{
+      //             width: '300px',
+      //             height: '30px',
+      //             lineHeight: '30px',
+      //             background: '#EAE8E8',
+      //           }}
+      //         >
+      //           {' '}
+      //           <div style={{ float: 'left', paddingLeft: '27px' }}>
+      //             订单编号:
+      //           </div>{' '}
+      //           <div style={{ float: 'left', marginLeft: '5px' }}>
+      //             {row.order_code}
+      //           </div>{' '}
+      //         </div>
+      //         <div
+      //           style={{
+      //             width: '300px',
+      //             height: '100px',
+      //             lineHeight: '30px',
+      //             border: '1px solid #EFEDED',
+      //             marginBottom: '24px',
+      //           }}
+      //         >
+      //           <div style={{ paddingLeft: '27px' }}>
+      //             账号: {row.user.user_name}
+      //           </div>
+      //           <div style={{ paddingLeft: '27px' }}>
+      //             订单金额: {row.total_amount}{' '}
+      //           </div>
+      //         </div>
+      //       </div>
+      //       <Form ref={this.formRef}>
+      //         <FormItem
+      //           label="审核"
+      //           name="audit_status"
+      //           rules={[{ required: true, message: `请选择` }]}
+      //         >
+      //           <Radio.Group>
+      //             <Radio value={1}>通过</Radio>
+      //             <Radio value={2}>拒绝</Radio>
+      //           </Radio.Group>
+      //         </FormItem>
+      //       </Form>
+      //       <div>
+      //         <div
+      //           style={{ float: 'left', height: '60px', lineHeight: '60px' }}
+      //         >
+      //           备注:
+      //         </div>
+      //         <div style={{ float: 'left', marginLeft: '8px' }}>
+      //           <Input
+      //             allowClear
+      //             onChange={event => this.handleMaxBackUp(event)}
+      //             defaultValue=""
+      //             style={{ width: '260px', height: '60px' }}
+      //           />
+      //         </div>
+      //       </div>
+      //     </div>
+      //   ),
+      //   onOk: () => {
+      //     const { remark } = this.state;
+      //     return new Promise((resolve, reject) => {
+      //       this.formRef.current
+      //         .validateFields()
+      //         .then(values => {
+      //           this.props
+      //             .dispatch({
+      //               type: 'replenishmentRecord/auditUpdate',
+      //               payload: {
+      //                 id: row.id,
+      //                 ...values,
+      //                 remark: remark,
+      //               },
+      //             })
+      //             .then(data => {
+      //               if (data != 'error') {
+      //                 resolve();
+      //                 this.loadData();
+      //               } else {
+      //                 reject();
+      //               }
+      //             });
+      //         })
+      //         .catch(() => reject());
+      //     });
+      //   },
+      // });
     } else if (index == 1) {
       this.setState({
         loading: true,
@@ -523,9 +545,11 @@ class Page extends Component {
       },
       () => {
         let aum = 0;
-        this.state.list.map(item => {
-          aum += item.total_amount * 1;
-        });
+        this.state.list
+          ? this.state.list.map(item => {
+              aum += item.total_amount * 1;
+            })
+          : null;
         this.setState({
           sum: aum,
         });
@@ -537,8 +561,10 @@ class Page extends Component {
   readactCancel = () => {
     this.setState({
       visible: false,
+      visible3: false,
       visibleInviteDrawer: false,
       dataAdd: undefined,
+      sum: undefined,
     });
   };
   onSelectChange = value => {
@@ -654,6 +680,7 @@ class Page extends Component {
       list: id,
     });
   };
+
   render() {
     const {
       visible,
@@ -670,6 +697,7 @@ class Page extends Component {
       selectedRowKeys,
       loadings,
       visible3,
+      val,
     } = this.state;
     const { data, listLoading, addLoading, updateLoading } = this.props;
     const rowSelection =
@@ -794,6 +822,37 @@ class Page extends Component {
             });
         },
       );
+    };
+    const onFinishAudit = val => {
+      this.setState({
+        loadings: true,
+      });
+      let username = this.state.audit.user.user_name;
+      this.props
+        .dispatch({
+          type: 'replenishmentRecord/auditUpdate',
+          payload: {
+            id: this.state.audit.id,
+            username: username,
+            remark: val.remark,
+            audit_status: val.audit_status,
+            order_code: this.state.audit.order_code,
+          },
+        })
+        .then(res => {
+          if (res != 'error') {
+            this.setState({
+              loadings: false,
+              visible3: false,
+            });
+            message.success('提交成功');
+            this.loadData();
+          } else {
+            this.setState({
+              loadings: false,
+            });
+          }
+        });
     };
     const { Option } = Select;
 
@@ -931,23 +990,105 @@ class Page extends Component {
               </Button>
             )}
           </div>
+          {console.log(this.state.audit)}
           <Modal
             visible={visible3}
-            title="关联商品"
-            onOk={this.handleSubmit}
-            onCancel={this.handleClose}
+            title="审核"
             maskClosable={false}
             confirmLoading={true}
             destroyOnClose
-            footer={[
-              <Button key="back" onClick={this.handleClose}>
-                取消
-              </Button>,
-              <Button key="submit" type="primary" onClick={this.handleSubmit}>
-                确认
-              </Button>,
-            ]}
-          ></Modal>
+            width={500}
+            footer={null}
+            destroyOnClose
+          >
+            <Form
+              ref={this.formRef3}
+              name="control-hooks"
+              onSubmit={this.handleSubmit}
+              onFinish={onFinishAudit}
+              ref={this.formRef3}
+            >
+              <div
+                style={{
+                  width: '450px',
+                  height: '30px',
+                  lineHeight: '30px',
+                  background: '#EAE8E8',
+                  display: 'flex',
+                }}
+              >
+                <div style={{ textIndent: '10px' }}>订单号:</div>
+                <div style={{ marginLeft: '5px' }}>
+                  {this.state.audit && this.state.audit.order_code}
+                </div>
+              </div>
+              <div
+                style={{
+                  width: '450px',
+                  height: '100px',
+                  lineHeight: '30px',
+                  border: '1px solid #EFEDED',
+                  marginBottom: '24px',
+                }}
+              >
+                <div style={{ display: 'flex', marginTop: '10px' }}>
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ marginLeft: '20px' }}>账号:</div>
+                    <div style={{ marginLeft: '10px' }}>
+                      {this.state.audit && this.state.audit.user.user_name}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ marginLeft: '20px' }}>订单金额:</div>
+                    <div style={{ marginLeft: '10px' }}>
+                      {this.state.audit && this.state.audit.total_amount}元
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginLeft: '18px', marginTop: '10px' }}>
+                  <Form.Item label="备注" name="remark">
+                    <Input
+                      allowClear
+                      onChange={event => this.handleMaxBackUp(event)}
+                      style={{ width: '350px', height: '30px' }}
+                    />
+                  </Form.Item>
+                </div>
+                <div style={{ marginLeft: '7px', marginTop: '30px' }}>
+                  <FormItem
+                    label="审核"
+                    name="audit_status"
+                    rules={[{ required: true, message: `请选择` }]}
+                  >
+                    <Radio.Group>
+                      <Radio value={1}>通过</Radio>
+                      <Radio value={2}>拒绝</Radio>
+                    </Radio.Group>
+                  </FormItem>
+                </div>
+              </div>
+              <div style={{ marginTop: '110px' }}>
+                <Form.Item>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                      onClick={this.readactCancel}
+                      style={{ padding: '4px 10px', marginRight: '20px' }}
+                    >
+                      取消
+                    </Button>
+                    <Button
+                      style={{ padding: '4px 10px' }}
+                      type="primary"
+                      htmlType="submit"
+                      loading={loadings}
+                    >
+                      {this.state.loadings ? '提交中' : '提交'}
+                    </Button>
+                  </div>
+                </Form.Item>
+              </div>
+            </Form>
+          </Modal>
           <Modal
             visible={visible2}
             title="关联商品"
@@ -1106,7 +1247,9 @@ class Page extends Component {
                                 {item.product_type_name}
                               </div>
                               <div className={styles.item}>{item.specs}</div>
-                              <div className={styles.item}>{item.price}</div>
+                              <div className={styles.item}>
+                                {item.total_price}
+                              </div>
                               <div className={styles.item}>
                                 <div style={{ display: 'flex' }}>
                                   <div style={{ lineHeight: '30px' }}>
@@ -1439,7 +1582,9 @@ class Page extends Component {
                 </div>
               </Form>
               <div style={{ float: 'right' }}>
-                <Button onClick={this.compile}>编辑</Button>
+                {this.state.ids.audit_status == 1 ? null : (
+                  <Button onClick={this.compile}>编辑</Button>
+                )}
               </div>
             </Drawer>
           ) : null}

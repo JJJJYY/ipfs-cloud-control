@@ -463,18 +463,9 @@ class Page extends Component {
                 name="price"
                 label={
                   this.state.keys == 1 || this.state.keys == 5
-                    ? '单价/台'
+                    ? '单价/年/台'
                     : '每T/元'
                 }
-                // rules={[
-                //   {
-                //     required: true,
-                //   },
-                //   {
-                //     pattern: /^\d+$|^\d+[.]?\d+$/,
-                //     message: '只能输入数字',
-                //   },
-                // ]}
               >
                 <Input
                   onChange={onChangeunit}
@@ -511,7 +502,7 @@ class Page extends Component {
               {this.state.keys == 1 ||
               this.state.keys == 5 ||
               this.state.keys == 0 ? null : (
-                <Form.Item name="total_price" label={'单价/T'}>
+                <Form.Item name="total_price" label={'单价/元'}>
                   <InputNumber
                     precision="2"
                     style={{ width: '472px' }}
@@ -736,19 +727,17 @@ class Page extends Component {
                 <Form.Item
                   name="price"
                   label={
-                    this.state.keyg == 1
-                      ? '单价/台'
-                      : this.state.keyg == 5
+                    this.state.keyg == 1 || this.state.keyg == 5
                       ? '单价/年/台'
-                      : '单价/T'
+                      : '每T/元'
                   }
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
                 >
-                  <Input maxLength={10} allowClear />
+                  <Input
+                    onChange={onChangeunit}
+                    type="number"
+                    maxLength={9}
+                    allowClear
+                  />
                 </Form.Item>
                 {this.state.keyg == 1 ||
                 this.state.keyg == 5 ||
@@ -761,9 +750,28 @@ class Page extends Component {
                     <Input allowClear />
                   </Form.Item>
                 )}
+
+                {this.state.keyg == 1 ||
+                this.state.keyg == 5 ||
+                this.state.keyg == 0 ? null : (
+                  <Form.Item name="total_price" label={'单价/元'}>
+                    <InputNumber
+                      precision="2"
+                      style={{ width: '472px' }}
+                      allowClear
+                    />
+                  </Form.Item>
+                )}
+
                 <Form.Item
                   name="stock"
-                  label={this.state.keyg == 1 ? '库存/台' : '库存/T'}
+                  label={
+                    this.state.keyg == 1
+                      ? '库存/台'
+                      : this.state.keyg == 5
+                      ? '库存/T'
+                      : '库存(每份576T)'
+                  }
                   rules={[
                     {
                       required: true,
