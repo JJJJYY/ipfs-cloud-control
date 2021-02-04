@@ -205,7 +205,6 @@ export async function replenishmentRecordList(params) {
 }
 
 export async function replenishmentRecordAdd(params) {
-  console.log(params);
   return request.post('staff/order/add', params);
 }
 

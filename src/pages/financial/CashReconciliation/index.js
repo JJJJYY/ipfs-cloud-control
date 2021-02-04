@@ -66,7 +66,6 @@ class Page extends Component {
   render() {
     const { page, count, search } = this.state;
     const { data, listLoading, updateLoading } = this.props;
-    console.log(data.data);
     return (
       <div>
         <SearchGroup

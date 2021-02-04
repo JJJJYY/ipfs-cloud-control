@@ -124,7 +124,6 @@ class Page extends Component {
         payload: values,
       })
       .then(data => {
-        console.log(data);
         if (data != 'error') {
           this.loadData();
           this.handleClose();

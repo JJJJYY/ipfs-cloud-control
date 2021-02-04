@@ -358,9 +358,7 @@ class Page extends Component {
                   visibleInviteDrawer: true,
                   loading: false,
                 },
-                () => {
-                  console.log(this.state.visibleInviteDrawer);
-                },
+                () => {},
               );
               this.formRef.current &&
                 this.formRef.current.setFieldsValue({
@@ -376,9 +374,7 @@ class Page extends Component {
       },
     );
   };
-  handleUpload = e => {
-    console.log(e);
-  };
+
   render() {
     const { data, listLoading, updateLoading } = this.props;
     const {
@@ -389,7 +385,6 @@ class Page extends Component {
       info,
     } = this.state;
     const onFinish = values => {
-      console.log(values);
       this.setState({
         loadings: true,
       });

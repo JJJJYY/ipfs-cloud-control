@@ -170,7 +170,6 @@ class CompileDrawer extends Component {
           visible={visibleInviteDrawer}
           destroyOnClose
         >
-          {console.log(visibleInviteDrawer)}
           <Divider>跟进信息</Divider>
           <Form
             layout="vertical"
@@ -360,7 +359,6 @@ class CompileDrawer extends Component {
                     textIndent: '10px',
                   }}
                 >
-                  {console.log(this.state.sum)}¥
                   {this.state.sum && this.state.sum.toFixed(2)}
                 </div>
               </div>

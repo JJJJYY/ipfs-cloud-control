@@ -18,7 +18,6 @@ class UploadItem extends Component {
   }
 
   urls = () => {
-    console.log(this.state.fileList);
     var urls = [];
     this.state.fileList.map(file => {
       if (file.status === 'done' && file.response) {
@@ -82,12 +81,10 @@ class UploadItem extends Component {
             ]
           }
           onChange={info => {
-            console.log(info);
             const ispic =
               info.file.type === 'image/jpeg' ||
               info.file.type === 'image/jpg' ||
               info.file.type === 'image/png';
-            console.log(ispic);
             if (ispic || typeof info.file.type === 'undefined') {
               this.setState({ fileList: info.fileList, showDefault });
               onChange && onChange(this.urls());

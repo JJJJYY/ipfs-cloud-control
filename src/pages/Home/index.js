@@ -40,7 +40,6 @@ class Page extends Component {
         type: 'goods/queryActive',
       })
       .then(res => {
-        console.log(res);
         this.setState({
           data: res,
         });
@@ -52,7 +51,7 @@ class Page extends Component {
   render() {
     const { loading } = this.props;
     const { data, active } = this.state;
-    console.log(data);
+
     return (
       <div>
         <Row gutter={16}>

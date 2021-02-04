@@ -375,7 +375,6 @@ class Page extends Component {
           payload: { id: row.id },
         })
         .then(result => {
-          console.log(result);
           if (result != 'error') {
             this.setState({
               ids: result || [],
@@ -407,18 +406,6 @@ class Page extends Component {
                 <div style={{ textIndent: '10px' }}>订单号:</div>
                 <div style={{ marginLeft: '5px' }}>{row.order_code}</div>
               </div>
-              {/* <div
-                style={{
-                  width: '450px',
-                  height: '100px',
-                  lineHeight: '30px',
-                  border: '1px solid #EFEDED',
-                  marginBottom: '24px',
-                }}
-              >
-                <div>账号：{row.user.user_name}</div>
-                <div>订单金额: {row.total_amount} </div>
-              </div> */}
               <div
                 style={{
                   width: '450px',
@@ -743,7 +730,6 @@ class Page extends Component {
       );
     };
     const onFinish = values => {
-      console.log(values);
       this.setState({
         loadings: true,
       });
@@ -823,46 +809,7 @@ class Page extends Component {
         },
       );
     };
-    const onFinishAudit = val => {
-      this.setState({
-        loadings: true,
-      });
-      let username = this.state.audit.user.user_name;
-      return new Promise((resolve, reject) => {
-        this.formRef3.current
-          .validateFields()
-          .then(val => {
-            this.props
-              .dispatch({
-                type: 'replenishmentRecord/auditUpdate',
-                payload: {
-                  id: this.state.audit.id,
-                  username: username,
-                  remark: val.remark,
-                  audit_status: val.audit_status,
-                  order_code: this.state.audit.order_code,
-                },
-              })
-              .then(data => {
-                if (data != 'error') {
-                  this.setState({
-                    loadings: false,
-                    visible3: false,
-                  });
-                  resolve();
-                  message.success('提交成功');
-                  this.loadData();
-                } else {
-                  this.setState({
-                    loadings: false,
-                  });
-                  reject();
-                }
-              });
-          })
-          .catch(() => reject());
-      });
-    };
+
     const { Option } = Select;
 
     return (
@@ -999,109 +946,6 @@ class Page extends Component {
               </Button>
             )}
           </div>
-
-          <Modal
-            visible={visible3}
-            title="审核"
-            maskClosable={false}
-            confirmLoading={true}
-            destroyOnClose
-            width={500}
-            onCancel={this.handleCancel}
-            footer={null}
-            destroyOnClose
-          >
-            <Form
-              layout="horizontal"
-              ref={this.formRef1}
-              name="control-hooks"
-              onFinish={onFinishAudit}
-              autoComplete="off"
-              ref={this.formRef3}
-            >
-              <div
-                style={{
-                  width: '450px',
-                  height: '30px',
-                  lineHeight: '30px',
-                  background: '#EAE8E8',
-                  display: 'flex',
-                }}
-              >
-                <div style={{ textIndent: '10px' }}>订单号:</div>
-                <div style={{ marginLeft: '5px' }}>
-                  {this.state.audit && this.state.audit.order_code}
-                </div>
-              </div>
-              <div
-                style={{
-                  width: '450px',
-                  height: '100px',
-                  lineHeight: '30px',
-                  border: '1px solid #EFEDED',
-                  marginBottom: '24px',
-                }}
-              >
-                <div style={{ display: 'flex', marginTop: '10px' }}>
-                  <div style={{ display: 'flex' }}>
-                    <div style={{ marginLeft: '20px' }}>账号:</div>
-                    <div style={{ marginLeft: '10px' }}>
-                      {this.state.audit && this.state.audit.user.user_name}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex' }}>
-                    <div style={{ marginLeft: '20px' }}>订单金额:</div>
-                    <div style={{ marginLeft: '10px' }}>
-                      {this.state.audit && this.state.audit.total_amount}元
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div style={{ marginLeft: '18px', marginTop: '10px' }}>
-                <Form.Item label="备注" name="remark">
-                  <Input
-                    allowClear
-                    onChange={event => this.handleMaxBackUp(event)}
-                    style={{ width: '350px', height: '30px' }}
-                  />
-                </Form.Item>
-              </div>
-
-              <div style={{ marginLeft: '7px', marginTop: '30px' }}>
-                <Form.Item
-                  label="审核"
-                  name="audit_status"
-                  rules={[{ required: true, message: '请选择' }]}
-                >
-                  <Radio.Group>
-                    <Radio value={1}>通过</Radio>
-                    <Radio value={2}>拒绝</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </div>
-
-              <div style={{ marginTop: '110px' }}>
-                <Form.Item>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button
-                      onClick={this.readactCancel}
-                      style={{ padding: '4px 10px', marginRight: '20px' }}
-                    >
-                      取消
-                    </Button>
-                    <Button
-                      style={{ padding: '4px 10px' }}
-                      type="primary"
-                      htmlType="submit"
-                      loading={loadings}
-                    >
-                      {this.state.loadings ? '提交中' : '提交'}
-                    </Button>
-                  </div>
-                </Form.Item>
-              </div>
-            </Form>
-          </Modal>
           <Modal
             visible={visible2}
             title="关联商品"
