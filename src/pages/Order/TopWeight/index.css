@@ -5,3 +5,6 @@
 .xiaohei .ant-upload-list-item-card-actions-btn{
     display: none;
 }
+.xiaohei .ant-upload{
+    display: none;
+}
