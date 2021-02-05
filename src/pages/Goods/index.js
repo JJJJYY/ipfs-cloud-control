@@ -175,6 +175,7 @@ class Page extends Component {
                   price: result.price,
                   stock: result.stock,
                   rank: result.rank,
+                  total_price: result.total_price,
                 });
               }
             });
@@ -262,6 +263,8 @@ class Page extends Component {
     this.setState({
       visible1: false,
       ids: undefined,
+      price: 0,
+      lowest_num: 0,
     });
   };
 
@@ -377,6 +380,46 @@ class Page extends Component {
           if (this.state.price * this.state.lowest_num) {
             this.formRef1.current.setFieldsValue({
               total_price: this.state.price * this.state.lowest_num,
+            });
+          } else {
+            this.formRef1.current.setFieldsValue({
+              total_price: 0,
+            });
+          }
+        },
+      );
+    };
+    const onChangeLowestnums = e => {
+      this.setState(
+        {
+          lowest_num: e.target.value,
+        },
+        () => {
+          if (this.state.price * this.state.lowest_num) {
+            this.formRef1.current.setFieldsValue({
+              price: this.state.price,
+              total_price: this.state.price * this.state.lowest_num,
+              lowest_num: this.state.lowest_num,
+            });
+          } else {
+            this.formRef1.current.setFieldsValue({
+              total_price: 0,
+            });
+          }
+        },
+      );
+    };
+    const onChangeunits = e => {
+      this.setState(
+        {
+          price: e.target.value,
+        },
+        () => {
+          if (this.state.price * this.state.lowest_num) {
+            this.formRef1.current.setFieldsValue({
+              price: this.state.price,
+              total_price: this.state.price * this.state.lowest_num,
+              lowest_num: this.state.lowest_num,
             });
           } else {
             this.formRef1.current.setFieldsValue({
@@ -508,6 +551,7 @@ class Page extends Component {
                     precision="2"
                     style={{ width: '472px' }}
                     allowClear
+                    readOnly
                   />
                 </Form.Item>
               )}
@@ -734,7 +778,7 @@ class Page extends Component {
                   }
                 >
                   <Input
-                    onChange={onChangeunit}
+                    onChange={onChangeunits}
                     type="number"
                     maxLength={9}
                     allowClear
@@ -748,7 +792,7 @@ class Page extends Component {
                     name="lowest_num"
                     label="最低起购/T"
                   >
-                    <Input allowClear />
+                    <Input allowClear onChange={onChangeLowestnums} />
                   </Form.Item>
                 )}
 
@@ -760,6 +804,7 @@ class Page extends Component {
                       precision="2"
                       style={{ width: '472px' }}
                       allowClear
+                      readOnly
                     />
                   </Form.Item>
                 )}
