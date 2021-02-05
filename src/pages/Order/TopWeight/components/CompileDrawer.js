@@ -277,9 +277,8 @@ class CompileDrawer extends Component {
                 <DescriptionItem
                   title="完成时间"
                   content={
-                    this.props.name.pay_status == 1 ||
-                    this.props.name.pay_status == 2
-                      ? this.props.name.pay_time
+                    this.state.ids.pay_status == 1 && this.state.ids.status == 2
+                      ? this.state.ids.pay_time
                       : '-'
                   }
                 />

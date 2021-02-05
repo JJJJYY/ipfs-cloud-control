@@ -627,7 +627,7 @@ class Page extends Component {
                       title="完成时间"
                       content={
                         this.state.ids.pay_status == 1 &&
-                        this.state.ids.pay_status == 2
+                        this.state.ids.status == 2
                           ? this.state.ids.pay_time
                           : '-'
                       }
@@ -845,7 +845,7 @@ class Page extends Component {
                       title="完成时间"
                       content={
                         this.state.ids.pay_status == 1 &&
-                        this.state.ids.pay_status == 2
+                        this.state.ids.status == 2
                           ? this.state.ids.pay_time
                           : '-'
                       }
