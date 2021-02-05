@@ -403,7 +403,10 @@ class Page extends Component {
             });
           } else {
             this.formRef1.current.setFieldsValue({
-              total_price: 0,
+              total_price:
+                (this.state.price == 0
+                  ? this.state.ids.price
+                  : this.state.price) * this.state.lowest_num,
             });
           }
         },
@@ -423,7 +426,11 @@ class Page extends Component {
             });
           } else {
             this.formRef1.current.setFieldsValue({
-              total_price: 0,
+              total_price:
+                this.state.price *
+                (this.state.lowest_num == 0
+                  ? this.state.lowest_num
+                  : this.state.ids.lowest_num),
             });
           }
         },
