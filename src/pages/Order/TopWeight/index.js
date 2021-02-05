@@ -173,12 +173,12 @@ class Page extends Component {
       dataIndex: 'quantity',
       render: (text, e, index) => (
         <div>
-          {' '}
           数量:{' '}
           <InputNumber
             style={{ width: '70px' }}
             min={1}
             step={1}
+            max={e.stock}
             defaultValue={text}
             onChange={value => this.onGenderChange(value, e, index)}
             precision=""

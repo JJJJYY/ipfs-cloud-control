@@ -205,6 +205,7 @@ class Page extends Component {
             style={{ width: '70px' }}
             min={1}
             step={1}
+            max={e.stock}
             defaultValue={text}
             onChange={value => this.onGenderChange(value, e, index)}
             precision=""
