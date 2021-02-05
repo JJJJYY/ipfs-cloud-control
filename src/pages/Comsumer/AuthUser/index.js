@@ -4,7 +4,6 @@ import {
   Form,
   Switch,
   Tag,
-  Modal,
   Select,
   Table,
   Divider,
@@ -197,26 +196,8 @@ class Page extends Component {
   };
 
   render() {
-    const {
-      visibleDrawer,
-      visibleInviteDrawer,
-      page,
-      order_amount,
-      count,
-      search,
-      status,
-      userID,
-      invitePage,
-      inviteCount,
-      rank,
-    } = this.state;
-    const {
-      data,
-      listLoading,
-      userDetail,
-      updateLoading,
-      inviteList,
-    } = this.props;
+    const { visibleDrawer } = this.state;
+    const { data, listLoading, updateLoading } = this.props;
 
     return (
       <div>

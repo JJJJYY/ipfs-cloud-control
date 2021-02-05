@@ -15,10 +15,10 @@ import {
   Spin,
 } from 'antd';
 import { MinusCircleOutlined } from '@ant-design/icons';
-import { connect } from 'umi';
+
 import EditableTable from '@/components/EditableTable';
 import OperationGroup from '@/components/OperationGroup';
-
+import { connect } from 'umi';
 import Upload from '@/components/Upload';
 import styles from './index.less';
 import './index.css';
@@ -404,6 +404,7 @@ class Page extends Component {
             onActions={this.handleAction}
             rowKey="id"
           />
+
           <Modal
             title="添加"
             okText="提交"
